@@ -1,6 +1,28 @@
 #include <gtk/gtk.h>
 
+#include "screenshot-utils.h"
+#include "screenshot-config.h"
+
+ScreenshotConfig* screenshot_config;
+
+void init_screen_config()
+{
+    screenshot_config = new ScreenshotConfig();
+    screenshot_config->copy_to_clipboard = false;
+    screenshot_config->take_window_shot = true;
+    screenshot_config->take_area_shot = false;
+    screenshot_config->include_border = false;
+    screenshot_config->include_icc_profile = false;
+    screenshot_config->include_pointer = false;
+    screenshot_config->delay = 0;
+}
+
 int main(int argc,char *argv[]) {
+
+    init_screen_config();
+
+    GdkPixbuf* gdkPixbuf = screenshot_get_pixbuf(NULL);
+
     GtkWidget *window;
     GtkWidget *label;
 
