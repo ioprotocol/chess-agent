@@ -2,7 +2,6 @@
 #include "screenshot-utils.h"
 #include "screenshot-config.h"
 
-
 int main(int argc,char *argv[]) {
     GtkWidget *window;
     GtkWidget *label;
@@ -37,6 +36,8 @@ int main(int argc,char *argv[]) {
     GdkPixbuf* gdkPixbuf = screenshot_fallback_get_pixbuf(NULL);
 
     save_pixbuf_to_jpeg_file(gdkPixbuf);
+
+    g_object_unref(gdkPixbuf);
     /* start the main loop, and let it rest until the application is closed */
     gtk_main();
     return 0;
