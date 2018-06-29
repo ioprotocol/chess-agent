@@ -1,10 +1,34 @@
 #include <gtk/gtk.h>
+#include <pthread.h>
+#include <unistd.h>
+#include <iostream>
 #include "screenshot-utils.h"
 #include "screenshot-config.h"
 
-int main(int argc,char *argv[]) {
+void* screen_shot(void* arg) {
+    for (int i = 0; i < 5; i++) {
+        GdkPixbuf *gdkPixbuf = screenshot_fallback_get_pixbuf(NULL);
+        save_pixbuf_to_jpeg_file(gdkPixbuf);
+        g_object_unref(gdkPixbuf);
+        std::cout << "sceen:" << i << std::endl;
+        sleep(5);
+    }
+}
+
+void button_clicked(GtkWidget *button, gpointer data) {
+    pthread_t id;
+    int ret = pthread_create(&id, NULL, screen_shot, NULL);
+    if(ret) {
+        std::cout << "Create pthread error!" << std::endl;
+        return;
+    }
+    pthread_join(id, NULL);
+}
+
+
+int main(int argc, char *argv[]) {
     GtkWidget *window;
-    GtkWidget *label;
+    GtkWidget *button;
 
     gtk_init(&argc, &argv);
     init_screen_config();
@@ -24,20 +48,17 @@ int main(int argc,char *argv[]) {
      */
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
-    /* create the "Hello, World" label */
-    label = gtk_label_new("Hello, World");
+
+    button = gtk_button_new_with_label("button");
+    g_signal_connect(GTK_WIDGET(button), "clicked", G_CALLBACK(button_clicked), NULL);
 
     /* and insert it into the main window */
-    gtk_container_add(GTK_CONTAINER(window), label);
+    gtk_container_add(GTK_CONTAINER(window), button);
 
     /* make sure that everything, window and label, are visible */
     gtk_widget_show_all(window);
 
-    GdkPixbuf* gdkPixbuf = screenshot_fallback_get_pixbuf(NULL);
 
-    save_pixbuf_to_jpeg_file(gdkPixbuf);
-
-    g_object_unref(gdkPixbuf);
     /* start the main loop, and let it rest until the application is closed */
     gtk_main();
     return 0;

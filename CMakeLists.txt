@@ -13,4 +13,4 @@ set(SOURCE_FILES main.cpp screenshot-utils.h screenshot-utils.c screenshot-confi
 add_executable(ChessAgent ${SOURCE_FILES})
 
 add_definitions (${GTK3_CFLAGS_OTHER})
-target_link_libraries (ChessAgent ${GTK3_LIBRARIES} X11)
+target_link_libraries (ChessAgent ${GTK3_LIBRARIES} X11 pthread)
