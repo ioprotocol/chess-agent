@@ -320,7 +320,7 @@ screenshot_fallback_find_current_window (void)
   return window;
 }
 
-static GdkPixbuf *
+GdkPixbuf *
 screenshot_fallback_get_pixbuf (GdkRectangle *rectangle)
 {
   GdkWindow *root, *wm_window = NULL;
@@ -665,4 +665,34 @@ screenshot_display_help (GtkWindow *parent)
                               error->message);
       g_error_free (error);
     }
+}
+
+void init_screen_config(void)
+{
+  screenshot_config = g_slice_new0 (ScreenshotConfig);
+  screenshot_config->copy_to_clipboard = FALSE;
+  screenshot_config->take_window_shot = TRUE;
+  screenshot_config->take_area_shot = FALSE;
+  screenshot_config->include_border = FALSE;
+  screenshot_config->include_icc_profile = FALSE;
+  screenshot_config->include_pointer = FALSE;
+  screenshot_config->border_effect = g_strdup ("none");
+  screenshot_config->delay = 0;
+}
+
+void
+save_pixbuf_to_jpeg_file (GdkPixbuf * pixbuf)
+{
+  gchar *path, *filename, *tmpname;
+  path = g_build_filename (g_get_user_cache_dir (), "chess", NULL);
+  tmpname = g_strdup_printf ("chess-%d.jpeg", g_random_int ());
+  filename = g_build_filename (path, tmpname, NULL);
+
+  g_mkdir_with_parents (path, 0700);
+
+  gdk_pixbuf_save(pixbuf, filename, "jpeg", NULL, "quality", "100",NULL);
+
+  g_free(path);
+  g_free(filename);
+  g_free(tmpname);
 }

@@ -24,8 +24,15 @@
 #include <gdk/gdkx.h>
 
 G_BEGIN_DECLS
+GdkPixbuf*  screenshot_fallback_get_pixbuf(GdkRectangle *rectangle);
 
-GdkPixbuf *screenshot_get_pixbuf          (GdkRectangle *rectangle);
+GdkPixbuf*  screenshot_get_pixbuf(GdkRectangle *rectangle);
+
+void        init_screen_config(void);
+/**
+ * save screen shot bitmap into /home/xsy/.cache/chess dir
+ */
+void		save_pixbuf_to_jpeg_file(GdkPixbuf *);
 
 G_END_DECLS
 
