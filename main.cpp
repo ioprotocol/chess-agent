@@ -4,8 +4,7 @@
 #include <iostream>
 #include "screenshot-utils.h"
 #include "screenshot-config.h"
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/highgui.hpp"
+#include "piece.h"
 
 void* screen_shot(void* arg) {
     for (int i = 0; i < 5; i++) {
@@ -27,8 +26,7 @@ void button_clicked(GtkWidget *button, gpointer data) {
     }
     pthread_join(id, NULL);
     */
-//    char* dir = (char *)get_current_dir_name();
-//    printf("dir:%s \n" , dir);
+    Piece* piece = new Piece("A.png", 0, 0, "che", TRUE);
 }
 
 
@@ -46,7 +44,7 @@ int main(int argc, char *argv[]) {
     gtk_window_set_title(GTK_WINDOW(window), "Chinese Chess");
 
     /* set default window size */
-    gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
+    gtk_window_set_default_size(GTK_WINDOW(window), 558, 620);
 
     /* connect the destroy signal of the window to gtk_main_quit
      * when the window is about to be destroyed we get a notification and

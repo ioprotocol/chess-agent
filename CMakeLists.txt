@@ -13,7 +13,7 @@ link_directories (${GTK3_LIBRARY_DIRS})
 
 include_directories(${OpenCV_DIR})
 
-set(SOURCE_FILES main.cpp screenshot-utils.h screenshot-utils.c screenshot-config.h screenshot-config.c chess.cpp chess.h)
+set(SOURCE_FILES main.cpp screenshot-utils.h screenshot-utils.c screenshot-config.h screenshot-config.c chess.cpp chess.h piece.cpp piece.h application-utils.h application-utils.cpp)
 
 add_executable(ChessAgent ${SOURCE_FILES})
 
