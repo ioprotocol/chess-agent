@@ -6,10 +6,12 @@ set(CMAKE_CXX_STANDARD 11)
 find_package (PkgConfig REQUIRED)
 find_package(OpenCV REQUIRED)
 pkg_check_modules (GTK3 REQUIRED gtk+-3.0)
+pkg_check_modules(GLIB REQUIRED glib-2.0>=2.40)
 
 include_directories (${GTK3_INCLUDE_DIRS})
 link_directories (${GTK3_LIBRARY_DIRS})
-include_directories(${OpenCV_INCLUDE_DIRS})
+
+include_directories(${OpenCV_DIR})
 
 set(SOURCE_FILES main.cpp screenshot-utils.h screenshot-utils.c screenshot-config.h screenshot-config.c)
 

@@ -18,6 +18,7 @@ void* screen_shot(void* arg) {
 }
 
 void button_clicked(GtkWidget *button, gpointer data) {
+    /*
     pthread_t id;
     int ret = pthread_create(&id, NULL, screen_shot, NULL);
     if(ret) {
@@ -25,6 +26,9 @@ void button_clicked(GtkWidget *button, gpointer data) {
         return;
     }
     pthread_join(id, NULL);
+    */
+    char* dir = (char *)get_current_dir_name();
+    printf("dir:%s \n" , dir);
 }
 
 
