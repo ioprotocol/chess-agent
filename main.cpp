@@ -4,6 +4,8 @@
 #include <iostream>
 #include "screenshot-utils.h"
 #include "screenshot-config.h"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/highgui.hpp"
 
 void* screen_shot(void* arg) {
     for (int i = 0; i < 5; i++) {
