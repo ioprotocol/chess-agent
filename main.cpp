@@ -27,8 +27,8 @@ void button_clicked(GtkWidget *button, gpointer data) {
     }
     pthread_join(id, NULL);
     */
-    char* dir = (char *)get_current_dir_name();
-    printf("dir:%s \n" , dir);
+//    char* dir = (char *)get_current_dir_name();
+//    printf("dir:%s \n" , dir);
 }
 
 
