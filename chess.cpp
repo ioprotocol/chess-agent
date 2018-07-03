@@ -3,7 +3,183 @@
 //
 
 #include "chess.h"
+#include "application-utils.h"
 
-chess::chess() {
+Chess::Chess() {
+    gchar *img_path, *file_path;
 
+    img_path = get_resources_img_path();
+    file_path = g_build_filename(img_path, "MAIN.png", NULL);
+
+    this->chessBoard = cv::imread(file_path, cv::IMREAD_COLOR);
+    if (this->chessBoard.empty()) {
+        g_assert_not_reached();
+    }
+
+    topLeft = cv::Point(51, 53);
+    topRight = cv::Point(507, 53);
+    bottomLeft = cv::Point(51, 567);
+    bottomRight = cv::Point(507, 567);
+
+    gdouble dx = (topRight.x - topLeft.x) / 8.0;
+    gdouble dy = (bottomLeft.y - topLeft.y) / 9.0;
+
+    gint y = 0, x = 0;
+    for( y = 0; y < 10; y++)
+    {
+        for(x = 0; x < 9; x++)
+        {
+            positions[y][x].x = topLeft.x + dx * x;
+            positions[y][x].y = topLeft.y + dy * y;
+        }
+    }
+
+    y = 0;
+    /**
+     * initialize the chess pieces
+     */
+    chessPieces[y++] = new Piece("BR", 0, 0, "Black Che");
+    chessPieces[y++] = new Piece("BR", 8, 0, "Black Che");
+
+    chessPieces[y++] = new Piece("RR", 0, 9, "Red Che");
+    chessPieces[y++] = new Piece("RR", 8, 9, "Red Che");
+
+    chessPieces[y++] = new Piece("BN", 1, 0, "Black Ma");
+    chessPieces[y++] = new Piece("BN", 7, 0, "Black Ma");
+
+    chessPieces[y++] = new Piece("RN", 1, 9, "Red Ma");
+    chessPieces[y++] = new Piece("RN", 7, 9, "Red Ma");
+
+    chessPieces[y++] = new Piece("BB", 2, 0, "Black Xiang");
+    chessPieces[y++] = new Piece("BB", 6, 0, "Black Xiang");
+
+    chessPieces[y++] = new Piece("RB", 2, 9, "Red Xiang");
+    chessPieces[y++] = new Piece("RB", 6, 9, "Red Xiang");
+
+    chessPieces[y++] = new Piece("BA", 3, 0, "Black Shi");
+    chessPieces[y++] = new Piece("BA", 5, 0, "Black Shi");
+
+    chessPieces[y++] = new Piece("RA", 3, 9, "Red Shi");
+    chessPieces[y++] = new Piece("RA", 5, 9, "Red Shi");
+
+    chessPieces[y++] = new Piece("BK", 4, 0, "Black Jiang");
+
+    chessPieces[y++] = new Piece("RK", 4, 9, "Red Jiang");
+
+    chessPieces[y++] = new Piece("BK", 1, 2, "Black Pao");
+    chessPieces[y++] = new Piece("RK", 7, 2, "Black Pao");
+
+    chessPieces[y++] = new Piece("BK", 1, 7, "Red Pao");
+    chessPieces[y++] = new Piece("RK", 7, 7, "Red Pao");
+
+    chessPieces[y++] = new Piece("BP", 0, 3, "Black Zu");
+    chessPieces[y++] = new Piece("BP", 2, 3, "Black Zu");
+    chessPieces[y++] = new Piece("BP", 4, 3, "Black Zu");
+    chessPieces[y++] = new Piece("BP", 6, 3, "Black Zu");
+    chessPieces[y++] = new Piece("BP", 8, 3, "Black Zu");
+
+    chessPieces[y++] = new Piece("BP", 0, 6, "Red Zu");
+    chessPieces[y++] = new Piece("BP", 2, 6, "Red Zu");
+    chessPieces[y++] = new Piece("BP", 4, 6, "Red Zu");
+    chessPieces[y++] = new Piece("BP", 6, 6, "Red Zu");
+    chessPieces[y  ] = new Piece("BP", 8, 6, "Red Zu");
+
+    g_free(img_path);
+    g_free(file_path);
+}
+
+Chess::~Chess() {
+    this->chessBoard.release();
+    for(int i = 0; i < 32; i++) {
+        delete chessPieces[i];
+        chessPieces[i] = NULL;
+    }
+}
+
+void Chess::saveToDisk() {
+    int thickness = 2;
+    gint y = 0, x = 0;
+    for( y = 0; y < 9; y++) {
+        for(x = 0; x < 8; x++) {
+            cv::line(this->chessBoard, positions[y][x], positions[y+1][x+1], cv::Scalar( 0, 0, 255), thickness, cv::LINE_8);
+            cv::line(this->chessBoard, positions[y+1][x], positions[y][x+1], cv::Scalar( 0, 0, 255), thickness, cv::LINE_8);
+        }
+    }
+    cv::imwrite("/home/xsy/main.png", this->chessBoard);
+}
+
+void Chess::resetPiecePosition() {
+    gint y = 0;
+    // che
+    chessPieces[y++]->setPosition(0, 0);
+    chessPieces[y++]->setPosition(8, 0);
+    chessPieces[y++]->setPosition(0, 9);
+    chessPieces[y++]->setPosition(8, 9);
+    // ma
+    chessPieces[y++]->setPosition(1, 0);
+    chessPieces[y++]->setPosition(7, 0);
+    chessPieces[y++]->setPosition(1, 9);
+    chessPieces[y++]->setPosition(7, 9);
+    // xiang
+    chessPieces[y++]->setPosition(2, 0);
+    chessPieces[y++]->setPosition(6, 0);
+    chessPieces[y++]->setPosition(2, 9);
+    chessPieces[y++]->setPosition(6, 9);
+    // shi
+    chessPieces[y++]->setPosition(3, 0);
+    chessPieces[y++]->setPosition(5, 0);
+    chessPieces[y++]->setPosition(3, 9);
+    chessPieces[y++]->setPosition(5, 9);
+    // jiang
+    chessPieces[y++]->setPosition(4, 0);
+    chessPieces[y++]->setPosition(4, 9);
+    // pao
+    chessPieces[y++]->setPosition(1, 2);
+    chessPieces[y++]->setPosition(7, 2);
+    chessPieces[y++]->setPosition(1, 7);
+    chessPieces[y++]->setPosition(7, 7);
+    // zu
+    chessPieces[y++]->setPosition(0, 3);
+    chessPieces[y++]->setPosition(2, 3);
+    chessPieces[y++]->setPosition(4, 3);
+    chessPieces[y++]->setPosition(6, 3);
+    chessPieces[y++]->setPosition(8, 3);
+
+    chessPieces[y++]->setPosition(0, 6);
+    chessPieces[y++]->setPosition(2, 6);
+    chessPieces[y++]->setPosition(4, 6);
+    chessPieces[y++]->setPosition(6, 6);
+    chessPieces[y  ]->setPosition(8, 6);
+}
+
+void Chess::reversePiecePosition() {
+    for(gint i = 0; i < 32; i++) {
+        chessPieces[i]->setPosition(chessPieces[i]->getCol(), 9 - chessPieces[i]->getRow());
+    }
+}
+
+void Chess::generateMat() {
+    cv::Mat out = cv::Mat::zeros(558, 620, this->chessBoard.type());
+
+    this->chessBoard.copyTo(out);
+
+    for(gint i = 0; i < 32; i++) {
+        cv::Point center = positions[chessPieces[i]->getRow()][chessPieces[i]->getCol()];
+
+        IplImage img = IplImage(out);
+        CvRect rect = cvRect(center.x - 28, center.y - 28, 57, 57);
+        cvSetImageROI(&img, rect);
+
+        if (chessPieces[i]->getIsEnable()) {
+            if (chessPieces[i]->getIsActive()) {
+                chessPieces[i]->getImgActive().copyTo(out);
+            } else {
+                chessPieces[i]->getImg().copyTo(out);
+            }
+        }
+
+        cvResetImageROI(&img);
+    }
+    cv::imwrite("/home/xsy/main.png", out);
+    out.release();
 }

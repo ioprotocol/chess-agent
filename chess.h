@@ -5,15 +5,38 @@
 #ifndef CHESSAGENT_CHESS_H
 #define CHESSAGENT_CHESS_H
 
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/highgui.hpp"
+#include <opencv2/imgproc.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include<opencv2/highgui.hpp>
 
-class chess {
+#include "piece.h"
+
+class Chess {
 private:
-    cv::Mat main;
+    // 558 x 620
+    cv::Mat chessBoard;
 
+    cv::Point topLeft;
+    cv::Point topRight;
+    cv::Point bottomLeft;
+    cv::Point bottomRight;
+
+    cv::Point positions[10][9];
+
+    Piece* chessPieces[32];
 public:
-    chess();
+    Chess();
+
+    virtual ~Chess();
+
+    void resetPiecePosition();
+
+    void reversePiecePosition();
+
+    void generateMat();
+
+    // for test
+    void saveToDisk();
 };
 
 

@@ -5,43 +5,66 @@
 #ifndef CHESSAGENT_PIECE_H
 #define CHESSAGENT_PIECE_H
 
-#include <string>
+#define ICON_TYPE ".png"
+
 #include <gtk/gtk.h>
+#include <gdk/gdkx.h>
 #include "opencv2/imgcodecs.hpp"
 
 class Piece {
 private:
-    // icon
+    gchar* imgName;
+    // icon 57x57
     cv::Mat img;
+    cv::Mat imgActive;
     // from left to right 0 ～ 8
     gint col;
     // from up to down 0 ~ 9
     gint row;
     // chess piece name
-    std::string name;
-    gboolean is_red;
+    gchar* name;
+    // where it is killed, this will be set to false
+    gboolean isEnable;
+    // is last active step
+    gboolean isActive;
 public:
-    Piece(const std::string &img_name, gint col, gint row, const std::string &name, gboolean is_red);
+    Piece(const gchar* path, gint col, gint row, const gchar* name);
+
+    virtual ~Piece();
+
+    gboolean isRed();
+
+    void saveToDisk(const gchar* path);
 
     const cv::Mat &getImg() const;
 
-    void setImg(const cv::Mat &img);
-
     gint getCol() const;
-
-    void setCol(gint col);
 
     gint getRow() const;
 
+    gchar *getName() const;
+
+    gboolean getIsEnable() const;
+
+    void setImg(const cv::Mat &img);
+
+    void setCol(gint col);
+
     void setRow(gint row);
 
-    const std::string &getName() const;
+    void setPosition(gint col, gint row);
 
-    void setName(const std::string &name);
+    void setName(gchar *name);
 
-    gboolean getIs_red() const;
+    void setIsEnable(gboolean isEnable);
 
-    void setIs_red(gboolean is_red);
+    gboolean getIsActive() const;
+
+    void setIsActive(gboolean isActive);
+
+    const cv::Mat &getImgActive() const;
+
+    void setImgActive(const cv::Mat &imgActive);
 };
 
 

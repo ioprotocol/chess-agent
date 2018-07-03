@@ -4,7 +4,8 @@
 #include <iostream>
 #include "screenshot-utils.h"
 #include "screenshot-config.h"
-#include "piece.h"
+
+#include "chess.h"
 
 void* screen_shot(void* arg) {
     for (int i = 0; i < 5; i++) {
@@ -26,9 +27,10 @@ void button_clicked(GtkWidget *button, gpointer data) {
     }
     pthread_join(id, NULL);
     */
-    Piece* piece = new Piece("A.png", 0, 0, "che", TRUE);
+    Chess* chess = new Chess();
+    chess->generateMat();
+    delete chess;
 }
-
 
 int main(int argc, char *argv[]) {
     GtkWidget *window;
