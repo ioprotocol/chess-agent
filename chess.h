@@ -5,9 +5,10 @@
 #ifndef CHESSAGENT_CHESS_H
 #define CHESSAGENT_CHESS_H
 
+#include <gtk/gtk.h>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/imgcodecs.hpp>
-#include<opencv2/highgui.hpp>
+#include <opencv2/highgui.hpp>
 
 #include "piece.h"
 
@@ -33,7 +34,7 @@ public:
 
     void reversePiecePosition();
 
-    void generateMat();
+    GdkPixbuf * generateMat();
 
     int cvAdd4cMat_q(cv::Mat &dst, cv::Mat &scr, double scale);
     // for test

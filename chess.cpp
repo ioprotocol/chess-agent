@@ -158,7 +158,8 @@ void Chess::reversePiecePosition() {
     }
 }
 
-void Chess::generateMat() {
+GdkPixbuf * Chess::generateMat() {
+
     cv::Mat out = cv::Mat::zeros(558, 620, this->chessBoard.type());
 
     this->chessBoard.copyTo(out);
@@ -178,9 +179,21 @@ void Chess::generateMat() {
         }
     }
 
-    cv::imwrite("/home/xushy/main.png", out);
+    std::vector<uchar> data_encode;
+    std::vector<int> params;
+    params.push_back(cv::IMWRITE_JPEG_QUALITY);
+    params.push_back(100);
+    cv::imencode(".jpeg", out, data_encode, params);
 
+    GBytes* buffer = g_bytes_new(data_encode.data(), data_encode.size());
+
+    GInputStream* inputStream = g_memory_input_stream_new_from_bytes(buffer);
+    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_stream(inputStream, NULL, NULL);
+
+    g_bytes_unref(buffer);
     out.release();
+
+    return pixbuf;
 }
 
 int Chess::cvAdd4cMat_q(cv::Mat &dst, cv::Mat &scr, double scale)

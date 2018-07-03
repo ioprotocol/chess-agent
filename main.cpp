@@ -5,6 +5,7 @@
 #include "screenshot-utils.h"
 #include "screenshot-config.h"
 
+#include "chess.h"
 
 void* screen_shot(void* arg) {
     for (int i = 0; i < 5; i++) {
@@ -26,6 +27,13 @@ void button_clicked(GtkWidget *button, gpointer data) {
     }
     pthread_join(id, NULL);
     */
+    GdkPixbuf *pixbuf = NULL;
+    Chess* chess = new Chess();
+    pixbuf = chess->generateMat();
+    delete chess;
+    gdk_pixbuf_save(pixbuf, "/home/xushy/main1.jpg", "jpeg", NULL, "quality", "100", NULL);
+    g_object_unref(pixbuf);
+
 }
 
 int main(int argc, char *argv[]) {
