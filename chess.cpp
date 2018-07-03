@@ -66,11 +66,11 @@ Chess::Chess() {
 
     chessPieces[y++] = new Piece("RK", 4, 9, "Red Jiang");
 
-    chessPieces[y++] = new Piece("BK", 1, 2, "Black Pao");
-    chessPieces[y++] = new Piece("RK", 7, 2, "Black Pao");
+    chessPieces[y++] = new Piece("BC", 1, 2, "Black Pao");
+    chessPieces[y++] = new Piece("BC", 7, 2, "Black Pao");
 
-    chessPieces[y++] = new Piece("BK", 1, 7, "Red Pao");
-    chessPieces[y++] = new Piece("RK", 7, 7, "Red Pao");
+    chessPieces[y++] = new Piece("RC", 1, 7, "Red Pao");
+    chessPieces[y++] = new Piece("RC", 7, 7, "Red Pao");
 
     chessPieces[y++] = new Piece("BP", 0, 3, "Black Zu");
     chessPieces[y++] = new Piece("BP", 2, 3, "Black Zu");
@@ -78,11 +78,11 @@ Chess::Chess() {
     chessPieces[y++] = new Piece("BP", 6, 3, "Black Zu");
     chessPieces[y++] = new Piece("BP", 8, 3, "Black Zu");
 
-    chessPieces[y++] = new Piece("BP", 0, 6, "Red Zu");
-    chessPieces[y++] = new Piece("BP", 2, 6, "Red Zu");
-    chessPieces[y++] = new Piece("BP", 4, 6, "Red Zu");
-    chessPieces[y++] = new Piece("BP", 6, 6, "Red Zu");
-    chessPieces[y  ] = new Piece("BP", 8, 6, "Red Zu");
+    chessPieces[y++] = new Piece("RP", 0, 6, "Red Zu");
+    chessPieces[y++] = new Piece("RP", 2, 6, "Red Zu");
+    chessPieces[y++] = new Piece("RP", 4, 6, "Red Zu");
+    chessPieces[y++] = new Piece("RP", 6, 6, "Red Zu");
+    chessPieces[y  ] = new Piece("RP", 8, 6, "Red Zu");
 
     g_free(img_path);
     g_free(file_path);
@@ -163,23 +163,28 @@ void Chess::generateMat() {
 
     this->chessBoard.copyTo(out);
 
+    cv::Mat mask = cv::Mat::zeros(57, 57, this->chessBoard.type());
+    cv::circle(mask, cv::Point(28, 28), 26, CV_RGB(255, 255, 255), -1);
+
     for(gint i = 0; i < 32; i++) {
         cv::Point center = positions[chessPieces[i]->getRow()][chessPieces[i]->getCol()];
 
-        IplImage img = IplImage(out);
-        CvRect rect = cvRect(center.x - 28, center.y - 28, 57, 57);
-        cvSetImageROI(&img, rect);
+        cv::Rect rect = cv::Rect(center.x - 28, center.y - 28, 57, 57);
+        cv::Mat roi = out(rect);
 
         if (chessPieces[i]->getIsEnable()) {
             if (chessPieces[i]->getIsActive()) {
-                chessPieces[i]->getImgActive().copyTo(out);
+                chessPieces[i]->getImgActive().copyTo(roi, mask);
             } else {
-                chessPieces[i]->getImg().copyTo(out);
+                chessPieces[i]->getImg().copyTo(roi, mask);
             }
         }
-
-        cvResetImageROI(&img);
+        roi.release();
     }
+    cv::GaussianBlur(out, out, cv::Size(1, 1), 0);
+
     cv::imwrite("/home/xsy/main.png", out);
+
+    mask.release();
     out.release();
 }
