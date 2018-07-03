@@ -36,7 +36,7 @@ public:
 
     void saveToDisk(const gchar* path);
 
-    const cv::Mat &getImg() const;
+    cv::Mat &getImg();
 
     gint getCol() const;
 
@@ -62,7 +62,7 @@ public:
 
     void setIsActive(gboolean isActive);
 
-    const cv::Mat &getImgActive() const;
+    cv::Mat &getImgActive();
 
     void setImgActive(const cv::Mat &imgActive);
 };

@@ -35,6 +35,7 @@ public:
 
     void generateMat();
 
+    int cvAdd4cMat_q(cv::Mat &dst, cv::Mat &scr, double scale);
     // for test
     void saveToDisk();
 };

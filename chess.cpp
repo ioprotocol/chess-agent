@@ -38,51 +38,51 @@ Chess::Chess() {
     /**
      * initialize the chess pieces
      */
-    chessPieces[y++] = new Piece("BR", 0, 0, "Black Che");
-    chessPieces[y++] = new Piece("BR", 8, 0, "Black Che");
+    chessPieces[y++] = new Piece("BR", 0, 0, "黑車");
+    chessPieces[y++] = new Piece("BR", 8, 0, "黑車");
 
-    chessPieces[y++] = new Piece("RR", 0, 9, "Red Che");
-    chessPieces[y++] = new Piece("RR", 8, 9, "Red Che");
+    chessPieces[y++] = new Piece("RR", 0, 9, "红車");
+    chessPieces[y++] = new Piece("RR", 8, 9, "红車");
 
-    chessPieces[y++] = new Piece("BN", 1, 0, "Black Ma");
-    chessPieces[y++] = new Piece("BN", 7, 0, "Black Ma");
+    chessPieces[y++] = new Piece("BN", 1, 0, "黑马");
+    chessPieces[y++] = new Piece("BN", 7, 0, "黑马");
 
-    chessPieces[y++] = new Piece("RN", 1, 9, "Red Ma");
-    chessPieces[y++] = new Piece("RN", 7, 9, "Red Ma");
+    chessPieces[y++] = new Piece("RN", 1, 9, "红马");
+    chessPieces[y++] = new Piece("RN", 7, 9, "红马");
 
-    chessPieces[y++] = new Piece("BB", 2, 0, "Black Xiang");
-    chessPieces[y++] = new Piece("BB", 6, 0, "Black Xiang");
+    chessPieces[y++] = new Piece("BB", 2, 0, "黑象");
+    chessPieces[y++] = new Piece("BB", 6, 0, "黑象");
 
-    chessPieces[y++] = new Piece("RB", 2, 9, "Red Xiang");
-    chessPieces[y++] = new Piece("RB", 6, 9, "Red Xiang");
+    chessPieces[y++] = new Piece("RB", 2, 9, "红象");
+    chessPieces[y++] = new Piece("RB", 6, 9, "红象");
 
-    chessPieces[y++] = new Piece("BA", 3, 0, "Black Shi");
-    chessPieces[y++] = new Piece("BA", 5, 0, "Black Shi");
+    chessPieces[y++] = new Piece("BA", 3, 0, "黑士");
+    chessPieces[y++] = new Piece("BA", 5, 0, "黑士");
 
-    chessPieces[y++] = new Piece("RA", 3, 9, "Red Shi");
-    chessPieces[y++] = new Piece("RA", 5, 9, "Red Shi");
+    chessPieces[y++] = new Piece("RA", 3, 9, "红士");
+    chessPieces[y++] = new Piece("RA", 5, 9, "红士");
 
-    chessPieces[y++] = new Piece("BK", 4, 0, "Black Jiang");
+    chessPieces[y++] = new Piece("BK", 4, 0, "黑将");
 
-    chessPieces[y++] = new Piece("RK", 4, 9, "Red Jiang");
+    chessPieces[y++] = new Piece("RK", 4, 9, "红将");
 
-    chessPieces[y++] = new Piece("BC", 1, 2, "Black Pao");
-    chessPieces[y++] = new Piece("BC", 7, 2, "Black Pao");
+    chessPieces[y++] = new Piece("BC", 1, 2, "黑炮");
+    chessPieces[y++] = new Piece("BC", 7, 2, "黑炮");
 
-    chessPieces[y++] = new Piece("RC", 1, 7, "Red Pao");
-    chessPieces[y++] = new Piece("RC", 7, 7, "Red Pao");
+    chessPieces[y++] = new Piece("RC", 1, 7, "红炮");
+    chessPieces[y++] = new Piece("RC", 7, 7, "红炮");
 
-    chessPieces[y++] = new Piece("BP", 0, 3, "Black Zu");
-    chessPieces[y++] = new Piece("BP", 2, 3, "Black Zu");
-    chessPieces[y++] = new Piece("BP", 4, 3, "Black Zu");
-    chessPieces[y++] = new Piece("BP", 6, 3, "Black Zu");
-    chessPieces[y++] = new Piece("BP", 8, 3, "Black Zu");
+    chessPieces[y++] = new Piece("BP", 0, 3, "黑卒");
+    chessPieces[y++] = new Piece("BP", 2, 3, "黑卒");
+    chessPieces[y++] = new Piece("BP", 4, 3, "黑卒");
+    chessPieces[y++] = new Piece("BP", 6, 3, "黑卒");
+    chessPieces[y++] = new Piece("BP", 8, 3, "黑卒");
 
-    chessPieces[y++] = new Piece("RP", 0, 6, "Red Zu");
-    chessPieces[y++] = new Piece("RP", 2, 6, "Red Zu");
-    chessPieces[y++] = new Piece("RP", 4, 6, "Red Zu");
-    chessPieces[y++] = new Piece("RP", 6, 6, "Red Zu");
-    chessPieces[y  ] = new Piece("RP", 8, 6, "Red Zu");
+    chessPieces[y++] = new Piece("RP", 0, 6, "红卒");
+    chessPieces[y++] = new Piece("RP", 2, 6, "红卒");
+    chessPieces[y++] = new Piece("RP", 4, 6, "红卒");
+    chessPieces[y++] = new Piece("RP", 6, 6, "红卒");
+    chessPieces[y  ] = new Piece("RP", 8, 6, "红卒");
 
     g_free(img_path);
     g_free(file_path);
@@ -163,9 +163,6 @@ void Chess::generateMat() {
 
     this->chessBoard.copyTo(out);
 
-    cv::Mat mask = cv::Mat::zeros(57, 57, this->chessBoard.type());
-    cv::circle(mask, cv::Point(28, 28), 26, CV_RGB(255, 255, 255), -1);
-
     for(gint i = 0; i < 32; i++) {
         cv::Point center = positions[chessPieces[i]->getRow()][chessPieces[i]->getCol()];
 
@@ -174,17 +171,42 @@ void Chess::generateMat() {
 
         if (chessPieces[i]->getIsEnable()) {
             if (chessPieces[i]->getIsActive()) {
-                chessPieces[i]->getImgActive().copyTo(roi, mask);
+                cvAdd4cMat_q(roi, chessPieces[i]->getImgActive(), 1);
             } else {
-                chessPieces[i]->getImg().copyTo(roi, mask);
+                cvAdd4cMat_q(roi, chessPieces[i]->getImg(), 1);
             }
         }
-        roi.release();
     }
-    cv::GaussianBlur(out, out, cv::Size(1, 1), 0);
 
-    cv::imwrite("/home/xsy/main.png", out);
+    cv::imwrite("/home/xushy/main.png", out);
 
-    mask.release();
     out.release();
+}
+
+int Chess::cvAdd4cMat_q(cv::Mat &dst, cv::Mat &scr, double scale)
+{
+    if (dst.channels() != 3 || scr.channels() != 4)
+    {
+        return true;
+    }
+    if (scale < 0.01)
+        return false;
+    std::vector<cv::Mat>scr_channels;
+    std::vector<cv::Mat>dstt_channels;
+    split(scr, scr_channels);
+    split(dst, dstt_channels);
+    CV_Assert(scr_channels.size() == 4 && dstt_channels.size() == 3);
+
+    if (scale < 1)
+    {
+        scr_channels[3] *= scale;
+        scale = 1;
+    }
+    for (int i = 0; i < 3; i++)
+    {
+        dstt_channels[i] = dstt_channels[i].mul(255.0 / scale - scr_channels[3], scale / 255.0);
+        dstt_channels[i] += scr_channels[i].mul(scr_channels[3], scale / 255.0);
+    }
+    merge(dstt_channels, dst);
+    return true;
 }

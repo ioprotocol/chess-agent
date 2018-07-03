@@ -17,8 +17,8 @@ Piece::Piece(const gchar* path, gint col, gint row, const gchar* name)
     abs_file_name = g_build_filename(resource_img_path, file_name, NULL);
     abs_active_file_name = g_build_filename(resource_img_path, active_file_name, NULL);
 
-    this->img = cv::imread(abs_file_name, cv::IMREAD_COLOR);
-    this->imgActive = cv::imread(abs_active_file_name, cv::IMREAD_COLOR);
+    this->img = cv::imread(abs_file_name, cv::IMREAD_UNCHANGED);
+    this->imgActive = cv::imread(abs_active_file_name, cv::IMREAD_UNCHANGED);
     this->isActive = FALSE;
     this->isEnable = TRUE;
 
@@ -57,7 +57,7 @@ void Piece::saveToDisk(const gchar *path) {
     cv::imwrite(path, this->img);
 }
 
-const cv::Mat &Piece::getImg() const {
+cv::Mat &Piece::getImg() {
     return img;
 }
 
@@ -105,7 +105,7 @@ void Piece::setIsActive(gboolean isActive) {
     Piece::isActive = isActive;
 }
 
-const cv::Mat &Piece::getImgActive() const {
+cv::Mat &Piece::getImgActive() {
     return imgActive;
 }
 
