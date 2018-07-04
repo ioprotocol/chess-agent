@@ -1,47 +1,55 @@
 #include <gtk/gtk.h>
-#include <pthread.h>
-#include <unistd.h>
 #include <iostream>
-#include "screenshot-utils.h"
-#include "screenshot-config.h"
 
-#include "chess.h"
+#include <unistd.h>
+#include "screen-shot.h"
 
-void* screen_shot(void* arg) {
-    for (int i = 0; i < 5; i++) {
-        GdkPixbuf *gdkPixbuf = screenshot_fallback_get_pixbuf(NULL);
-        save_pixbuf_to_jpeg_file(gdkPixbuf);
-        g_object_unref(gdkPixbuf);
-        std::cout << "sceen:" << i << std::endl;
-        sleep(5);
-    }
+GTask* task;
+GCancellable* cancellable;
+
+void task_call_back(GObject *source_object,
+                  GAsyncResult *res,
+                  gpointer user_data) {
+    std::cout << "task call back" << std::endl;
 }
 
-void button_clicked(GtkWidget *button, gpointer data) {
-    /*
-    pthread_t id;
-    int ret = pthread_create(&id, NULL, screen_shot, NULL);
-    if(ret) {
-        std::cout << "Create pthread error!" << std::endl;
-        return;
-    }
-    pthread_join(id, NULL);
-    */
-    GdkPixbuf *pixbuf = NULL;
-    Chess* chess = new Chess();
-    pixbuf = chess->generateMat();
-    delete chess;
-    gdk_pixbuf_save(pixbuf, "/home/xushy/main1.jpg", "jpeg", NULL, "quality", "100", NULL);
-    g_object_unref(pixbuf);
+void task_data_destroy(gpointer data) {
+    std::cout << "task_data_destroy" << std::endl;
+}
 
+void thread_run(GTask           *task,
+                gpointer         source_object,
+                gpointer         task_data,
+                GCancellable    *cancellable) {
+    ScreenShot* screenShot = (ScreenShot*)task_data;
+    while(true) {
+        screenShot->run();
+        usleep(3000*1000);
+    }
+    g_task_return_boolean(task, TRUE);
+}
+
+void button_clicked(GtkWidget *button, gpointer data)
+{
+    cancellable = g_cancellable_new();
+    task = g_task_new(button, cancellable, task_call_back, data);
+
+    g_task_set_task_data(task, new ScreenShot(), task_data_destroy);
+
+    g_task_run_in_thread(task, thread_run);
+    std::cout << "thread_start" << std::endl;
 }
 
 int main(int argc, char *argv[]) {
     GtkWidget *window;
     GtkWidget *button;
 
+    if(!g_thread_supported()) {
+        g_thread_init(NULL);
+    }
+    gdk_threads_init();
+
     gtk_init(&argc, &argv);
-    init_screen_config();
 
     /* create the main, top level, window */
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -68,8 +76,7 @@ int main(int argc, char *argv[]) {
     /* make sure that everything, window and label, are visible */
     gtk_widget_show_all(window);
 
-
     /* start the main loop, and let it rest until the application is closed */
-    gtk_main();
+    gtk_main ();
     return 0;
 }

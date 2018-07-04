@@ -191,6 +191,7 @@ GdkPixbuf * Chess::generateMat() {
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_stream(inputStream, NULL, NULL);
 
     g_bytes_unref(buffer);
+    g_object_unref(inputStream);
     out.release();
 
     return pixbuf;
