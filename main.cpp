@@ -1,42 +1,20 @@
 #include <gtk/gtk.h>
 #include <iostream>
 
-#include <unistd.h>
-#include "screen-shot.h"
+#include "screen-shot-task.h"
 
-GTask* task;
-GCancellable* cancellable;
-
-void task_call_back(GObject *source_object,
-                  GAsyncResult *res,
-                  gpointer user_data) {
-    std::cout << "task call back" << std::endl;
-}
-
-void task_data_destroy(gpointer data) {
-    std::cout << "task_data_destroy" << std::endl;
-}
-
-void thread_run(GTask           *task,
-                gpointer         source_object,
-                gpointer         task_data,
-                GCancellable    *cancellable) {
-    ScreenShot* screenShot = (ScreenShot*)task_data;
-    while(true) {
-        screenShot->run();
-        usleep(3000*1000);
-    }
-    g_task_return_boolean(task, TRUE);
-}
+gboolean flag = FALSE;
 
 void button_clicked(GtkWidget *button, gpointer data)
 {
-    cancellable = g_cancellable_new();
-    task = g_task_new(button, cancellable, task_call_back, data);
+    if(!flag) {
+        screen_shot_task_create(button, 10000);
+        flag = TRUE;
+    } else {
+        screen_shot_task_destory();
+        flag = FALSE;
+    }
 
-    g_task_set_task_data(task, new ScreenShot(), task_data_destroy);
-
-    g_task_run_in_thread(task, thread_run);
     std::cout << "thread_start" << std::endl;
 }
 

@@ -9,7 +9,7 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
-#include "opencv2/imgcodecs.hpp"
+#include <opencv2/imgcodecs.hpp>
 
 class Piece {
 private:
