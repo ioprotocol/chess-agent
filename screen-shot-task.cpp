@@ -75,7 +75,7 @@ void output_disk_for_test(cv::Mat arrays[10][9]) {
         for(x = 0; x < 9; x++)
         {
             sprintf(&str[0], "%d_%d.jpg", y, x);
-            path = g_build_filename("/home/xsy", str, NULL);
+            path = g_build_filename("/home/xushy/CLionProjects/dataset", str, NULL);
 
             cv::imwrite(path, arrays[y][x], params);
 
@@ -83,6 +83,30 @@ void output_disk_for_test(cv::Mat arrays[10][9]) {
         }
     }
 }
+
+void output_disk_for_dataset(cv::Mat &mat, gint y, gint x) {
+    gchar* path;
+    gchar str[8];
+
+    std::vector<int> params;
+    params.push_back(cv::IMWRITE_JPEG_QUALITY);
+    params.push_back(100);
+
+    cv::Mat threshold;
+
+    // red
+//    cv::inRange(mat, cv::Scalar(0,45,0), cv::Scalar(246,136,255), threshold);
+//    sprintf(&str[0], "r_%d.jpg", y * 10 + x);
+    // black
+    cv::inRange(mat, cv::Scalar(0,0,47), cv::Scalar(255,255,183), threshold);
+    sprintf(&str[0], "b_%d.jpg", y * 10 + x);
+
+    path = g_build_filename("/home/xushy/CLionProjects/dataset", str, NULL);
+
+    cv::imwrite(path, threshold, params);
+    g_free(path);
+}
+
 /**
  *
  * @param task
@@ -103,13 +127,13 @@ void screen_shot_task_thread(GTask *task, gpointer source_object, gpointer task_
         // 2. split screen shot img
         cv::Mat split_img_array[10][9];
         screenShot->split_screen_shot_img(screen_shot_img, split_img_array);
-        output_disk_for_test(split_img_array);
 
         // 3. analise split img
         for(int y = 0; y < 10; y++) {
             for(int x = 0; x < 9; x++) {
 //                ChessType chessType = screenShot->chessType(split_img_array[y][x]);
 //                std::cout << "pos:y=" << y << " x=" << x << " type:" << chessType << std::endl;
+                output_disk_for_dataset(split_img_array[y][x], y , x);
             }
         }
         screenShot->matchTemplateTest(screen_shot_img);
