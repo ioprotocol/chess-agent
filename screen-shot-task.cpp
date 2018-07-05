@@ -75,7 +75,7 @@ void output_disk_for_test(cv::Mat arrays[10][9]) {
         for(x = 0; x < 9; x++)
         {
             sprintf(&str[0], "%d_%d.jpg", y, x);
-            path = g_build_filename("/home/xushy/.cache/chess", str, NULL);
+            path = g_build_filename("/home/xsy", str, NULL);
 
             cv::imwrite(path, arrays[y][x], params);
 
