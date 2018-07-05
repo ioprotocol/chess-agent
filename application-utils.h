@@ -13,6 +13,11 @@
 
 G_BEGIN_DECLS
 
+enum ChessType {
+    B_CHE = 0, B_MA, B_XIANG, B_SHI, B_JIANG, B_PAO, B_ZU,
+    R_CHE, R_MA, R_XIANG, R_SHI, R_JIANG, R_PAO, R_ZU,
+    UN_KNOW
+};
 /**
  * Get current application img resources path
  * @return

@@ -7,16 +7,19 @@
 
 #include <opencv2/imgcodecs.hpp>
 
+#include "application-utils.h"
+
 class ScreenShot {
 private:
 private:
+    gchar *tencent_chess_names[14];
+
     cv::Point topLeft;
     cv::Point topRight;
     cv::Point bottomLeft;
     cv::Point bottomRight;
     cv::Point positions[10][9];
-    cv::Mat bChe;
-    cv::Mat rChe;
+    cv::Mat tencentChessFeatures[14];
 public:
     ScreenShot();
 
@@ -26,9 +29,13 @@ public:
 
     void split_screen_shot_img(cv::Mat &mat, cv::Mat arrays[10][9]);
 
-    double compareHist(cv::Mat &mat1, cv::Mat &mat2);
+    gdouble compareHist(const cv::Mat &mat1, const cv::Mat &mat2);
 
-    double isBChe(cv::Mat &mat);
+    ChessType chessType(const cv::Mat &mat);
+
+    void compareTest(cv::Mat &mat);
+
+    void matchTemplateTest(cv::Mat &src);
 };
 
 

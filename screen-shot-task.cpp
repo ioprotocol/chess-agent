@@ -99,22 +99,22 @@ void screen_shot_task_thread(GTask *task, gpointer source_object, gpointer task_
         // 1. take current active window picture
 //        cv::Mat screen_shot = screenShot->shot();
         cv::Mat screen_shot_img = load_screen_shot_for_test();
+
         // 2. split screen shot img
         cv::Mat split_img_array[10][9];
         screenShot->split_screen_shot_img(screen_shot_img, split_img_array);
-
         output_disk_for_test(split_img_array);
+
         // 3. analise split img
-        double value1 = screenShot->isBChe(split_img_array[0][0]);
-
-        std::cout << value1 << std::endl;
-
-        double value2 = screenShot->isBChe(split_img_array[9][8]);
-        std::cout << value2 << std::endl;
-
+        for(int y = 0; y < 10; y++) {
+            for(int x = 0; x < 9; x++) {
+//                ChessType chessType = screenShot->chessType(split_img_array[y][x]);
+//                std::cout << "pos:y=" << y << " x=" << x << " type:" << chessType << std::endl;
+            }
+        }
+        screenShot->matchTemplateTest(screen_shot_img);
 
         screen_shot_img.release();
-
         usleep(screen_shot_sleep_time*1000);
     }
 
