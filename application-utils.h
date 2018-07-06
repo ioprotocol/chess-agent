@@ -24,6 +24,8 @@ enum ChessType {
  */
 gchar* get_resources_img_path();
 
+gchar* get_resources_path();
+
 G_END_DECLS
 
 

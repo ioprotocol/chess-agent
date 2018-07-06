@@ -6,6 +6,7 @@
 
 #include <unistd.h>
 #include <time.h>
+#include <fstream>
 
 #include <gtk/gtk.h>
 
@@ -17,20 +18,12 @@
 #include "screenshot-config.h"
 
 ScreenShot::ScreenShot() {
-    gchar *resource_img_path, *file_name;
-
-    gchar* tem[] = {
-        "OOS.png", "T_MA_B.jpg", "T_XIANG_B.jpg", "T_SHI_B.jpg", "T_JIANG_B.jpg", "T_PAO_B.jpg", "T_ZU_B.jpg",
-                "T_CHE_R.jpg", "T_MA_R.jpg", "T_XIANG_R.jpg", "T_SHI_R.jpg", "T_JIANG_R.jpg", "T_PAO_R.jpg", "T_ZU_R.jpg"
-    };
-
-    for(int i = 0; i < 14; i++) {
-        tencent_chess_names[i] = tem[i];
-    }
+    gchar *resource_img_path, *resource_path, *file_name;
 
     init_screen_config();
 
     resource_img_path = get_resources_img_path();
+    resource_path = get_resources_path();
 
     topLeft = cv::Point(83, 144);
     topRight = cv::Point(623, 144);
@@ -50,15 +43,11 @@ ScreenShot::ScreenShot() {
         }
     }
 
-    for( y = 0; y < 14; y++) {
-        file_name = g_build_filename(resource_img_path, tencent_chess_names[y], NULL);
-        tencentChessFeatures[y] = cv::imread(file_name, cv::IMREAD_COLOR);
-        if(tencentChessFeatures[y].empty()) {
-            g_assert_not_reached();
-        }
-        g_free(file_name);
-    }
+    file_name = g_build_filename(resource_path, "knn.xml", NULL);
+    knnModel = cv::ml::StatModel::load<cv::ml::KNearest>(file_name);
 
+    g_free(resource_path);
+    g_free(file_name);
     g_free(resource_img_path);
 }
 
@@ -101,7 +90,7 @@ cv::Mat ScreenShot::shot() {
     return mat;
 }
 
-void ScreenShot::split_screen_shot_img(cv::Mat &mat, cv::Mat arrays[10][9]) {
+void ScreenShot::splitScreenImg(cv::Mat &mat, cv::Mat arrays[][9]) {
     cv::Mat mask = cv::Mat::zeros(48, 48, mat.type());
     cv::circle(mask, cv::Point(24, 24), 21, CV_RGB(255, 255, 255), -1);
 
@@ -151,33 +140,7 @@ gdouble ScreenShot::compareHist(const cv::Mat &mat1, const cv::Mat &mat2) {
     return cv::compareHist(hist_test1, hist_test2, cv::HISTCMP_CORREL);
 }
 
-ChessType ScreenShot::chessType(const cv::Mat &mat) {
-    gint i = 0;
-    gdouble ret = 0;
-    for( i = 0; i < 14; i++) {
-        ret = compareHist(tencentChessFeatures[i], mat);
-        std::cout << tencent_chess_names[i] << ":" << abs(1.0 - ret) << std::endl;
-        if (abs(1.0 - ret) < 0.001) {
-            return ChessType(i);
-        }
-    }
-
-    return UN_KNOW;
-}
-
-void ScreenShot::compareTest(cv::Mat &mat) {
-    gdouble ret = 0;
-    gint y = 0;
-    gint x = 0;
-
-    for(y = 0; y < 13; y++) {
-        for(x = y; x < 14; x++) {
-            ret = compareHist(tencentChessFeatures[y], tencentChessFeatures[x]);
-            std::cout << tencent_chess_names[y] << " vs " << tencent_chess_names[x] << " = " << ret << " = " << 1 - ret<< std::endl;
-        }
-    }
-}
-
+/*
 void ScreenShot::matchTemplateTest(cv::Mat &src1) {
     cv::Mat src = src1(cv::Rect(0, 0, 200, 200));
 //    cv::Mat src = tencentChessFeatures[0];
@@ -207,4 +170,56 @@ void ScreenShot::matchTemplateTest(cv::Mat &src1) {
 
     std::cout << "x=" << matchLoc.x << " y=" << matchLoc.y <<std::endl;
     return;
+}
+*/
+
+/**
+ * KNN xunlian
+ */
+void ScreenShot::knnTrain() {
+    int train_num = 50;
+    cv::Mat src_data,src_labels;
+    std::string img_name;
+    cv::Mat gray;
+
+    std::ifstream file_name_stream("/home/xsy/CLionProjects/svg-train/img.txt");
+    for(int i = 0; i < 50; i++) {
+        getline(file_name_stream, img_name);
+        int value = (int)(img_name.at(0) - '0');
+        std::cout << "image: " << img_name << "  " << value << std::endl;
+
+        cv::Mat src = cv::imread("/home/xsy/CLionProjects/svg-train/img/" + img_name);
+        cvtColor(src, gray, CV_BGR2GRAY);
+        src_data.push_back(gray.reshape(0, 1));
+        src_labels.push_back(value);
+    }
+
+    file_name_stream.close();
+
+    src_data.convertTo(src_data, CV_32F); //uchar型转换为cv_32f
+
+    cv::Mat trainData, trainLabels;
+    trainData = src_data(cv::Range(0, train_num), cv::Range::all());
+    trainLabels = src_labels(cv::Range(0, train_num), cv::Range::all());
+
+    //使用KNN算法
+    int K = 5;
+
+    cv::Ptr<cv::ml::TrainData> tData = cv::ml::TrainData::create(trainData, cv::ml::ROW_SAMPLE, trainLabels);
+    cv::Ptr<cv::ml::KNearest> model = cv::ml::KNearest::create();
+
+    model->setDefaultK(K);
+    model->setIsClassifier(true);
+    model->train(tData);
+
+    model->save("/home/xsy/CLionProjects/knn.xml");
+    model->clear();
+}
+
+gint ScreenShot::knnPredit(cv::Mat &mat) {
+    cv::Mat tmp;
+    cvtColor(mat, tmp, CV_BGR2GRAY);
+    tmp.convertTo(tmp, CV_32F);
+    float r = knnModel->predict(tmp.reshape(0, 1));
+    return (gint)r;
 }

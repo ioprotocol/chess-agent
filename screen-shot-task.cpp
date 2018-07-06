@@ -127,7 +127,7 @@ void screen_shot_task_thread(GTask *task, gpointer source_object, gpointer task_
 
         // 2. split screen shot img
         cv::Mat split_img_array[10][9];
-        screenShot->split_screen_shot_img(screen_shot_img, split_img_array);
+        screenShot->splitScreenImg(screen_shot_img, split_img_array);
 
         // 3. analise split img
         for(int y = 0; y < 10; y++) {
@@ -137,7 +137,6 @@ void screen_shot_task_thread(GTask *task, gpointer source_object, gpointer task_
                 output_disk_for_dataset(split_img_array[y][x], y , x);
             }
         }
-        screenShot->matchTemplateTest(screen_shot_img);
 
         screen_shot_img.release();
         usleep(screen_shot_sleep_time*1000);
