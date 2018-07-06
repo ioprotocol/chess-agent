@@ -103,7 +103,7 @@ cv::Mat ScreenShot::shot() {
 
 void ScreenShot::split_screen_shot_img(cv::Mat &mat, cv::Mat arrays[10][9]) {
     cv::Mat mask = cv::Mat::zeros(48, 48, mat.type());
-    cv::circle(mask, cv::Point(24, 24), 22, CV_RGB(255, 255, 255), -1);
+    cv::circle(mask, cv::Point(24, 24), 21, CV_RGB(255, 255, 255), -1);
 
     gint y = 0, x = 0;
     for( y = 0; y < 10; y++)

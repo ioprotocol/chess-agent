@@ -19,7 +19,7 @@ int main()
     //creat SVM classfier
     Ptr<SVM> svm = SVM::create();
     //load train file
-    svm = SVM::load<SVM>("SVM_HOG.xml");
+    svm = SVM::load("SVM_HOG.xml");
 
     if (!svm)
     {

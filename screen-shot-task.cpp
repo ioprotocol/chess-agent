@@ -84,7 +84,7 @@ void output_disk_for_test(cv::Mat arrays[10][9]) {
     }
 }
 
-void output_disk_for_dataset(cv::Mat &mat, gint y, gint x) {
+void output_disk_for_dataset(cv::Mat mat, gint y, gint x) {
     gchar* path;
     gchar str[8];
 
@@ -99,9 +99,10 @@ void output_disk_for_dataset(cv::Mat &mat, gint y, gint x) {
 //    sprintf(&str[0], "r_%d.jpg", y * 10 + x);
     // black
     cv::inRange(mat, cv::Scalar(0,0,47), cv::Scalar(255,255,183), threshold);
+    cv::threshold(threshold, threshold, 0, 255.0, CV_THRESH_BINARY_INV);
     sprintf(&str[0], "b_%d.jpg", y * 10 + x);
 
-    path = g_build_filename("/home/xushy/CLionProjects/dataset", str, NULL);
+    path = g_build_filename("/home/xsy/CLionProjects/dataset", str, NULL);
 
     cv::imwrite(path, threshold, params);
     g_free(path);
