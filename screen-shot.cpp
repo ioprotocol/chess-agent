@@ -177,21 +177,37 @@ void ScreenShot::matchTemplateTest(cv::Mat &src1) {
  * KNN xunlian
  */
 void ScreenShot::knnTrain() {
-    int train_num = 50;
+    gchar* file_name;
+    gchar* path;
+
+    // 样本数量
+    int sambles = 32;
+    // 样本有限，每个样本重复训练100次
+    int repeat = 50;
+
+    int train_num = sambles * repeat;
+
     cv::Mat src_data,src_labels;
     std::string img_name;
     cv::Mat gray;
 
-    std::ifstream file_name_stream("/home/xsy/CLionProjects/svg-train/img.txt");
-    for(int i = 0; i < 50; i++) {
-        getline(file_name_stream, img_name);
-        int value = (int)(img_name.at(0) - '0');
-        std::cout << "image: " << img_name << "  " << value << std::endl;
+    path = get_resources_path();
 
-        cv::Mat src = cv::imread("/home/xsy/CLionProjects/svg-train/img/" + img_name);
-        cvtColor(src, gray, CV_BGR2GRAY);
-        src_data.push_back(gray.reshape(0, 1));
-        src_labels.push_back(value);
+    std::ifstream file_name_stream(std::string(path) + "/train.txt");
+    for(int i = 0; i < sambles; i++) {
+        getline(file_name_stream, img_name);
+        int idx = img_name.find("_");
+        std::string prefix = img_name.substr(0, idx);
+        std::stringstream ss = std::stringstream(prefix);
+        int value;
+        ss >> value;
+
+        for(int o = 0; o < repeat; o++) {
+            cv::Mat src = cv::imread("/home/xushy/CLionProjects/dataset/" + img_name);
+            cvtColor(src, gray, CV_BGR2GRAY);
+            src_data.push_back(gray.reshape(0, 1));
+            src_labels.push_back(value);
+        }
     }
 
     file_name_stream.close();
@@ -212,14 +228,21 @@ void ScreenShot::knnTrain() {
     model->setIsClassifier(true);
     model->train(tData);
 
-    model->save("/home/xsy/CLionProjects/knn.xml");
+    file_name = g_build_filename(path, "knn.xml", NULL);
+    model->save(file_name);
+    g_free(path);
+    g_free(file_name);
+
     model->clear();
+
+    std::cout << "train finish" << std::endl;
 }
 
 gint ScreenShot::knnPredit(cv::Mat &mat) {
-    cv::Mat tmp;
-    cvtColor(mat, tmp, CV_BGR2GRAY);
-    tmp.convertTo(tmp, CV_32F);
-    float r = knnModel->predict(tmp.reshape(0, 1));
+    cv::inRange(mat, cv::Scalar(0,0,47), cv::Scalar(255,255,183), mat);
+    cv::threshold(mat, mat, 0, 255.0, CV_THRESH_BINARY_INV);
+//    cvtColor(mat, mat, CV_BGR2GRAY);
+    mat.convertTo(mat, CV_32F);
+    float r = knnModel->predict(mat.reshape(0, 1));
     return (gint)r;
 }

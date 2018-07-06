@@ -86,7 +86,120 @@ void output_disk_for_test(cv::Mat arrays[10][9]) {
 
 void output_disk_for_dataset(cv::Mat mat, gint y, gint x) {
     gchar* path;
-    gchar str[8];
+    gchar str[20];
+    str[0] = '\0';
+
+    // che
+    if(y == 0 && x == 0) {
+        sprintf(&str[0], "1_%d_che.jpg", 1);
+    }
+    if(y == 0 && x == 8) {
+        sprintf(&str[0], "1_%d_che.jpg", 2);
+    }
+    if(y == 9 && x == 0) {
+        sprintf(&str[0], "1_%d_che.jpg", 3);
+    }
+    if(y == 9 && x == 8) {
+        sprintf(&str[0], "1_%d_che.jpg", 4);
+    }
+    // ma
+    if(y == 0 && x == 1) {
+        sprintf(&str[0], "2_%d_ma.jpg", 1);
+    }
+    if(y == 0 && x == 7) {
+        sprintf(&str[0], "2_%d_ma.jpg", 2);
+    }
+    if(y == 9 && x == 1) {
+        sprintf(&str[0], "2_%d_ma.jpg", 3);
+    }
+    if(y == 9 && x == 7) {
+        sprintf(&str[0], "2_%d_ma.jpg", 4);
+    }
+    // xiang b
+    if(y == 0 && x == 2) {
+        sprintf(&str[0], "3_%d_xiang_b.jpg", 1);
+    }
+    if(y == 0 && x == 6) {
+        sprintf(&str[0], "3_%d_xiang_b.jpg", 2);
+    }
+    // xiang r
+    if(y == 9 && x == 2) {
+        sprintf(&str[0], "4_%d_xiang_r.jpg", 1);
+    }
+    if(y == 9 && x == 6) {
+        sprintf(&str[0], "4_%d_xiang_r.jpg", 2);
+    }
+    // shi b
+    if(y == 0 && x == 3) {
+        sprintf(&str[0], "5_%d_shi_b.jpg", 1);
+    }
+    if(y == 0 && x == 5) {
+        sprintf(&str[0], "5_%d_shi_b.jpg", 2);
+    }
+    // shi r
+    if(y == 9 && x == 3) {
+        sprintf(&str[0], "6_%d_shi_r.jpg", 1);
+    }
+    if(y == 9 && x == 5) {
+        sprintf(&str[0], "6_%d_shi_r.jpg", 2);
+    }
+    // jiang b
+    if(y == 0 && x == 4) {
+        sprintf(&str[0], "7_%d_jiang_b.jpg", 1);
+    }
+    // jiang r
+    if(y == 9 && x == 4) {
+        sprintf(&str[0], "8_%d_jiang_r.jpg", 1);
+    }
+    // pao b
+    if(y == 2 && x == 1) {
+        sprintf(&str[0], "9_%d_pao_b.jpg", 1);
+    }
+    if(y == 2 && x == 7) {
+        sprintf(&str[0], "9_%d_pao_b.jpg", 2);
+    }
+    // pao r
+    if(y == 7 && x == 1) {
+        sprintf(&str[0], "9_%d_pao_r.jpg", 3);
+    }
+    if(y == 7 && x == 7) {
+        sprintf(&str[0], "9_%d_pao_r.jpg", 4);
+    }
+    // zu b
+    if(y == 3 && x == 0) {
+        sprintf(&str[0], "10_%d_zu_b.jpg", 1);
+    }
+    if(y == 3 && x == 2) {
+        sprintf(&str[0], "10_%d_zu_b.jpg", 2);
+    }
+    if(y == 3 && x == 4) {
+        sprintf(&str[0], "10_%d_zu_b.jpg", 3);
+    }
+    if(y == 3 && x == 6) {
+        sprintf(&str[0], "10_%d_zu_b.jpg", 4);
+    }
+    if(y == 3 && x == 8) {
+        sprintf(&str[0], "10_%d_zu_b.jpg", 5);
+    }
+    // zu r
+    if(y == 6 && x == 0) {
+        sprintf(&str[0], "11_%d_zu_r.jpg", 1);
+    }
+    if(y == 6 && x == 2) {
+        sprintf(&str[0], "11_%d_zu_r.jpg", 2);
+    }
+    if(y == 6 && x == 4) {
+        sprintf(&str[0], "11_%d_zu_r.jpg", 3);
+    }
+    if(y == 6 && x == 6) {
+        sprintf(&str[0], "11_%d_zu_r.jpg", 4);
+    }
+    if(y == 6 && x == 8) {
+        sprintf(&str[0], "11_%d_zu_r.jpg", 5);
+    }
+    if(str[0] == '\0') {
+        sprintf(&str[0], "%d_%d_blank.jpg", y*1000 + x * 100, y*10 + x);
+    }
 
     std::vector<int> params;
     params.push_back(cv::IMWRITE_JPEG_QUALITY);
@@ -94,15 +207,10 @@ void output_disk_for_dataset(cv::Mat mat, gint y, gint x) {
 
     cv::Mat threshold;
 
-    // red
-//    cv::inRange(mat, cv::Scalar(0,45,0), cv::Scalar(246,136,255), threshold);
-//    sprintf(&str[0], "r_%d.jpg", y * 10 + x);
-    // black
     cv::inRange(mat, cv::Scalar(0,0,47), cv::Scalar(255,255,183), threshold);
     cv::threshold(threshold, threshold, 0, 255.0, CV_THRESH_BINARY_INV);
-    sprintf(&str[0], "b_%d.jpg", y * 10 + x);
 
-    path = g_build_filename("/home/xsy/CLionProjects/dataset", str, NULL);
+    path = g_build_filename("/home/xushy/CLionProjects/dataset", str, NULL);
 
     cv::imwrite(path, threshold, params);
     g_free(path);
@@ -134,9 +242,11 @@ void screen_shot_task_thread(GTask *task, gpointer source_object, gpointer task_
             for(int x = 0; x < 9; x++) {
 //                ChessType chessType = screenShot->chessType(split_img_array[y][x]);
 //                std::cout << "pos:y=" << y << " x=" << x << " type:" << chessType << std::endl;
-                output_disk_for_dataset(split_img_array[y][x], y , x);
+//                output_disk_for_dataset(split_img_array[y][x], y , x);
+                std::cout << "pos:y=" << y << " x=" << x << " type:" << screenShot->knnPredit(split_img_array[y][x]) << std::endl;
             }
         }
+//        screenShot->knnTrain();
 
         screen_shot_img.release();
         usleep(screen_shot_sleep_time*1000);
