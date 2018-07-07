@@ -86,119 +86,154 @@ void output_disk_for_test(cv::Mat arrays[10][9]) {
 
 void output_disk_for_dataset(cv::Mat mat, gint y, gint x) {
     gchar* path;
-    gchar str[20];
+    gchar str[50];
     str[0] = '\0';
 
     // che
     if(y == 0 && x == 0) {
-        sprintf(&str[0], "1_%d_che.jpg", 1);
+        sprintf(&str[0], "a_1_%d_che.jpg", 1);
     }
     if(y == 0 && x == 8) {
-        sprintf(&str[0], "1_%d_che.jpg", 2);
+        sprintf(&str[0], "a_1_%d_che.jpg", 2);
     }
     if(y == 9 && x == 0) {
-        sprintf(&str[0], "1_%d_che.jpg", 3);
+        sprintf(&str[0], "a_1_%d_che.jpg", 3);
     }
     if(y == 9 && x == 8) {
-        sprintf(&str[0], "1_%d_che.jpg", 4);
+        sprintf(&str[0], "a_1_%d_che.jpg", 4);
     }
     // ma
     if(y == 0 && x == 1) {
-        sprintf(&str[0], "2_%d_ma.jpg", 1);
+        sprintf(&str[0], "a_2_%d_ma.jpg", 1);
     }
     if(y == 0 && x == 7) {
-        sprintf(&str[0], "2_%d_ma.jpg", 2);
+        sprintf(&str[0], "a_2_%d_ma.jpg", 2);
     }
     if(y == 9 && x == 1) {
-        sprintf(&str[0], "2_%d_ma.jpg", 3);
+        sprintf(&str[0], "a_2_%d_ma.jpg", 3);
     }
     if(y == 9 && x == 7) {
-        sprintf(&str[0], "2_%d_ma.jpg", 4);
+        sprintf(&str[0], "a_2_%d_ma.jpg", 4);
     }
     // xiang b
     if(y == 0 && x == 2) {
-        sprintf(&str[0], "3_%d_xiang_b.jpg", 1);
+        sprintf(&str[0], "a_3_%d_xiang_b.jpg", 1);
     }
     if(y == 0 && x == 6) {
-        sprintf(&str[0], "3_%d_xiang_b.jpg", 2);
+        sprintf(&str[0], "a_3_%d_xiang_b.jpg", 2);
     }
     // xiang r
     if(y == 9 && x == 2) {
-        sprintf(&str[0], "4_%d_xiang_r.jpg", 1);
+        sprintf(&str[0], "a_4_%d_xiang_r.jpg", 1);
     }
     if(y == 9 && x == 6) {
-        sprintf(&str[0], "4_%d_xiang_r.jpg", 2);
+        sprintf(&str[0], "a_4_%d_xiang_r.jpg", 2);
     }
     // shi b
     if(y == 0 && x == 3) {
-        sprintf(&str[0], "5_%d_shi_b.jpg", 1);
+        sprintf(&str[0], "a_5_%d_shi_b.jpg", 1);
     }
     if(y == 0 && x == 5) {
-        sprintf(&str[0], "5_%d_shi_b.jpg", 2);
+        sprintf(&str[0], "a_5_%d_shi_b.jpg", 2);
     }
     // shi r
     if(y == 9 && x == 3) {
-        sprintf(&str[0], "6_%d_shi_r.jpg", 1);
+        sprintf(&str[0], "a_6_%d_shi_r.jpg", 1);
     }
     if(y == 9 && x == 5) {
-        sprintf(&str[0], "6_%d_shi_r.jpg", 2);
+        sprintf(&str[0], "a_6_%d_shi_r.jpg", 2);
     }
     // jiang b
     if(y == 0 && x == 4) {
-        sprintf(&str[0], "7_%d_jiang_b.jpg", 1);
+        sprintf(&str[0], "a_7_%d_jiang_b.jpg", 1);
     }
     // jiang r
     if(y == 9 && x == 4) {
-        sprintf(&str[0], "8_%d_jiang_r.jpg", 1);
+        sprintf(&str[0], "a_8_%d_jiang_r.jpg", 1);
     }
     // pao b
     if(y == 2 && x == 1) {
-        sprintf(&str[0], "9_%d_pao_b.jpg", 1);
+        sprintf(&str[0], "a_9_%d_pao_b.jpg", 1);
     }
     if(y == 2 && x == 7) {
-        sprintf(&str[0], "9_%d_pao_b.jpg", 2);
+        sprintf(&str[0], "a_9_%d_pao_b.jpg", 2);
     }
     // pao r
     if(y == 7 && x == 1) {
-        sprintf(&str[0], "9_%d_pao_r.jpg", 3);
+        sprintf(&str[0], "a_9_%d_pao_r.jpg", 3);
     }
     if(y == 7 && x == 7) {
-        sprintf(&str[0], "9_%d_pao_r.jpg", 4);
+        sprintf(&str[0], "a_9_%d_pao_r.jpg", 4);
     }
     // zu b
     if(y == 3 && x == 0) {
-        sprintf(&str[0], "10_%d_zu_b.jpg", 1);
+        sprintf(&str[0], "a_10_%d_zu_b.jpg", 1);
     }
     if(y == 3 && x == 2) {
-        sprintf(&str[0], "10_%d_zu_b.jpg", 2);
+        sprintf(&str[0], "a_10_%d_zu_b.jpg", 2);
     }
     if(y == 3 && x == 4) {
-        sprintf(&str[0], "10_%d_zu_b.jpg", 3);
+        sprintf(&str[0], "a_10_%d_zu_b.jpg", 3);
     }
     if(y == 3 && x == 6) {
-        sprintf(&str[0], "10_%d_zu_b.jpg", 4);
+        sprintf(&str[0], "a_10_%d_zu_b.jpg", 4);
     }
     if(y == 3 && x == 8) {
-        sprintf(&str[0], "10_%d_zu_b.jpg", 5);
+        sprintf(&str[0], "a_10_%d_zu_b.jpg", 5);
     }
     // zu r
     if(y == 6 && x == 0) {
-        sprintf(&str[0], "11_%d_zu_r.jpg", 1);
+        sprintf(&str[0], "a_11_%d_zu_r.jpg", 1);
     }
     if(y == 6 && x == 2) {
-        sprintf(&str[0], "11_%d_zu_r.jpg", 2);
+        sprintf(&str[0], "a_11_%d_zu_r.jpg", 2);
     }
     if(y == 6 && x == 4) {
-        sprintf(&str[0], "11_%d_zu_r.jpg", 3);
+        sprintf(&str[0], "a_11_%d_zu_r.jpg", 3);
     }
     if(y == 6 && x == 6) {
-        sprintf(&str[0], "11_%d_zu_r.jpg", 4);
+        sprintf(&str[0], "a_11_%d_zu_r.jpg", 4);
     }
     if(y == 6 && x == 8) {
-        sprintf(&str[0], "11_%d_zu_r.jpg", 5);
+        sprintf(&str[0], "a_11_%d_zu_r.jpg", 5);
+    }
+    if( (y == 1 && x == 1) || (y==1 & x == 2) || (y==1 & x == 3) || (y==1 & x == 5) || (y==1 & x == 6) || (y==1 & x == 7) || (y==3 & x == 1)
+         || (y==3 & x == 7) || (y==7 & x == 2) || (y==7 & x == 4) || (y==7 & x == 6) || (y==8 & x == 7) || (y==8 & x == 1) ) {
+        sprintf(&str[0], "b_50_%d_blank.jpg", rand());
+    }
+    if( (y == 2 && x == 2) || (y==2 & x == 4) || (y==2 & x == 6) || (y==3 & x == 3) || (y==3 & x == 5) || (y==6 & x == 1) || (y==6 & x == 3) || (y==6 & x == 5) || (y==6 & x == 7)
+         || (y==8 & x == 2) || (y==8 & x == 3) || (y==8 & x == 5) || (y==8 & x == 6) ) {
+        sprintf(&str[0], "b_51_%d_blank.jpg", rand());
+    }
+    if( (y == 4 && x == 1) || (y==4 & x == 3) || (y==4 & x == 5) || (y==4 & x == 7) || (y==4 & x == 2)  || (y==4 & x == 4)  || (y==4 & x == 6) ) {
+        sprintf(&str[0], "b_52_%d_blank.jpg", rand());
+    }
+    if( (y == 1 && x == 4) || (y==8 & x == 4) ) {
+        sprintf(&str[0], "b_53_%d_blank.jpg", rand());
+    }
+    if( (y == 1 && x == 8) || (y==2 & x == 8) || (y==4 & x == 8) || (y==5 & x == 8) || (y==7 & x == 8) || (y==8 & x == 8) ) {
+        sprintf(&str[0], "b_54_%d_blank.jpg", rand());
+    }
+    if( (y == 1 && x == 0) || (y==2 & x == 0) || (y==4 & x == 0) || (y==5 & x == 0) || (y==7 & x == 0) || (y==8 & x == 0) ) {
+        sprintf(&str[0], "b_55_%d_blank.jpg", rand());
+    }
+    if( (y == 5 && x == 1) || (y==5 & x == 2) || (y==5 & x == 3) || (y==5 & x == 4) || (y==5 & x == 5) || (y==5 & x == 6)  || (y==5 & x == 7) ) {
+        sprintf(&str[0], "b_56_%d_blank.jpg", rand());
+    }
+    if(y == 2 && x == 3) {
+        sprintf(&str[0], "b_57_%d_blank.jpg", rand());
+    }
+    if(y == 2 && x == 5) {
+        sprintf(&str[0], "b_58_%d_blank.jpg", rand());
+    }
+    if(y == 7 && x == 3) {
+        sprintf(&str[0], "b_59_%d_blank.jpg", rand());
+    }
+    if(y == 7 && x == 5) {
+        sprintf(&str[0], "b_60_%d_blank.jpg", rand());
     }
     if(str[0] == '\0') {
-        sprintf(&str[0], "%d_%d_blank.jpg", y*1000 + x * 100, y*10 + x);
+        sprintf(&str[0], "b_%d_%d_blank.jpg", y, x);
     }
 
     std::vector<int> params;

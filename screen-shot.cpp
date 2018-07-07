@@ -181,7 +181,7 @@ void ScreenShot::knnTrain() {
     gchar* path;
 
     // 样本数量
-    int sambles = 32;
+    int sambles = 90;
     // 样本有限，每个样本重复训练100次
     int repeat = 50;
 
@@ -196,12 +196,13 @@ void ScreenShot::knnTrain() {
     std::ifstream file_name_stream(std::string(path) + "/train.txt");
     for(int i = 0; i < sambles; i++) {
         getline(file_name_stream, img_name);
-        int idx = img_name.find("_");
-        std::string prefix = img_name.substr(0, idx);
+        int idx = img_name.find("_", 2);
+        std::string prefix = img_name.substr(2, idx);
         std::stringstream ss = std::stringstream(prefix);
         int value;
         ss >> value;
 
+        std::cout << img_name << ":" << value << std::endl;
         for(int o = 0; o < repeat; o++) {
             cv::Mat src = cv::imread("/home/xushy/CLionProjects/dataset/" + img_name);
             cvtColor(src, gray, CV_BGR2GRAY);

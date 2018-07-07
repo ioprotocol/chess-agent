@@ -43,21 +43,3 @@ gchar* get_resources_path()
     return resource_path;
 }
 
-void  set_pixel_value(GdkPixbuf *pixbuf, int x, int y, int color)
-{
-    guchar *pixel;
-    guchar *p;
-    gint channel;
-    gint rowstride;
-
-    if(!pixbuf)   return ;
-
-    channel = gdk_pixbuf_get_n_channels(pixbuf);
-    rowstride = gdk_pixbuf_get_rowstride(pixbuf);
-    pixel = gdk_pixbuf_get_pixels(pixbuf);
-    p = pixel+y*rowstride+x*channel;
-
-    p[0] = (color & 0xFF000000) >>24;
-    p[1] = (color & 0x00FF0000) >>16;
-    p[2] = (color & 0x0000FF00) >>8;
-}
