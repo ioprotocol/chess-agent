@@ -1,18 +1,12 @@
-#include <gtk/gtk.h>
-#include "main-window.h"
+#include <gtkmm.h>
 
 int main(int argc, char *argv[]) {
-    MainWindow* mainWindow;
+    auto app =
+            Gtk::Application::create(argc, argv,
+                                     "com.github.chess.agent");
 
-    if (!g_thread_supported()) {
-        g_thread_init(NULL);
-    }
-    gdk_threads_init();
+    Gtk::Window window;
+    window.set_default_size(200, 200);
 
-    gtk_init(&argc, &argv);
-
-    mainWindow = new MainWindow();
-
-    gtk_main();
-    return 0;
+    return app->run(window);
 }
