@@ -13,7 +13,7 @@ link_directories (${GTKMM_LIBRARY_DIRS})
 
 include_directories(${OpenCV_DIR})
 
-set(SOURCE_FILES main.cpp screenshot-utils.h screenshot-utils.c screenshot-config.h screenshot-config.c chess.cpp chess.h piece.cpp piece.h application-utils.h application-utils.c screen-shot.cpp screen-shot.h screen-shot-task.h screen-shot-task.cpp main-window.cpp main-window.h)
+set(SOURCE_FILES main.cpp screenshot-utils.h screenshot-utils.c screenshot-config.h screenshot-config.c chess.cpp chess.h piece.cpp piece.h application-utils.h application-utils.c screen-shot.cpp screen-shot.h screen-shot-task.h screen-shot-task.cpp chess-window.cpp chess-window.h)
 
 add_executable(ChessAgent ${SOURCE_FILES})
 

@@ -43,3 +43,12 @@ gchar* get_resources_path()
     return resource_path;
 }
 
+gchar* get_main_glade_file()
+{
+    gchar *path, *file_name;
+    path = get_resources_path();
+    file_name = g_build_filename(path, "appMain.glade", NULL);
+    g_free(path);
+    return file_name;
+}
+

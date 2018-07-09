@@ -25,6 +25,7 @@ gchar* get_resources_path();
  */
 gchar* get_resources_img_path();
 
+gchar* get_main_glade_file();
 G_END_DECLS
 
 
