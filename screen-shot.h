@@ -5,6 +5,7 @@
 #ifndef CHESSAGENT_SCREENSHOTTASK_H
 #define CHESSAGENT_SCREENSHOTTASK_H
 
+#include <glibmm.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgcodecs.hpp>
 

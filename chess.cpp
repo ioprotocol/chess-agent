@@ -3,15 +3,13 @@
 //
 
 #include "chess.h"
+
+#include <glibmm.h>
+
 #include "application-utils.h"
 
 Chess::Chess() {
-    gchar *img_path, *file_path;
-
-    img_path = get_resources_img_path();
-    file_path = g_build_filename(img_path, "MAIN.png", NULL);
-
-    this->chessBoard = cv::imread(file_path, cv::IMREAD_COLOR);
+    this->chessBoard = cv::imread(Glib::build_filename(get_resources_img_path(), "MAIN.png"), cv::IMREAD_COLOR);
     if (this->chessBoard.empty()) {
         g_assert_not_reached();
     }
@@ -83,9 +81,6 @@ Chess::Chess() {
     chessPieces[y++] = new Piece("RP", 4, 6, "红卒");
     chessPieces[y++] = new Piece("RP", 6, 6, "红卒");
     chessPieces[y  ] = new Piece("RP", 8, 6, "红卒");
-
-    g_free(img_path);
-    g_free(file_path);
 }
 
 Chess::~Chess() {
@@ -111,50 +106,50 @@ void Chess::saveToDisk() {
 void Chess::resetPiecePosition() {
     gint y = 0;
     // che
-    chessPieces[y++]->setPosition(0, 0);
-    chessPieces[y++]->setPosition(8, 0);
-    chessPieces[y++]->setPosition(0, 9);
-    chessPieces[y++]->setPosition(8, 9);
+    chessPieces[y++]->set_position(0, 0);
+    chessPieces[y++]->set_position(8, 0);
+    chessPieces[y++]->set_position(0, 9);
+    chessPieces[y++]->set_position(8, 9);
     // ma
-    chessPieces[y++]->setPosition(1, 0);
-    chessPieces[y++]->setPosition(7, 0);
-    chessPieces[y++]->setPosition(1, 9);
-    chessPieces[y++]->setPosition(7, 9);
+    chessPieces[y++]->set_position(1, 0);
+    chessPieces[y++]->set_position(7, 0);
+    chessPieces[y++]->set_position(1, 9);
+    chessPieces[y++]->set_position(7, 9);
     // xiang
-    chessPieces[y++]->setPosition(2, 0);
-    chessPieces[y++]->setPosition(6, 0);
-    chessPieces[y++]->setPosition(2, 9);
-    chessPieces[y++]->setPosition(6, 9);
+    chessPieces[y++]->set_position(2, 0);
+    chessPieces[y++]->set_position(6, 0);
+    chessPieces[y++]->set_position(2, 9);
+    chessPieces[y++]->set_position(6, 9);
     // shi
-    chessPieces[y++]->setPosition(3, 0);
-    chessPieces[y++]->setPosition(5, 0);
-    chessPieces[y++]->setPosition(3, 9);
-    chessPieces[y++]->setPosition(5, 9);
+    chessPieces[y++]->set_position(3, 0);
+    chessPieces[y++]->set_position(5, 0);
+    chessPieces[y++]->set_position(3, 9);
+    chessPieces[y++]->set_position(5, 9);
     // jiang
-    chessPieces[y++]->setPosition(4, 0);
-    chessPieces[y++]->setPosition(4, 9);
+    chessPieces[y++]->set_position(4, 0);
+    chessPieces[y++]->set_position(4, 9);
     // pao
-    chessPieces[y++]->setPosition(1, 2);
-    chessPieces[y++]->setPosition(7, 2);
-    chessPieces[y++]->setPosition(1, 7);
-    chessPieces[y++]->setPosition(7, 7);
+    chessPieces[y++]->set_position(1, 2);
+    chessPieces[y++]->set_position(7, 2);
+    chessPieces[y++]->set_position(1, 7);
+    chessPieces[y++]->set_position(7, 7);
     // zu
-    chessPieces[y++]->setPosition(0, 3);
-    chessPieces[y++]->setPosition(2, 3);
-    chessPieces[y++]->setPosition(4, 3);
-    chessPieces[y++]->setPosition(6, 3);
-    chessPieces[y++]->setPosition(8, 3);
+    chessPieces[y++]->set_position(0, 3);
+    chessPieces[y++]->set_position(2, 3);
+    chessPieces[y++]->set_position(4, 3);
+    chessPieces[y++]->set_position(6, 3);
+    chessPieces[y++]->set_position(8, 3);
 
-    chessPieces[y++]->setPosition(0, 6);
-    chessPieces[y++]->setPosition(2, 6);
-    chessPieces[y++]->setPosition(4, 6);
-    chessPieces[y++]->setPosition(6, 6);
-    chessPieces[y  ]->setPosition(8, 6);
+    chessPieces[y++]->set_position(0, 6);
+    chessPieces[y++]->set_position(2, 6);
+    chessPieces[y++]->set_position(4, 6);
+    chessPieces[y++]->set_position(6, 6);
+    chessPieces[y  ]->set_position(8, 6);
 }
 
 void Chess::reversePiecePosition() {
     for(gint i = 0; i < 32; i++) {
-        chessPieces[i]->setPosition(chessPieces[i]->getCol(), 9 - chessPieces[i]->getRow());
+        chessPieces[i]->set_position(chessPieces[i]->get_col(), 9 - chessPieces[i]->get_row());
     }
 }
 
@@ -165,16 +160,16 @@ GdkPixbuf * Chess::generateMat() {
     this->chessBoard.copyTo(out);
 
     for(gint i = 0; i < 32; i++) {
-        cv::Point center = positions[chessPieces[i]->getRow()][chessPieces[i]->getCol()];
+        cv::Point center = positions[chessPieces[i]->get_row()][chessPieces[i]->get_col()];
 
         cv::Rect rect = cv::Rect(center.x - 28, center.y - 28, 57, 57);
         cv::Mat roi = out(rect);
 
-        if (chessPieces[i]->getIsEnable()) {
-            if (chessPieces[i]->getIsActive()) {
-                cvAdd4cMat_q(roi, chessPieces[i]->getImgActive(), 1);
+        if (chessPieces[i]->get_enable()) {
+            if (chessPieces[i]->get_active()) {
+                cvAdd4cMat_q(roi, chessPieces[i]->get_img_active(), 1);
             } else {
-                cvAdd4cMat_q(roi, chessPieces[i]->getImg(), 1);
+                cvAdd4cMat_q(roi, chessPieces[i]->get_img(), 1);
             }
         }
     }

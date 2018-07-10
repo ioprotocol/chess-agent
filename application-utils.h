@@ -5,28 +5,16 @@
 #ifndef CHESSAGENT_APPLICATION_UTILS_H
 #define CHESSAGENT_APPLICATION_UTILS_H
 
-#include <gtk/gtk.h>
-#include <gdk/gdkx.h>
-
+#include <iostream>
 
 #define PWD "EPWD"
 
-G_BEGIN_DECLS
+std::string get_application_path();
 
-/**
- *
- * @return
- */
-gchar* get_resources_path();
+std::string get_resources_path();
 
-/**
- * Get current application img resources path
- * @return
- */
-gchar* get_resources_img_path();
+std::string get_resources_img_path();
 
-gchar* get_main_glade_file();
-G_END_DECLS
-
+std::string get_resource_glade_file();
 
 #endif //CHESSAGENT_APPLICATION_UTILS_H

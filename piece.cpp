@@ -5,115 +5,55 @@
 #include "piece.h"
 #include "application-utils.h"
 
+Piece::Piece(std::string file_name, gint col, gint row, std::string chess_name)
+        : m_col(col), m_row(row), m_file_name(file_name), m_chess_name(chess_name)
+{
 
-Piece::Piece(const gchar* path, gint col, gint row, const gchar* name)
-        : col(col), row(row) {
-    gchar *resource_img_path, *file_name, *active_file_name, *abs_file_name, *abs_active_file_name;
+    std::string abs_file_name = Glib::build_filename(get_resources_img_path(), m_file_name, std::string(ICON_TYPE));
+    std::string abs_active_file_name = Glib::build_filename(get_resources_img_path(), m_file_name, std::string("S"),
+                                                        std::string(ICON_TYPE));
 
-    resource_img_path = get_resources_img_path();
-    file_name = g_strconcat(path, ICON_TYPE, NULL);
-    active_file_name = g_strconcat(path, "S", ICON_TYPE, NULL);
+    m_img = cv::imread(abs_file_name, cv::IMREAD_UNCHANGED);
+    m_img_active = cv::imread(abs_active_file_name, cv::IMREAD_UNCHANGED);
+    this->m_active = FALSE;
+    this->m_enable = TRUE;
 
-    abs_file_name = g_build_filename(resource_img_path, file_name, NULL);
-    abs_active_file_name = g_build_filename(resource_img_path, active_file_name, NULL);
-
-    this->img = cv::imread(abs_file_name, cv::IMREAD_UNCHANGED);
-    this->imgActive = cv::imread(abs_active_file_name, cv::IMREAD_UNCHANGED);
-    this->isActive = FALSE;
-    this->isEnable = TRUE;
-
-    if (this->img.empty()) {
+    if (this->m_img.empty()) {
         g_assert_not_reached();
     }
-    if (this->imgActive.empty()) {
+    if (this->m_img_active.empty()) {
         g_assert_not_reached();
     }
-
-    this->imgName = g_strdup(path);
-
-    if(name != NULL)
-    {
-        this->name = g_strdup(name);
-    }
-
-    g_free(resource_img_path);
-    g_free(file_name);
-    g_free(abs_file_name);
-    g_free(active_file_name);
-    g_free(abs_active_file_name);
 }
 
 Piece::~Piece() {
-    g_free(this->name);
-    g_free(this->imgName);
-    this->img.release();
 }
 
-gboolean Piece::isRed() {
-    return this->imgName[0] == 'R';
+void Piece::set_position(gint col, gint row) {
+    this->m_col = col;
+    this->m_row = row;
 }
 
-void Piece::saveToDisk(const gchar *path) {
-    cv::imwrite(path, this->img);
+gint Piece::get_col() const {
+    return m_col;
 }
 
-cv::Mat &Piece::getImg() {
-    return img;
+gint Piece::get_row() const {
+    return m_row;
 }
 
-gint Piece::getCol() const {
-    return col;
+gboolean Piece::get_enable() const {
+    return m_enable;
 }
 
-gint Piece::getRow() const {
-    return row;
+gboolean Piece::get_active() const {
+    return m_active;
 }
 
-gchar *Piece::getName() const {
-    return name;
+cv::Mat &Piece::get_img() {
+    return m_img;
 }
 
-gboolean Piece::getIsEnable() const {
-    return isEnable;
-}
-
-void Piece::setImg(const cv::Mat &img) {
-    Piece::img = img;
-}
-
-void Piece::setCol(gint col) {
-    Piece::col = col;
-}
-
-void Piece::setRow(gint row) {
-    Piece::row = row;
-}
-
-void Piece::setName(gchar *name) {
-    Piece::name = name;
-}
-
-void Piece::setIsEnable(gboolean isEnable) {
-    Piece::isEnable = isEnable;
-}
-
-gboolean Piece::getIsActive() const {
-    return isActive;
-}
-
-void Piece::setIsActive(gboolean isActive) {
-    Piece::isActive = isActive;
-}
-
-cv::Mat &Piece::getImgActive() {
-    return imgActive;
-}
-
-void Piece::setImgActive(const cv::Mat &imgActive) {
-    Piece::imgActive = imgActive;
-}
-
-void Piece::setPosition(gint col, gint row) {
-    Piece::col = col;
-    Piece::row = row;
+cv::Mat &Piece::get_img_active() {
+    return m_img_active;
 }

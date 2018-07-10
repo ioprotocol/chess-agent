@@ -8,22 +8,14 @@
 #include <time.h>
 #include <fstream>
 
-#include <gtk/gtk.h>
-
 #include <opencv2/imgproc.hpp>
-
 #include <iostream>
 
 #include "screenshot-utils.h"
 #include "screenshot-config.h"
 
 ScreenShot::ScreenShot() {
-    gchar *resource_img_path, *resource_path, *file_name;
-
     init_screen_config();
-
-    resource_img_path = get_resources_img_path();
-    resource_path = get_resources_path();
 
     topLeft = cv::Point(83, 144);
     topRight = cv::Point(623, 144);
@@ -43,12 +35,7 @@ ScreenShot::ScreenShot() {
         }
     }
 
-    file_name = g_build_filename(resource_path, "knn.xml", NULL);
-    knnModel = cv::ml::StatModel::load<cv::ml::KNearest>(file_name);
-
-    g_free(resource_path);
-    g_free(file_name);
-    g_free(resource_img_path);
+    knnModel = cv::ml::StatModel::load<cv::ml::KNearest>(Glib::build_filename(get_resources_path(), "knn.xml"));
 }
 
 ScreenShot::~ScreenShot() {
@@ -96,19 +83,7 @@ cv::Mat ScreenShot::screen_shot() {
  * @return
  */
 cv::Mat ScreenShot::screen_shot_test() {
-    cv::Mat mat;
-    gchar* name;
-    gchar* img_path;
-
-    img_path = get_resources_img_path();
-    name = g_build_filename(img_path, "demo.jpeg", NULL);
-
-    mat = cv::imread(name, cv::IMREAD_COLOR);
-
-    g_free(name);
-    g_free(img_path);
-
-    return mat;
+    return cv::imread(Glib::build_filename(get_resources_img_path(), "demo.jpeg"), cv::IMREAD_COLOR);
 }
 
 void ScreenShot::splitScreenImg(cv::Mat &mat, cv::Mat arrays[][9]) {
@@ -198,9 +173,6 @@ void ScreenShot::matchTemplateTest(cv::Mat &src1) {
  * KNN xunlian
  */
 void ScreenShot::knn_train() {
-    gchar* file_name;
-    gchar* path;
-
     // 样本数量
     int sambles = 90;
     // 样本有限，每个样本重复训练100次
@@ -212,9 +184,7 @@ void ScreenShot::knn_train() {
     std::string img_name;
     cv::Mat gray;
 
-    path = get_resources_path();
-
-    std::ifstream file_name_stream(std::string(path) + "/train.txt");
+    std::ifstream file_name_stream(Glib::build_filename(get_resources_path(), "train.txt"));
     for(int i = 0; i < sambles; i++) {
         getline(file_name_stream, img_name);
         int idx = img_name.find("_", 2);
@@ -225,7 +195,7 @@ void ScreenShot::knn_train() {
 
         std::cout << img_name << ":" << value << std::endl;
         for(int o = 0; o < repeat; o++) {
-            cv::Mat src = cv::imread("/home/xushy/CLionProjects/dataset/" + img_name);
+            cv::Mat src = cv::imread(Glib::build_filename(get_resources_path(), "dataset", img_name));
             cvtColor(src, gray, CV_BGR2GRAY);
             src_data.push_back(gray.reshape(0, 1));
             src_labels.push_back(value);
@@ -250,14 +220,9 @@ void ScreenShot::knn_train() {
     model->setIsClassifier(true);
     model->train(tData);
 
-    file_name = g_build_filename(path, "knn.xml", NULL);
-    model->save(file_name);
-    g_free(path);
-    g_free(file_name);
-
+    model->save(Glib::build_filename(get_resources_path(), "knn.xml"));
     model->clear();
-
-    std::cout << "train finish" << std::endl;
+    std::cout << "train finish:" << std::endl;
 }
 
 gint ScreenShot::knn_predit(cv::Mat &mat) {
@@ -451,7 +416,5 @@ void ScreenShot::output_disk_by_screen_shot(cv::Mat screen) {
             g_free(path);
         }
     }
-
-
 
 }

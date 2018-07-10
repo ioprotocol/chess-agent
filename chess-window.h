@@ -7,6 +7,7 @@
 
 #include <gtkmm.h>
 #include "chess-worker.h"
+#include "screen-shot.h"
 
 class ChessWindow : public Gtk::ApplicationWindow {
 public:
@@ -16,7 +17,8 @@ public:
 private:
     Gtk::MenuItem *m_option_train;
     Gtk::MenuItem *m_option_gen_resource;
-
+private:
+    ScreenShot m_screen_shot;
     Glib::Dispatcher m_dispatcher;
     std::thread* m_worker_thread;
     ChessWorker m_chess_worker;

@@ -7,64 +7,44 @@
 
 #define ICON_TYPE ".png"
 
-#include <gtk/gtk.h>
-#include <gdk/gdkx.h>
+#include <glibmm.h>
 #include <opencv2/imgcodecs.hpp>
 
 class Piece {
 private:
-    gchar* imgName;
-    // icon 57x57
-    cv::Mat img;
-    cv::Mat imgActive;
-    // from left to right 0 ～ 8
-    gint col;
-    // from up to down 0 ~ 9
-    gint row;
+    Glib::ustring m_file_name;
     // chess piece name
-    gchar* name;
+    Glib::ustring m_chess_name;
+    // icon 57x57
+    cv::Mat m_img;
+    cv::Mat m_img_active;
+    // from left to right 0 ～ 8
+    gint m_col;
+    // from up to down 0 ~ 9
+    gint m_row;
     // where it is killed, this will be set to false
-    gboolean isEnable;
+    gboolean m_enable;
     // is last active step
-    gboolean isActive;
+    gboolean m_active;
 public:
-    Piece(const gchar* path, gint col, gint row, const gchar* name);
+    gint get_col() const;
+
+    gint get_row() const;
+
+    gboolean get_enable() const;
+
+    gboolean get_active() const;
+
+    cv::Mat &get_img();
+
+    cv::Mat &get_img_active();
+
+public:
+    Piece(std::string file_name, gint col, gint row, std::string chess_name);
 
     virtual ~Piece();
 
-    gboolean isRed();
-
-    void saveToDisk(const gchar* path);
-
-    cv::Mat &getImg();
-
-    gint getCol() const;
-
-    gint getRow() const;
-
-    gchar *getName() const;
-
-    gboolean getIsEnable() const;
-
-    void setImg(const cv::Mat &img);
-
-    void setCol(gint col);
-
-    void setRow(gint row);
-
-    void setPosition(gint col, gint row);
-
-    void setName(gchar *name);
-
-    void setIsEnable(gboolean isEnable);
-
-    gboolean getIsActive() const;
-
-    void setIsActive(gboolean isActive);
-
-    cv::Mat &getImgActive();
-
-    void setImgActive(const cv::Mat &imgActive);
+    void set_position(gint col, gint row);
 };
 
 
