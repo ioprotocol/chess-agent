@@ -12,7 +12,6 @@
 
 class ScreenShot {
 private:
-private:
     cv::Point topLeft;
     cv::Point topRight;
     cv::Point bottomLeft;
@@ -24,17 +23,21 @@ public:
 
     virtual ~ScreenShot();
 public:
-    cv::Mat shot();
+    cv::Mat screen_shot();
+
+    cv::Mat screen_shot_test();
+    /**
+     * Generate knn train data to `pwd`/resources/dataset
+     *
+     * @param screen
+     */
+    void output_disk_by_screen_shot(cv::Mat screen);
 
     void splitScreenImg(cv::Mat &mat, cv::Mat arrays[][9]);
 
-    gdouble compareHist(const cv::Mat &mat1, const cv::Mat &mat2);
+    void knn_train();
 
-//    void matchTemplateTest(cv::Mat &src);
-
-    void knnTrain();
-
-    gint knnPredit(cv::Mat &mat);
+    gint knn_predit(cv::Mat &mat);
 };
 
 

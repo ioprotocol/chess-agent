@@ -55,7 +55,7 @@ ScreenShot::~ScreenShot() {
     g_free(screenshot_config);
 }
 
-cv::Mat ScreenShot::shot() {
+cv::Mat ScreenShot::screen_shot() {
     GOutputStream *outputStream;
     GdkPixbuf *gdkPixbuf;
     gpointer pixBuffer;
@@ -90,6 +90,27 @@ cv::Mat ScreenShot::shot() {
     return mat;
 }
 
+/**
+ * Just for dev test.
+ *
+ * @return
+ */
+cv::Mat ScreenShot::screen_shot_test() {
+    cv::Mat mat;
+    gchar* name;
+    gchar* img_path;
+
+    img_path = get_resources_img_path();
+    name = g_build_filename(img_path, "demo.jpeg", NULL);
+
+    mat = cv::imread(name, cv::IMREAD_COLOR);
+
+    g_free(name);
+    g_free(img_path);
+
+    return mat;
+}
+
 void ScreenShot::splitScreenImg(cv::Mat &mat, cv::Mat arrays[][9]) {
     cv::Mat mask = cv::Mat::zeros(48, 48, mat.type());
     cv::circle(mask, cv::Point(24, 24), 21, CV_RGB(255, 255, 255), -1);
@@ -111,6 +132,7 @@ void ScreenShot::splitScreenImg(cv::Mat &mat, cv::Mat arrays[][9]) {
     mask.release();
 }
 
+/*
 gdouble ScreenShot::compareHist(const cv::Mat &mat1, const cv::Mat &mat2) {
     const int channels[] = { 0, 1 };
     const int histSize[] = { 50, 60 };
@@ -140,7 +162,6 @@ gdouble ScreenShot::compareHist(const cv::Mat &mat1, const cv::Mat &mat2) {
     return cv::compareHist(hist_test1, hist_test2, cv::HISTCMP_CORREL);
 }
 
-/*
 void ScreenShot::matchTemplateTest(cv::Mat &src1) {
     cv::Mat src = src1(cv::Rect(0, 0, 200, 200));
 //    cv::Mat src = tencentChessFeatures[0];
@@ -176,7 +197,7 @@ void ScreenShot::matchTemplateTest(cv::Mat &src1) {
 /**
  * KNN xunlian
  */
-void ScreenShot::knnTrain() {
+void ScreenShot::knn_train() {
     gchar* file_name;
     gchar* path;
 
@@ -239,11 +260,198 @@ void ScreenShot::knnTrain() {
     std::cout << "train finish" << std::endl;
 }
 
-gint ScreenShot::knnPredit(cv::Mat &mat) {
+gint ScreenShot::knn_predit(cv::Mat &mat) {
     cv::inRange(mat, cv::Scalar(0,0,47), cv::Scalar(255,255,183), mat);
     cv::threshold(mat, mat, 0, 255.0, CV_THRESH_BINARY_INV);
 //    cvtColor(mat, mat, CV_BGR2GRAY);
     mat.convertTo(mat, CV_32F);
     float r = knnModel->predict(mat.reshape(0, 1));
     return (gint)r;
+}
+
+void ScreenShot::output_disk_by_screen_shot(cv::Mat screen) {
+    gchar* path;
+    gchar str[50];
+    str[0] = '\0';
+
+    std::vector<int> params;
+    params.push_back(cv::IMWRITE_JPEG_QUALITY);
+    params.push_back(100);
+
+    cv::Mat mask = cv::Mat::zeros(48, 48, screen.type());
+    cv::circle(mask, cv::Point(24, 24), 21, CV_RGB(255, 255, 255), -1);
+
+    gint y = 0, x = 0;
+    for( y = 0; y < 10; y++)
+    {
+        for(x = 0; x < 9; x++)
+        {
+            cv::Rect rect = cv::Rect(positions[y][x].x - 24, positions[y][x].y - 24, 48, 48);
+            cv::Mat roi = screen(rect);
+            cv::Mat split = cv::Mat::zeros(48, 48, screen.type());
+
+            roi.copyTo(split, mask);
+
+            // che
+            if(y == 0 && x == 0) {
+                sprintf(&str[0], "a_1_%d_che.jpg", 1);
+            }
+            if(y == 0 && x == 8) {
+                sprintf(&str[0], "a_1_%d_che.jpg", 2);
+            }
+            if(y == 9 && x == 0) {
+                sprintf(&str[0], "a_1_%d_che.jpg", 3);
+            }
+            if(y == 9 && x == 8) {
+                sprintf(&str[0], "a_1_%d_che.jpg", 4);
+            }
+            // ma
+            if(y == 0 && x == 1) {
+                sprintf(&str[0], "a_2_%d_ma.jpg", 1);
+            }
+            if(y == 0 && x == 7) {
+                sprintf(&str[0], "a_2_%d_ma.jpg", 2);
+            }
+            if(y == 9 && x == 1) {
+                sprintf(&str[0], "a_2_%d_ma.jpg", 3);
+            }
+            if(y == 9 && x == 7) {
+                sprintf(&str[0], "a_2_%d_ma.jpg", 4);
+            }
+            // xiang b
+            if(y == 0 && x == 2) {
+                sprintf(&str[0], "a_3_%d_xiang_b.jpg", 1);
+            }
+            if(y == 0 && x == 6) {
+                sprintf(&str[0], "a_3_%d_xiang_b.jpg", 2);
+            }
+            // xiang r
+            if(y == 9 && x == 2) {
+                sprintf(&str[0], "a_4_%d_xiang_r.jpg", 1);
+            }
+            if(y == 9 && x == 6) {
+                sprintf(&str[0], "a_4_%d_xiang_r.jpg", 2);
+            }
+            // shi b
+            if(y == 0 && x == 3) {
+                sprintf(&str[0], "a_5_%d_shi_b.jpg", 1);
+            }
+            if(y == 0 && x == 5) {
+                sprintf(&str[0], "a_5_%d_shi_b.jpg", 2);
+            }
+            // shi r
+            if(y == 9 && x == 3) {
+                sprintf(&str[0], "a_6_%d_shi_r.jpg", 1);
+            }
+            if(y == 9 && x == 5) {
+                sprintf(&str[0], "a_6_%d_shi_r.jpg", 2);
+            }
+            // jiang b
+            if(y == 0 && x == 4) {
+                sprintf(&str[0], "a_7_%d_jiang_b.jpg", 1);
+            }
+            // jiang r
+            if(y == 9 && x == 4) {
+                sprintf(&str[0], "a_8_%d_jiang_r.jpg", 1);
+            }
+            // pao b
+            if(y == 2 && x == 1) {
+                sprintf(&str[0], "a_9_%d_pao_b.jpg", 1);
+            }
+            if(y == 2 && x == 7) {
+                sprintf(&str[0], "a_9_%d_pao_b.jpg", 2);
+            }
+            // pao r
+            if(y == 7 && x == 1) {
+                sprintf(&str[0], "a_9_%d_pao_r.jpg", 3);
+            }
+            if(y == 7 && x == 7) {
+                sprintf(&str[0], "a_9_%d_pao_r.jpg", 4);
+            }
+            // zu b
+            if(y == 3 && x == 0) {
+                sprintf(&str[0], "a_10_%d_zu_b.jpg", 1);
+            }
+            if(y == 3 && x == 2) {
+                sprintf(&str[0], "a_10_%d_zu_b.jpg", 2);
+            }
+            if(y == 3 && x == 4) {
+                sprintf(&str[0], "a_10_%d_zu_b.jpg", 3);
+            }
+            if(y == 3 && x == 6) {
+                sprintf(&str[0], "a_10_%d_zu_b.jpg", 4);
+            }
+            if(y == 3 && x == 8) {
+                sprintf(&str[0], "a_10_%d_zu_b.jpg", 5);
+            }
+            // zu r
+            if(y == 6 && x == 0) {
+                sprintf(&str[0], "a_11_%d_zu_r.jpg", 1);
+            }
+            if(y == 6 && x == 2) {
+                sprintf(&str[0], "a_11_%d_zu_r.jpg", 2);
+            }
+            if(y == 6 && x == 4) {
+                sprintf(&str[0], "a_11_%d_zu_r.jpg", 3);
+            }
+            if(y == 6 && x == 6) {
+                sprintf(&str[0], "a_11_%d_zu_r.jpg", 4);
+            }
+            if(y == 6 && x == 8) {
+                sprintf(&str[0], "a_11_%d_zu_r.jpg", 5);
+            }
+            if( (y == 1 && x == 1) || (y==1 & x == 2) || (y==1 & x == 3) || (y==1 & x == 5) || (y==1 & x == 6) || (y==1 & x == 7) || (y==3 & x == 1)
+                || (y==3 & x == 7) || (y==7 & x == 2) || (y==7 & x == 4) || (y==7 & x == 6) || (y==8 & x == 7) || (y==8 & x == 1) ) {
+                sprintf(&str[0], "b_50_%d_blank.jpg", rand());
+            }
+            if( (y == 2 && x == 2) || (y==2 & x == 4) || (y==2 & x == 6) || (y==3 & x == 3) || (y==3 & x == 5) || (y==6 & x == 1) || (y==6 & x == 3) || (y==6 & x == 5) || (y==6 & x == 7)
+                || (y==8 & x == 2) || (y==8 & x == 3) || (y==8 & x == 5) || (y==8 & x == 6) ) {
+                sprintf(&str[0], "b_51_%d_blank.jpg", rand());
+            }
+            if( (y == 4 && x == 1) || (y==4 & x == 3) || (y==4 & x == 5) || (y==4 & x == 7) || (y==4 & x == 2)  || (y==4 & x == 4)  || (y==4 & x == 6) ) {
+                sprintf(&str[0], "b_52_%d_blank.jpg", rand());
+            }
+            if( (y == 1 && x == 4) || (y==8 & x == 4) ) {
+                sprintf(&str[0], "b_53_%d_blank.jpg", rand());
+            }
+            if( (y == 1 && x == 8) || (y==2 & x == 8) || (y==4 & x == 8) || (y==5 & x == 8) || (y==7 & x == 8) || (y==8 & x == 8) ) {
+                sprintf(&str[0], "b_54_%d_blank.jpg", rand());
+            }
+            if( (y == 1 && x == 0) || (y==2 & x == 0) || (y==4 & x == 0) || (y==5 & x == 0) || (y==7 & x == 0) || (y==8 & x == 0) ) {
+                sprintf(&str[0], "b_55_%d_blank.jpg", rand());
+            }
+            if( (y == 5 && x == 1) || (y==5 & x == 2) || (y==5 & x == 3) || (y==5 & x == 4) || (y==5 & x == 5) || (y==5 & x == 6)  || (y==5 & x == 7) ) {
+                sprintf(&str[0], "b_56_%d_blank.jpg", rand());
+            }
+            if(y == 2 && x == 3) {
+                sprintf(&str[0], "b_57_%d_blank.jpg", rand());
+            }
+            if(y == 2 && x == 5) {
+                sprintf(&str[0], "b_58_%d_blank.jpg", rand());
+            }
+            if(y == 7 && x == 3) {
+                sprintf(&str[0], "b_59_%d_blank.jpg", rand());
+            }
+            if(y == 7 && x == 5) {
+                sprintf(&str[0], "b_60_%d_blank.jpg", rand());
+            }
+            if(str[0] == '\0') {
+                sprintf(&str[0], "b_%d_%d_blank.jpg", y, x);
+            }
+
+
+            cv::Mat threshold;
+
+            cv::inRange(split, cv::Scalar(0,0,47), cv::Scalar(255,255,183), threshold);
+            cv::threshold(threshold, threshold, 0, 255.0, CV_THRESH_BINARY_INV);
+
+            path = g_build_filename("/home/xushy/CLionProjects/dataset", str, NULL);
+
+            cv::imwrite(path, threshold, params);
+            g_free(path);
+        }
+    }
+
+
+
 }
