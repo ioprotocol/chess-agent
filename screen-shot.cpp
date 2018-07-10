@@ -4,8 +4,7 @@
 
 #include "screen-shot.h"
 
-#include <unistd.h>
-#include <time.h>
+#include <glibmm.h>
 #include <fstream>
 
 #include <opencv2/imgproc.hpp>
@@ -70,9 +69,7 @@ cv::Mat ScreenShot::screen_shot() {
     g_object_unref(gdkPixbuf);
     g_object_unref(outputStream);
 
-    time_t timep;
-    time(&timep);
-    std::cout << "screen shot" << asctime(gmtime(&timep)) << std::endl;
+    std::cout << "screen shot @ " << Glib::DateTime::create_now_local().format("%Y-%m-%d %H:%M:%S") << std::endl;
 
     return mat;
 }
@@ -235,16 +232,14 @@ gint ScreenShot::knn_predit(cv::Mat &mat) {
 }
 
 void ScreenShot::output_disk_by_screen_shot(cv::Mat screen) {
-    gchar* path;
-    gchar str[50];
-    str[0] = '\0';
-
     std::vector<int> params;
     params.push_back(cv::IMWRITE_JPEG_QUALITY);
     params.push_back(100);
 
     cv::Mat mask = cv::Mat::zeros(48, 48, screen.type());
     cv::circle(mask, cv::Point(24, 24), 21, CV_RGB(255, 255, 255), -1);
+
+    std::string file_name;
 
     gint y = 0, x = 0;
     for( y = 0; y < 10; y++)
@@ -257,38 +252,39 @@ void ScreenShot::output_disk_by_screen_shot(cv::Mat screen) {
 
             roi.copyTo(split, mask);
 
+            /*
             // che
             if(y == 0 && x == 0) {
-                sprintf(&str[0], "a_1_%d_che.jpg", 1);
+                file_name.append("a_1_1_che");
             }
             if(y == 0 && x == 8) {
-                sprintf(&str[0], "a_1_%d_che.jpg", 2);
+                file_name.append("a_1_2_che");
             }
             if(y == 9 && x == 0) {
-                sprintf(&str[0], "a_1_%d_che.jpg", 3);
+                file_name.append("a_1_3_che");
             }
             if(y == 9 && x == 8) {
-                sprintf(&str[0], "a_1_%d_che.jpg", 4);
+                file_name.append("a_1_4_che");
             }
             // ma
             if(y == 0 && x == 1) {
-                sprintf(&str[0], "a_2_%d_ma.jpg", 1);
+                file_name.append("a_2_1_ma");
             }
             if(y == 0 && x == 7) {
-                sprintf(&str[0], "a_2_%d_ma.jpg", 2);
+                file_name.append("a_2_2_ma");
             }
             if(y == 9 && x == 1) {
-                sprintf(&str[0], "a_2_%d_ma.jpg", 3);
+                file_name.append("a_2_3_ma");
             }
             if(y == 9 && x == 7) {
-                sprintf(&str[0], "a_2_%d_ma.jpg", 4);
+                file_name.append("a_2_4_ma");
             }
             // xiang b
             if(y == 0 && x == 2) {
-                sprintf(&str[0], "a_3_%d_xiang_b.jpg", 1);
+                file_name.append("a_3_1_xiang_b");
             }
             if(y == 0 && x == 6) {
-                sprintf(&str[0], "a_3_%d_xiang_b.jpg", 2);
+                file_name.append("a_3_2_xiang_b");
             }
             // xiang r
             if(y == 9 && x == 2) {
@@ -365,55 +361,16 @@ void ScreenShot::output_disk_by_screen_shot(cv::Mat screen) {
             if(y == 6 && x == 8) {
                 sprintf(&str[0], "a_11_%d_zu_r.jpg", 5);
             }
-            if( (y == 1 && x == 1) || (y==1 & x == 2) || (y==1 & x == 3) || (y==1 & x == 5) || (y==1 & x == 6) || (y==1 & x == 7) || (y==3 & x == 1)
-                || (y==3 & x == 7) || (y==7 & x == 2) || (y==7 & x == 4) || (y==7 & x == 6) || (y==8 & x == 7) || (y==8 & x == 1) ) {
-                sprintf(&str[0], "b_50_%d_blank.jpg", rand());
-            }
-            if( (y == 2 && x == 2) || (y==2 & x == 4) || (y==2 & x == 6) || (y==3 & x == 3) || (y==3 & x == 5) || (y==6 & x == 1) || (y==6 & x == 3) || (y==6 & x == 5) || (y==6 & x == 7)
-                || (y==8 & x == 2) || (y==8 & x == 3) || (y==8 & x == 5) || (y==8 & x == 6) ) {
-                sprintf(&str[0], "b_51_%d_blank.jpg", rand());
-            }
-            if( (y == 4 && x == 1) || (y==4 & x == 3) || (y==4 & x == 5) || (y==4 & x == 7) || (y==4 & x == 2)  || (y==4 & x == 4)  || (y==4 & x == 6) ) {
-                sprintf(&str[0], "b_52_%d_blank.jpg", rand());
-            }
-            if( (y == 1 && x == 4) || (y==8 & x == 4) ) {
-                sprintf(&str[0], "b_53_%d_blank.jpg", rand());
-            }
-            if( (y == 1 && x == 8) || (y==2 & x == 8) || (y==4 & x == 8) || (y==5 & x == 8) || (y==7 & x == 8) || (y==8 & x == 8) ) {
-                sprintf(&str[0], "b_54_%d_blank.jpg", rand());
-            }
-            if( (y == 1 && x == 0) || (y==2 & x == 0) || (y==4 & x == 0) || (y==5 & x == 0) || (y==7 & x == 0) || (y==8 & x == 0) ) {
-                sprintf(&str[0], "b_55_%d_blank.jpg", rand());
-            }
-            if( (y == 5 && x == 1) || (y==5 & x == 2) || (y==5 & x == 3) || (y==5 & x == 4) || (y==5 & x == 5) || (y==5 & x == 6)  || (y==5 & x == 7) ) {
-                sprintf(&str[0], "b_56_%d_blank.jpg", rand());
-            }
-            if(y == 2 && x == 3) {
-                sprintf(&str[0], "b_57_%d_blank.jpg", rand());
-            }
-            if(y == 2 && x == 5) {
-                sprintf(&str[0], "b_58_%d_blank.jpg", rand());
-            }
-            if(y == 7 && x == 3) {
-                sprintf(&str[0], "b_59_%d_blank.jpg", rand());
-            }
-            if(y == 7 && x == 5) {
-                sprintf(&str[0], "b_60_%d_blank.jpg", rand());
-            }
-            if(str[0] == '\0') {
-                sprintf(&str[0], "b_%d_%d_blank.jpg", y, x);
-            }
-
+            */
 
             cv::Mat threshold;
 
             cv::inRange(split, cv::Scalar(0,0,47), cv::Scalar(255,255,183), threshold);
             cv::threshold(threshold, threshold, 0, 255.0, CV_THRESH_BINARY_INV);
 
-            path = g_build_filename("/home/xushy/CLionProjects/dataset", str, NULL);
+            file_name = Glib::build_filename(get_resources_path(), "dataset", file_name, ".jpg");
 
-            cv::imwrite(path, threshold, params);
-            g_free(path);
+            cv::imwrite(file_name, threshold, params);
         }
     }
 
