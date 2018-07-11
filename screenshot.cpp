@@ -2,7 +2,7 @@
 // Created by xsy on 18-7-4.
 //
 
-#include "screen-shot.h"
+#include "screenshot.h"
 
 #include <glibmm.h>
 #include <fstream>
@@ -16,25 +16,25 @@
 ScreenShot::ScreenShot() {
     init_screen_config();
 
-    topLeft = cv::Point(83, 144);
-    topRight = cv::Point(623, 144);
-    bottomLeft = cv::Point(83, 751);
-    bottomRight = cv::Point(623, 751);
+    top_left_ = cv::Point(83, 144);
+    top_right_ = cv::Point(623, 144);
+    bottom_left_ = cv::Point(83, 751);
+    bottom_right_ = cv::Point(623, 751);
 
-    gdouble dx = (topRight.x - topLeft.x) / 8.0;
-    gdouble dy = (bottomLeft.y - topLeft.y) / 9.0;
+    gdouble dx = (top_right_.x - top_left_.x) / 8.0;
+    gdouble dy = (bottom_left_.y - top_left_.y) / 9.0;
 
     gint y = 0, x = 0;
     for( y = 0; y < 10; y++)
     {
         for(x = 0; x < 9; x++)
         {
-            positions[y][x].x = topLeft.x + dx * x;
-            positions[y][x].y = topLeft.y + dy * y;
+            positions_[y][x].x = top_left_.x + dx * x;
+            positions_[y][x].y = top_left_.y + dy * y;
         }
     }
 
-    knnModel = cv::ml::StatModel::load<cv::ml::KNearest>(Glib::build_filename(get_resources_path(), "knn.xml"));
+    knn_model = cv::ml::StatModel::load<cv::ml::KNearest>(Glib::build_filename(Hub::get_resources_path(), "knn.xml"));
 }
 
 ScreenShot::~ScreenShot() {
@@ -80,7 +80,7 @@ cv::Mat ScreenShot::screen_shot() {
  * @return
  */
 cv::Mat ScreenShot::screen_shot_test() {
-    return cv::imread(Glib::build_filename(get_resources_img_path(), "demo.jpeg"), cv::IMREAD_COLOR);
+    return cv::imread(Glib::build_filename(Hub::get_resources_img_path(), "demo.jpeg"), cv::IMREAD_COLOR);
 }
 
 void ScreenShot::splitScreenImg(cv::Mat &mat, cv::Mat arrays[][9]) {
@@ -92,7 +92,7 @@ void ScreenShot::splitScreenImg(cv::Mat &mat, cv::Mat arrays[][9]) {
     {
         for(x = 0; x < 9; x++)
         {
-            cv::Rect rect = cv::Rect(positions[y][x].x - 24, positions[y][x].y - 24, 48, 48);
+            cv::Rect rect = cv::Rect(positions_[y][x].x - 24, positions_[y][x].y - 24, 48, 48);
             cv::Mat roi = mat(rect);
             cv::Mat split = cv::Mat::zeros(48, 48, mat.type());
 
@@ -181,7 +181,7 @@ void ScreenShot::knn_train() {
     std::string img_name;
     cv::Mat gray;
 
-    std::ifstream file_name_stream(Glib::build_filename(get_resources_path(), "train.txt"));
+    std::ifstream file_name_stream(Glib::build_filename(Hub::get_resources_path(), "train.txt"));
     for(int i = 0; i < sambles; i++) {
         getline(file_name_stream, img_name);
         int idx = img_name.find("_", 2);
@@ -192,7 +192,7 @@ void ScreenShot::knn_train() {
 
         std::cout << img_name << ":" << value << std::endl;
         for(int o = 0; o < repeat; o++) {
-            cv::Mat src = cv::imread(Glib::build_filename(get_resources_path(), "dataset", img_name));
+            cv::Mat src = cv::imread(Glib::build_filename(Hub::get_resources_path(), "dataset", img_name));
             cvtColor(src, gray, CV_BGR2GRAY);
             src_data.push_back(gray.reshape(0, 1));
             src_labels.push_back(value);
@@ -217,7 +217,7 @@ void ScreenShot::knn_train() {
     model->setIsClassifier(true);
     model->train(tData);
 
-    model->save(Glib::build_filename(get_resources_path(), "knn.xml"));
+    model->save(Glib::build_filename(Hub::get_resources_path(), "knn.xml"));
     model->clear();
     std::cout << "train finish:" << std::endl;
 }
@@ -227,7 +227,7 @@ gint ScreenShot::knn_predit(cv::Mat &mat) {
     cv::threshold(mat, mat, 0, 255.0, CV_THRESH_BINARY_INV);
 //    cvtColor(mat, mat, CV_BGR2GRAY);
     mat.convertTo(mat, CV_32F);
-    float r = knnModel->predict(mat.reshape(0, 1));
+    float r = knn_model->predict(mat.reshape(0, 1));
     return (gint)r;
 }
 
@@ -246,7 +246,7 @@ void ScreenShot::output_disk_by_screen_shot(cv::Mat screen) {
     {
         for(x = 0; x < 9; x++)
         {
-            cv::Rect rect = cv::Rect(positions[y][x].x - 24, positions[y][x].y - 24, 48, 48);
+            cv::Rect rect = cv::Rect(positions_[y][x].x - 24, positions_[y][x].y - 24, 48, 48);
             cv::Mat roi = screen(rect);
             cv::Mat split = cv::Mat::zeros(48, 48, screen.type());
 
@@ -368,7 +368,7 @@ void ScreenShot::output_disk_by_screen_shot(cv::Mat screen) {
             cv::inRange(split, cv::Scalar(0,0,47), cv::Scalar(255,255,183), threshold);
             cv::threshold(threshold, threshold, 0, 255.0, CV_THRESH_BINARY_INV);
 
-            file_name = Glib::build_filename(get_resources_path(), "dataset", file_name, ".jpg");
+            file_name = Glib::build_filename(Hub::get_resources_path(), "dataset", file_name, ".jpg");
 
             cv::imwrite(file_name, threshold, params);
         }

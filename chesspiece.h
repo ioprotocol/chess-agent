@@ -10,22 +10,22 @@
 #include <glibmm.h>
 #include <opencv2/imgcodecs.hpp>
 
-class Piece {
+class ChessPiece {
 private:
-    Glib::ustring m_file_name;
+    Glib::ustring file_name_;
     // chess piece name
-    Glib::ustring m_chess_name;
+    Glib::ustring chess_name_;
     // icon 57x57
-    cv::Mat m_img;
-    cv::Mat m_img_active;
+    cv::Mat img_;
+    cv::Mat img_active_;
     // from left to right 0 ～ 8
-    gint m_col;
+    gint col_;
     // from up to down 0 ~ 9
-    gint m_row;
+    gint row_;
     // where it is killed, this will be set to false
-    gboolean m_enable;
+    gboolean enable_;
     // is last active step
-    gboolean m_active;
+    gboolean active_;
 public:
     gint get_col() const;
 
@@ -40,9 +40,9 @@ public:
     cv::Mat &get_img_active();
 
 public:
-    Piece(std::string file_name, gint col, gint row, std::string chess_name);
+    ChessPiece(std::string file_name, gint col, gint row, std::string chess_name);
 
-    virtual ~Piece();
+    virtual ~ChessPiece();
 
     void set_position(gint col, gint row);
 };

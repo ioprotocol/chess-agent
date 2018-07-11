@@ -9,16 +9,16 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgcodecs.hpp>
 
-#include "application-utils.h"
+#include "application_utils.h"
 
 class ScreenShot {
 private:
-    cv::Point topLeft;
-    cv::Point topRight;
-    cv::Point bottomLeft;
-    cv::Point bottomRight;
-    cv::Point positions[10][9];
-    cv::Ptr<cv::ml::KNearest> knnModel;
+    cv::Point top_left_;
+    cv::Point top_right_;
+    cv::Point bottom_left_;
+    cv::Point bottom_right_;
+    cv::Point positions_[10][9];
+    cv::Ptr<cv::ml::KNearest> knn_model;
 public:
     ScreenShot();
 

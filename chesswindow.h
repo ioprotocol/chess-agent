@@ -6,8 +6,8 @@
 #define CHESSAGENT_CHESSWINDOW_H
 
 #include <gtkmm.h>
-#include "chess-worker.h"
-#include "screen-shot.h"
+#include "chessworker.h"
+#include "screenshot.h"
 
 class ChessWindow : public Gtk::ApplicationWindow {
 public:
@@ -15,13 +15,13 @@ public:
 
     void notify();
 private:
-    Gtk::MenuItem *m_option_train;
-    Gtk::MenuItem *m_option_gen_resource;
+    Gtk::MenuItem *p_option_train_;
+    Gtk::MenuItem *p_option_gen_resource_;
 private:
-    ScreenShot  m_screen_shot;
-    Glib::Dispatcher m_dispatcher;
-    std::thread* m_worker_thread;
-    ChessWorker m_chess_worker;
+    ScreenShot  screen_shot_;
+    Glib::Dispatcher dispatcher_;
+    std::thread* p_worker_thread_;
+    ChessWorker chess_worker_;
 private:
     void on_option_train_active();
 
