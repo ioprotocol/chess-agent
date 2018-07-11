@@ -17,6 +17,7 @@ public:
 private:
     Gtk::MenuItem *p_option_train_;
     Gtk::MenuItem *p_option_gen_resource_;
+    Gtk::MenuItem *p_option_test_;
 private:
     ScreenShot  screen_shot_;
     Glib::Dispatcher dispatcher_;
@@ -26,6 +27,8 @@ private:
     void on_option_train_active();
 
     void on_option_gen_resource_active();
+
+    void on_option_test_active();
 
     void on_worker_thread_start();
 

@@ -17,8 +17,15 @@ private:
     cv::Point top_right_;
     cv::Point bottom_left_;
     cv::Point bottom_right_;
+
+    gint mask_redius_;
+
     cv::Point positions_[10][9];
-    cv::Ptr<cv::ml::KNearest> knn_model;
+
+    std::map<gint, gint> knn_chess_type_;
+    std::map<gint, gint> knn_blank_type_;
+
+    cv::Ptr<cv::ml::KNearest> knn_model_;
 public:
     ScreenShot();
 
@@ -28,13 +35,18 @@ public:
 
     cv::Mat screen_shot_test();
     /**
-     * Generate knn train data to `pwd`/resources/dataset
+     * Generate positive knn train data to `pwd`/resources/dataset
      *
      * @param screen
      */
-    void output_disk_by_screen_shot(cv::Mat screen);
+    void generate_train_pos_img(cv::Mat screen);
 
-    void splitScreenImg(cv::Mat &mat, cv::Mat arrays[][9]);
+    // generate negative knn train data to `pwd`/resources/dataset
+    void generate_train_neg_img(cv::Mat screen);
+
+    void split_screen_img(cv::Mat &mat, cv::Mat **arrays);
+
+    gint point_to_knn_type(gint y, gint x);
 
     void knn_train();
 

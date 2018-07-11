@@ -30,7 +30,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkMenuItem" id="m_option_train">
+                      <object class="GtkMenuItem" id="option_train">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">训练</property>
@@ -38,10 +38,18 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkMenuItem" id="m_option_gen_resource">
+                      <object class="GtkMenuItem" id="option_gen_resource">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">测试</property>
+                        <property name="label" translatable="yes">GenResources</property>
+                        <property name="use_underline">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="option_test">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Test</property>
                         <property name="use_underline">True</property>
                       </object>
                     </child>

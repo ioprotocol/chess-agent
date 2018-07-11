@@ -16,6 +16,8 @@
 ScreenShot::ScreenShot() {
     init_screen_config();
 
+    mask_redius_ = 18;
+    // width = 540 height = 607
     top_left_ = cv::Point(83, 144);
     top_right_ = cv::Point(623, 144);
     bottom_left_ = cv::Point(83, 751);
@@ -34,7 +36,142 @@ ScreenShot::ScreenShot() {
         }
     }
 
-    knn_model = cv::ml::StatModel::load<cv::ml::KNearest>(Glib::build_filename(Hub::get_resources_path(), "knn.xml"));
+    // mark black chess with initial postion
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 0), (gint) Chess::B_CHE));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 1), (gint) Chess::B_MA));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 2), (gint) Chess::B_XIANG));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 3), (gint) Chess::B_SHI));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 4), (gint) Chess::B_JIANG));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 5), (gint) Chess::B_SHI));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 6), (gint) Chess::B_XIANG));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 7), (gint) Chess::B_MA));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 8), (gint) Chess::B_CHE));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(2, 1), (gint) Chess::B_PAO));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(2, 7), (gint) Chess::B_PAO));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(3, 0), (gint) Chess::B_ZU));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(3, 2), (gint) Chess::B_ZU));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(3, 4), (gint) Chess::B_ZU));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(3, 6), (gint) Chess::B_ZU));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(3, 8), (gint) Chess::B_ZU));
+    // mark red chess with initial postion
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(9, 0), (gint) Chess::B_CHE));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(9, 1), (gint) Chess::B_MA));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(9, 2), (gint) Chess::R_XIANG));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(9, 3), (gint) Chess::R_SHI));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(9, 4), (gint) Chess::R_JIANG));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(9, 5), (gint) Chess::R_SHI));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(9, 6), (gint) Chess::R_XIANG));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(9, 7), (gint) Chess::B_MA));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(9, 8), (gint) Chess::B_CHE));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(7, 1), (gint) Chess::B_PAO));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(7, 7), (gint) Chess::B_PAO));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(6, 0), (gint) Chess::R_ZU));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(6, 2), (gint) Chess::R_ZU));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(6, 4), (gint) Chess::R_ZU));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(6, 6), (gint) Chess::R_ZU));
+    knn_chess_type_.insert(std::pair<gint, gint>(point_to_knn_type(6, 8), (gint) Chess::R_ZU));
+    // mark blank board to knn type
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 0), 9000));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 1), 9001));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 2), 9001));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 4), 9001));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 6), 9001));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 7), 9001));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 3), 9002));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 5), 9003));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(0, 8), 9004));
+
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(1, 0), 9005));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(1, 1), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(1, 2), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(1, 3), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(1, 4), 9007));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(1, 5), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(1, 6), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(1, 7), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(1, 8), 9008));
+
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(2, 0), 9005));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(2, 1), 9009));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(2, 2), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(2, 3), 9010));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(2, 4), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(2, 5), 9011));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(2, 6), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(2, 7), 9009));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(2, 8), 9008));
+
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(3, 0), 9012));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(3, 1), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(3, 2), 9009));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(3, 3), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(3, 4), 9009));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(3, 5), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(3, 6), 9009));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(3, 7), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(3, 8), 9013));
+
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(4, 0), 9005));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(4, 1), 9014));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(4, 2), 9014));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(4, 3), 9014));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(4, 4), 9014));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(4, 5), 9014));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(4, 6), 9014));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(4, 7), 9014));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(4, 8), 9008));
+
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(5, 0), 9005));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(5, 1), 9015));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(5, 2), 9015));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(5, 3), 9015));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(5, 4), 9015));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(5, 5), 9015));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(5, 6), 9015));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(5, 7), 9015));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(5, 8), 9008));
+
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(6, 0), 9012));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(6, 1), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(6, 2), 9009));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(6, 3), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(6, 4), 9009));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(6, 5), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(6, 6), 9009));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(6, 7), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(6, 8), 9013));
+
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(7, 0), 9005));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(7, 1), 9009));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(7, 2), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(7, 3), 9016));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(7, 4), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(7, 5), 9017));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(7, 6), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(7, 7), 9009));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(7, 8), 9008));
+
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 0), 9005));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 1), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 2), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 3), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 4), 9007));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 5), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 6), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 7), 9006));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 8), 9008));
+
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 0), 9018));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 1), 9019));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 2), 9019));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 3), 9020));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 4), 9019));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 5), 9021));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 6), 9019));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 7), 9019));
+    knn_blank_type_.insert(std::pair<gint, gint>(point_to_knn_type(8, 8), 9022));
+
+    knn_model_ = cv::ml::StatModel::load<cv::ml::KNearest>(Glib::build_filename(Hub::get_resources_path(), "knn.xml"));
 }
 
 ScreenShot::~ScreenShot() {
@@ -83,7 +220,7 @@ cv::Mat ScreenShot::screen_shot_test() {
     return cv::imread(Glib::build_filename(Hub::get_resources_img_path(), "demo.jpeg"), cv::IMREAD_COLOR);
 }
 
-void ScreenShot::splitScreenImg(cv::Mat &mat, cv::Mat arrays[][9]) {
+void ScreenShot::split_screen_img(cv::Mat &mat, cv::Mat **arrays) {
     cv::Mat mask = cv::Mat::zeros(48, 48, mat.type());
     cv::circle(mask, cv::Point(24, 24), 21, CV_RGB(255, 255, 255), -1);
 
@@ -104,68 +241,6 @@ void ScreenShot::splitScreenImg(cv::Mat &mat, cv::Mat arrays[][9]) {
     mask.release();
 }
 
-/*
-gdouble ScreenShot::compareHist(const cv::Mat &mat1, const cv::Mat &mat2) {
-    const int channels[] = { 0, 1 };
-    const int histSize[] = { 50, 60 };
-    float range1[] = {0, 255};
-    float range2[] = {0, 180};
-    const float *ranges[] = { range1, range2};
-
-    cv::Mat hsv_test1;
-    cv::Mat hsv_test2;
-
-    cv::Mat hist_test1;
-    cv::Mat hist_test2;
-
-    cv::cvtColor(mat1, hsv_test1, cv::COLOR_BGR2HSV);
-    cv::cvtColor(mat2, hsv_test2, cv::COLOR_BGR2HSV);
-
-    cv::Mat src1[] = { hsv_test1 };
-    cv::Mat src2[] = { hsv_test2 };
-
-
-    cv::calcHist(src1, 1, channels, cv::Mat(), hist_test1, 1, histSize, &ranges[0], true, false);
-    cv::calcHist(src2, 1, channels, cv::Mat(), hist_test2, 1, histSize, &ranges[0], true, false);
-
-    cv::normalize(hist_test1, hist_test1, 0, hist_test1.rows, cv::NORM_MINMAX, -1, cv::Mat());
-    cv::normalize(hist_test2, hist_test2, 0, hist_test2.rows, cv::NORM_MINMAX, -1, cv::Mat());
-
-    return cv::compareHist(hist_test1, hist_test2, cv::HISTCMP_CORREL);
-}
-
-void ScreenShot::matchTemplateTest(cv::Mat &src1) {
-    cv::Mat src = src1(cv::Rect(0, 0, 200, 200));
-//    cv::Mat src = tencentChessFeatures[0];
-    cv::Mat tpl = tencentChessFeatures[0];
-    cv::Mat result;
-
-    int result_cols =  src.cols - tpl.cols + 1;
-    int result_rows = src.rows - tpl.rows + 1;
-    result.create( result_rows, result_cols, CV_32FC1 );
-
-    int match_method = CV_TM_CCORR_NORMED;
-
-    bool method_accepts_mask = (CV_TM_SQDIFF == match_method || match_method == CV_TM_CCORR_NORMED);
-
-    matchTemplate( src, tpl, result, match_method);
-    normalize( result, result, 0, 1, cv::NORM_MINMAX, -1, cv::Mat() );
-
-    double minVal; double maxVal; cv::Point minLoc; cv::Point maxLoc;
-    cv::Point matchLoc;
-
-    minMaxLoc( result, &minVal, &maxVal, &minLoc, &maxLoc, cv::Mat() );
-
-    if( match_method  == cv::TM_SQDIFF || match_method == cv::TM_SQDIFF_NORMED )
-    { matchLoc = minLoc; }
-    else
-    { matchLoc = maxLoc; }
-
-    std::cout << "x=" << matchLoc.x << " y=" << matchLoc.y <<std::endl;
-    return;
-}
-*/
-
 /**
  * KNN xunlian
  */
@@ -184,11 +259,9 @@ void ScreenShot::knn_train() {
     std::ifstream file_name_stream(Glib::build_filename(Hub::get_resources_path(), "train.txt"));
     for(int i = 0; i < sambles; i++) {
         getline(file_name_stream, img_name);
-        int idx = img_name.find("_", 2);
-        std::string prefix = img_name.substr(2, idx);
-        std::stringstream ss = std::stringstream(prefix);
-        int value;
-        ss >> value;
+        int idx = img_name.find("_", 4);
+        std::string prefix = img_name.substr(4, idx);
+        int value = std::stoi(prefix);
 
         std::cout << img_name << ":" << value << std::endl;
         for(int o = 0; o < repeat; o++) {
@@ -227,17 +300,17 @@ gint ScreenShot::knn_predit(cv::Mat &mat) {
     cv::threshold(mat, mat, 0, 255.0, CV_THRESH_BINARY_INV);
 //    cvtColor(mat, mat, CV_BGR2GRAY);
     mat.convertTo(mat, CV_32F);
-    float r = knn_model->predict(mat.reshape(0, 1));
+    float r = knn_model_->predict(mat.reshape(0, 1));
     return (gint)r;
 }
 
-void ScreenShot::output_disk_by_screen_shot(cv::Mat screen) {
+void ScreenShot::generate_train_pos_img(cv::Mat screen) {
     std::vector<int> params;
     params.push_back(cv::IMWRITE_JPEG_QUALITY);
     params.push_back(100);
 
     cv::Mat mask = cv::Mat::zeros(48, 48, screen.type());
-    cv::circle(mask, cv::Point(24, 24), 21, CV_RGB(255, 255, 255), -1);
+    cv::circle(mask, cv::Point(24, 24), mask_redius_, CV_RGB(255, 255, 255), -1);
 
     std::string file_name;
 
@@ -246,132 +319,72 @@ void ScreenShot::output_disk_by_screen_shot(cv::Mat screen) {
     {
         for(x = 0; x < 9; x++)
         {
-            cv::Rect rect = cv::Rect(positions_[y][x].x - 24, positions_[y][x].y - 24, 48, 48);
-            cv::Mat roi = screen(rect);
-            cv::Mat split = cv::Mat::zeros(48, 48, screen.type());
+            if (knn_chess_type_.count(point_to_knn_type(y, x)) == 1) {
+                cv::Rect rect = cv::Rect(positions_[y][x].x - 24, positions_[y][x].y - 24, 48, 48);
+                cv::Mat roi = screen(rect);
+                cv::Mat split = cv::Mat::zeros(48, 48, screen.type());
 
-            roi.copyTo(split, mask);
+                roi.copyTo(split, mask);
 
-            /*
-            // che
-            if(y == 0 && x == 0) {
-                file_name.append("a_1_1_che");
-            }
-            if(y == 0 && x == 8) {
-                file_name.append("a_1_2_che");
-            }
-            if(y == 9 && x == 0) {
-                file_name.append("a_1_3_che");
-            }
-            if(y == 9 && x == 8) {
-                file_name.append("a_1_4_che");
-            }
-            // ma
-            if(y == 0 && x == 1) {
-                file_name.append("a_2_1_ma");
-            }
-            if(y == 0 && x == 7) {
-                file_name.append("a_2_2_ma");
-            }
-            if(y == 9 && x == 1) {
-                file_name.append("a_2_3_ma");
-            }
-            if(y == 9 && x == 7) {
-                file_name.append("a_2_4_ma");
-            }
-            // xiang b
-            if(y == 0 && x == 2) {
-                file_name.append("a_3_1_xiang_b");
-            }
-            if(y == 0 && x == 6) {
-                file_name.append("a_3_2_xiang_b");
-            }
-            // xiang r
-            if(y == 9 && x == 2) {
-                sprintf(&str[0], "a_4_%d_xiang_r.jpg", 1);
-            }
-            if(y == 9 && x == 6) {
-                sprintf(&str[0], "a_4_%d_xiang_r.jpg", 2);
-            }
-            // shi b
-            if(y == 0 && x == 3) {
-                sprintf(&str[0], "a_5_%d_shi_b.jpg", 1);
-            }
-            if(y == 0 && x == 5) {
-                sprintf(&str[0], "a_5_%d_shi_b.jpg", 2);
-            }
-            // shi r
-            if(y == 9 && x == 3) {
-                sprintf(&str[0], "a_6_%d_shi_r.jpg", 1);
-            }
-            if(y == 9 && x == 5) {
-                sprintf(&str[0], "a_6_%d_shi_r.jpg", 2);
-            }
-            // jiang b
-            if(y == 0 && x == 4) {
-                sprintf(&str[0], "a_7_%d_jiang_b.jpg", 1);
-            }
-            // jiang r
-            if(y == 9 && x == 4) {
-                sprintf(&str[0], "a_8_%d_jiang_r.jpg", 1);
-            }
-            // pao b
-            if(y == 2 && x == 1) {
-                sprintf(&str[0], "a_9_%d_pao_b.jpg", 1);
-            }
-            if(y == 2 && x == 7) {
-                sprintf(&str[0], "a_9_%d_pao_b.jpg", 2);
-            }
-            // pao r
-            if(y == 7 && x == 1) {
-                sprintf(&str[0], "a_9_%d_pao_r.jpg", 3);
-            }
-            if(y == 7 && x == 7) {
-                sprintf(&str[0], "a_9_%d_pao_r.jpg", 4);
-            }
-            // zu b
-            if(y == 3 && x == 0) {
-                sprintf(&str[0], "a_10_%d_zu_b.jpg", 1);
-            }
-            if(y == 3 && x == 2) {
-                sprintf(&str[0], "a_10_%d_zu_b.jpg", 2);
-            }
-            if(y == 3 && x == 4) {
-                sprintf(&str[0], "a_10_%d_zu_b.jpg", 3);
-            }
-            if(y == 3 && x == 6) {
-                sprintf(&str[0], "a_10_%d_zu_b.jpg", 4);
-            }
-            if(y == 3 && x == 8) {
-                sprintf(&str[0], "a_10_%d_zu_b.jpg", 5);
-            }
-            // zu r
-            if(y == 6 && x == 0) {
-                sprintf(&str[0], "a_11_%d_zu_r.jpg", 1);
-            }
-            if(y == 6 && x == 2) {
-                sprintf(&str[0], "a_11_%d_zu_r.jpg", 2);
-            }
-            if(y == 6 && x == 4) {
-                sprintf(&str[0], "a_11_%d_zu_r.jpg", 3);
-            }
-            if(y == 6 && x == 6) {
-                sprintf(&str[0], "a_11_%d_zu_r.jpg", 4);
-            }
-            if(y == 6 && x == 8) {
-                sprintf(&str[0], "a_11_%d_zu_r.jpg", 5);
-            }
-            */
+                cv::Mat threshold;
 
-            cv::Mat threshold;
+                cv::inRange(split, cv::Scalar(0,0,47), cv::Scalar(255,255,183), threshold);
+                cv::threshold(threshold, threshold, 0, 255.0, CV_THRESH_BINARY_INV);
 
-            cv::inRange(split, cv::Scalar(0,0,47), cv::Scalar(255,255,183), threshold);
-            cv::threshold(threshold, threshold, 0, 255.0, CV_THRESH_BINARY_INV);
+                file_name.append("pos_").append(std::to_string(knn_chess_type_.at(point_to_knn_type(y, x))));
+                file_name.append("_").append(std::to_string(y)).append(std::to_string(x));
+                file_name.append(".jpg");
+                std::cout << file_name << std::endl;
+                file_name = Glib::build_filename(Hub::get_resources_path(), "dataset", file_name);
 
-            file_name = Glib::build_filename(Hub::get_resources_path(), "dataset", file_name, ".jpg");
-
-            cv::imwrite(file_name, threshold, params);
+                cv::imwrite(file_name, threshold, params);
+                file_name.clear();
+            }
         }
     }
 
+}
+
+void ScreenShot::generate_train_neg_img(cv::Mat screen) {
+    std::vector<int> params;
+    params.push_back(cv::IMWRITE_JPEG_QUALITY);
+    params.push_back(100);
+
+    cv::Mat mask = cv::Mat::zeros(48, 48, screen.type());
+    cv::circle(mask, cv::Point(24, 24), mask_redius_, CV_RGB(255, 255, 255), -1);
+
+    std::string file_name;
+
+    gint y = 0, x = 0;
+    for( y = 0; y < 10; y++)
+    {
+        for(x = 0; x < 9; x++)
+        {
+            if (knn_blank_type_.count(point_to_knn_type(y, x)) == 1) {
+                cv::Rect rect = cv::Rect(positions_[y][x].x - 24, positions_[y][x].y - 24, 48, 48);
+                cv::Mat roi = screen(rect);
+                cv::Mat split = cv::Mat::zeros(48, 48, screen.type());
+
+                roi.copyTo(split, mask);
+
+                cv::Mat threshold;
+
+                cv::inRange(split, cv::Scalar(0,0,47), cv::Scalar(255,255,183), threshold);
+                cv::threshold(threshold, threshold, 0, 255.0, CV_THRESH_BINARY_INV);
+
+                file_name.append("neg_").append(std::to_string(knn_blank_type_.at(point_to_knn_type(y, x))));
+                file_name.append("_").append(std::to_string(y)).append(std::to_string(x));
+                file_name.append(".jpg");
+                std::cout << file_name << std::endl;
+                file_name = Glib::build_filename(Hub::get_resources_path(), "dataset", file_name);
+
+                cv::imwrite(file_name, threshold, params);
+                file_name.clear();
+            }
+        }
+    }
+}
+
+gint ScreenShot::point_to_knn_type(gint y, gint x) {
+    return y * 10 + x;
 }
