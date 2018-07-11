@@ -5,16 +5,16 @@
 #include "screenshot.h"
 
 #include <glibmm.h>
+#include <gtkmm.h>
 #include <fstream>
 
 #include <opencv2/imgproc.hpp>
 #include <iostream>
+#include <gtk/gtk.h>
 
-#include "screenshot-utils.h"
-#include "screenshot-config.h"
+#include "application_utils.h"
 
 ScreenShot::ScreenShot() {
-    init_screen_config();
 
     mask_redius_ = 18;
     // width = 540 height = 607
@@ -175,40 +175,35 @@ ScreenShot::ScreenShot() {
 }
 
 ScreenShot::~ScreenShot() {
-    g_free(screenshot_config);
 }
 
 cv::Mat ScreenShot::screen_shot() {
-    GOutputStream *outputStream;
-    GdkPixbuf *gdkPixbuf;
-    gpointer pixBuffer;
-    gsize size;
-    uchar *data;
-    std::vector<int> params;
 
-    params.push_back(cv::IMWRITE_JPEG_QUALITY);
-    params.push_back(100);
+    Glib::RefPtr<Gdk::Display> display = Gdk::Display::get_default();
+    if (!display) {
+        std::cout << "default display is null" << std::endl;
+    }
 
-    outputStream = g_memory_output_stream_new_resizable();
-    gdkPixbuf = screenshot_fallback_get_pixbuf(NULL);
+    Glib::RefPtr<Gdk::Screen> screen = display->get_default_screen();
 
-    gdk_pixbuf_save_to_stream(gdkPixbuf, outputStream, "jpeg", NULL, NULL, "quality", "100", NULL);
+    Glib::RefPtr<Gdk::Window> window = screen->get_active_window();
+    Glib::RefPtr<Gdk::Window> root_window = screen->get_root_window();
 
-    pixBuffer = g_memory_output_stream_get_data(G_MEMORY_OUTPUT_STREAM(outputStream));
-    size = g_memory_output_stream_get_size(G_MEMORY_OUTPUT_STREAM(outputStream));
+    if (!window) {
+        std::cout << "root window is null " << std::endl;
+    }
 
-    data = (uchar *) pixBuffer;
+    Gdk::Rectangle frame_extras;
 
-    std::vector<uchar> vec_data(&data[0], &data[0] + size);
+    window->get_frame_extents(frame_extras);
+    int x, y;
+    window->get_origin(x, y);
 
-    cv::Mat mat = cv::imdecode(vec_data, cv::IMREAD_COLOR);
+    std::cout << "x:" << x << "y:"<< y <<"width:" << window->get_width() << "height:" << window->get_height() << std::endl;
 
-    g_object_unref(gdkPixbuf);
-    g_object_unref(outputStream);
+    GdkPixbuf *pixbuf = gdk_pixbuf_get_from_window(root_window->gobj(), x, y, window->get_width(), window->get_height());
 
-    std::cout << "screen shot @ " << Glib::DateTime::create_now_local().format("%Y-%m-%d %H:%M:%S") << std::endl;
-
-    return mat;
+    return Hub::pixbuffer_to_mat(pixbuf);
 }
 
 /**
@@ -312,6 +307,8 @@ void ScreenShot::generate_train_pos_img(cv::Mat screen) {
     cv::Mat mask = cv::Mat::zeros(48, 48, screen.type());
     cv::circle(mask, cv::Point(24, 24), mask_redius_, CV_RGB(255, 255, 255), -1);
 
+    Glib::Rand rand;
+
     std::string file_name;
 
     gint y = 0, x = 0;
@@ -333,6 +330,7 @@ void ScreenShot::generate_train_pos_img(cv::Mat screen) {
 
                 file_name.append("pos_").append(std::to_string(knn_chess_type_.at(point_to_knn_type(y, x))));
                 file_name.append("_").append(std::to_string(y)).append(std::to_string(x));
+                file_name.append("_").append(std::to_string(rand.get_int()));
                 file_name.append(".jpg");
                 std::cout << file_name << std::endl;
                 file_name = Glib::build_filename(Hub::get_resources_path(), "dataset", file_name);
@@ -352,6 +350,8 @@ void ScreenShot::generate_train_neg_img(cv::Mat screen) {
 
     cv::Mat mask = cv::Mat::zeros(48, 48, screen.type());
     cv::circle(mask, cv::Point(24, 24), mask_redius_, CV_RGB(255, 255, 255), -1);
+
+    Glib::Rand rand;
 
     std::string file_name;
 
@@ -374,6 +374,7 @@ void ScreenShot::generate_train_neg_img(cv::Mat screen) {
 
                 file_name.append("neg_").append(std::to_string(knn_blank_type_.at(point_to_knn_type(y, x))));
                 file_name.append("_").append(std::to_string(y)).append(std::to_string(x));
+                file_name.append("_").append(std::to_string(rand.get_int()));
                 file_name.append(".jpg");
                 std::cout << file_name << std::endl;
                 file_name = Glib::build_filename(Hub::get_resources_path(), "dataset", file_name);

@@ -3,7 +3,6 @@
 //
 
 #include "chesswindow.h"
-
 #include <iostream>
 
 ChessWindow::ChessWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refGlade)
@@ -15,6 +14,7 @@ ChessWindow::ChessWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builde
 {
     refGlade->get_widget("option_train", p_option_train_);
     refGlade->get_widget("option_gen_resource", p_option_gen_resource_);
+    refGlade->get_widget("option_test", p_option_test_);
 
     p_option_train_->signal_activate().connect(sigc::mem_fun(this, &ChessWindow::on_option_train_active));
     p_option_gen_resource_->signal_activate().connect(sigc::mem_fun(this, &ChessWindow::on_option_gen_resource_active));
@@ -50,5 +50,4 @@ void ChessWindow::notify() {
 }
 
 void ChessWindow::on_option_test_active() {
-
 }

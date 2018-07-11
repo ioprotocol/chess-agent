@@ -6,6 +6,8 @@
 #define CHESSAGENT_APPLICATION_UTILS_H
 
 #include <iostream>
+#include <opencv2/imgproc.hpp>
+#include <gdk-pixbuf/gdk-pixbuf-core.h>
 
 #define PWD "EPWD"
 
@@ -18,6 +20,8 @@ namespace Hub {
     std::string get_resources_img_path();
 
     std::string get_resource_glade_file();
+
+    cv::Mat pixbuffer_to_mat(GdkPixbuf* gdkPixbuf);
 }
 
 namespace Chess {
