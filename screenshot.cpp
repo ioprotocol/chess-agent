@@ -306,8 +306,8 @@ void ScreenShot::knn_train() {
 }
 
 gint ScreenShot::knn_predict(cv::Mat &mat) {
-    cv::inRange(mat, cv::Scalar(0,0,47), cv::Scalar(255,255,183), mat);
-    cv::threshold(mat, mat, 0, 255.0, CV_THRESH_BINARY_INV);
+//    cv::inRange(mat, cv::Scalar(0,0,47), cv::Scalar(255,255,183), mat);
+//    cv::threshold(mat, mat, 0, 255.0, CV_THRESH_BINARY_INV);
     cvtColor(mat, mat, CV_BGR2GRAY);
     mat.convertTo(mat, CV_32F);
     float r = knn_model_->predict(mat.reshape(0, 1));

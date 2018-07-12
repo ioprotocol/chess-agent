@@ -15,7 +15,7 @@
 #define SCREEN_WIDTH  529
 #define SCREEN_HEIGHT 800
 
-#define MIN_SAMPLE_NUMBER 100
+#define MIN_SAMPLE_NUMBER 50
 
 class ScreenShot {
 private:
