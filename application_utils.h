@@ -11,6 +11,8 @@
 
 #define PWD "EPWD"
 
+#define _TEST_STD_OUT
+
 namespace Hub {
 
     std::string get_application_path();
