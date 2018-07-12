@@ -44,16 +44,20 @@ private:
     /**
      * Generate positive knn train data to `pwd`/resources/dataset
      */
-    void generate_train_pos_img(cv::Mat screen);
+    void generate_train_pos_img(cv::Mat &screen);
 
     // generate negative knn train data to `pwd`/resources/dataset
-    void generate_train_neg_img(cv::Mat screen);
+    void generate_train_neg_img(cv::Mat &screen);
 
-    void generate_train_mark_img(const cv::Mat screen);
+    void generate_train_mark_img(const cv::Mat &screen);
 
     gint point_to_knn_type(gint y, gint x);
 
     void knn_sample_stat();
+
+    std::vector<cv::Vec3f> hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &circles);
+
+    gint knn_predict(cv::Mat &mat);
 public:
     cv::Mat screen_shot();
 
@@ -63,7 +67,11 @@ public:
 
     void knn_predit_stat();
 
-    gint knn_predict(cv::Mat &mat);
+    /**
+     * 检测象棋的位置
+     * @param map
+     */
+    void detect_chess_position(cv::Mat &screen, std::map<gint, gint> &map);
 };
 
 

@@ -29,7 +29,7 @@ ScreenShot::ScreenShot() {
 
     mask_size_x_ = 48;
     mask_size_y_ = 48 * dy / dx;
-    mask_redius_ = 15;
+    mask_redius_ = 18;
 
     gint y = 0, x = 0;
     for( y = 0; y < 10; y++)
@@ -207,7 +207,6 @@ cv::Mat ScreenShot::screen_shot() {
     GdkPixbuf *pixbuf = gdk_pixbuf_get_from_window(root_window->gobj(), x, y, window->get_width(), window->get_height());
 
     cv::Mat mat = Hub::pixbuffer_to_mat(pixbuf);
-    cv::resize(mat, mat, cv::Size(SCREEN_WIDTH, SCREEN_HEIGHT), 0, 0, cv::INTER_LINEAR);
     std::cout << Glib::DateTime::create_now_local().format("%y-%m-%d %H:%M:%S") << "@x:" << x << "y:" << y << "width:"
               << window->get_width() << "height:" << window->get_height() << std::endl;
     gdk_threads_leave();
@@ -288,12 +287,10 @@ void ScreenShot::knn_train() {
     trainLabels = src_labels(cv::Range(0, train_num), cv::Range::all());
 
     //使用KNN算法
-    int K = 5;
-
     cv::Ptr<cv::ml::TrainData> tData = cv::ml::TrainData::create(trainData, cv::ml::ROW_SAMPLE, trainLabels);
     cv::Ptr<cv::ml::KNearest> model = cv::ml::KNearest::create();
 
-    model->setDefaultK(K);
+    model->setDefaultK(5);
     model->setIsClassifier(true);
     model->train(tData);
 
@@ -302,25 +299,22 @@ void ScreenShot::knn_train() {
 
     clock_t end_time = clock();
 
+    knn_model_ = cv::ml::StatModel::load<cv::ml::KNearest>(Glib::build_filename(Hub::get_resources_path(), "knn.xml"));
     std::cout << "train finish @ cost:" <<end_time - start_time << std::endl;
 }
 
 gint ScreenShot::knn_predict(cv::Mat &mat) {
-//    cv::inRange(mat, cv::Scalar(0,0,47), cv::Scalar(255,255,183), mat);
-//    cv::threshold(mat, mat, 0, 255.0, CV_THRESH_BINARY_INV);
-    cvtColor(mat, mat, CV_BGR2GRAY);
+    cv::inRange(mat, cv::Scalar(0,0,47), cv::Scalar(255,255,183), mat);
+    cv::threshold(mat, mat, 0, 255.0, CV_THRESH_BINARY_INV);
     mat.convertTo(mat, CV_32F);
     float r = knn_model_->predict(mat.reshape(0, 1));
     return (gint)r;
 }
 
-void ScreenShot::generate_train_pos_img(cv::Mat screen) {
+void ScreenShot::generate_train_pos_img(cv::Mat &screen) {
     std::vector<int> params;
     params.push_back(cv::IMWRITE_JPEG_QUALITY);
     params.push_back(100);
-
-    cv::Mat mask = cv::Mat::zeros(mask_size_x_, mask_size_y_, screen.type());
-    cv::circle(mask, cv::Point(mask_size_x_/2, mask_size_y_/2), mask_redius_, CV_RGB(255, 255, 255), -1);
 
     Glib::Rand rand;
 
@@ -334,7 +328,25 @@ void ScreenShot::generate_train_pos_img(cv::Mat screen) {
             if (knn_chess_type_.count(point_to_knn_type(y, x)) == 1) {
                 cv::Rect rect = cv::Rect(positions_[y][x].x - mask_size_x_/2 + 2, positions_[y][x].y - mask_size_y_/2 - 6, mask_size_x_, mask_size_y_);
                 cv::Mat roi = screen(rect);
-                cv::Mat split = cv::Mat::zeros(mask_size_x_, mask_size_y_, screen.type());
+
+                std::vector<cv::Vec3f> circles;
+                hough_detection_circle(roi, circles);
+                if(circles.size() < 1) {
+                    std::cout << "circles is null " << std::endl;
+                    continue;
+                }
+
+                cv::Point center(cvRound(circles[0][0]), cvRound(circles[0][1]));
+                int radius = cvRound(circles[0][2]);
+
+                if(radius <= 0 ) {
+                    std::cout << "hough_detection_circle is null " << std::endl;
+                    radius = mask_redius_;
+                }
+
+                cv::Mat split = cv::Mat::zeros(roi.rows, roi.cols, screen.type());
+                cv::Mat mask = cv::Mat::zeros(split.rows, split.cols, screen.type());
+                cv::circle(mask, center, radius - 4, CV_RGB(255, 255, 255), -1);
 
                 roi.copyTo(split, mask);
 
@@ -345,9 +357,8 @@ void ScreenShot::generate_train_pos_img(cv::Mat screen) {
 
                 file_name.append("pos_").append(std::to_string(knn_chess_type_.at(point_to_knn_type(y, x))));
                 file_name.append("_").append(std::to_string(y)).append(std::to_string(x));
-                file_name.append("_").append(std::to_string(clock()));
+                file_name.append("_").append(std::to_string(rand.get_int()));
                 file_name.append(".jpg");
-                std::cout << file_name << std::endl;
                 file_name = Glib::build_filename(Hub::get_resources_path(), "dataset", file_name);
 
                 cv::imwrite(file_name, threshold, params);
@@ -356,6 +367,9 @@ void ScreenShot::generate_train_pos_img(cv::Mat screen) {
                 cv::Rect rect = cv::Rect(positions_[y][x].x - mask_size_x_/2, positions_[y][x].y - mask_size_y_/2, mask_size_x_, mask_size_y_);
                 cv::Mat roi = screen(rect);
                 cv::Mat split = cv::Mat::zeros(mask_size_x_, mask_size_y_, screen.type());
+
+                cv::Mat mask = cv::Mat::zeros(mask_size_x_, mask_size_y_, screen.type());
+                cv::circle(mask, cv::Point(mask_size_x_/2, mask_size_y_/2), mask_redius_, CV_RGB(255, 255, 255), -1);
 
                 roi.copyTo(split, mask);
 
@@ -366,9 +380,8 @@ void ScreenShot::generate_train_pos_img(cv::Mat screen) {
 
                 file_name.append("neg_").append(std::to_string(knn_blank_type_.at(point_to_knn_type(y, x))));
                 file_name.append("_").append(std::to_string(y)).append(std::to_string(x));
-                file_name.append("_").append(std::to_string(clock()));
+                file_name.append("_").append(std::to_string(rand.get_int()));
                 file_name.append(".jpg");
-                std::cout << file_name << std::endl;
                 file_name = Glib::build_filename(Hub::get_resources_path(), "dataset", file_name);
 
                 cv::imwrite(file_name, threshold, params);
@@ -379,7 +392,7 @@ void ScreenShot::generate_train_pos_img(cv::Mat screen) {
 
 }
 
-void ScreenShot::generate_train_neg_img(cv::Mat screen) {
+void ScreenShot::generate_train_neg_img(cv::Mat &screen) {
     std::vector<int> params;
     params.push_back(cv::IMWRITE_JPEG_QUALITY);
     params.push_back(100);
@@ -410,9 +423,8 @@ void ScreenShot::generate_train_neg_img(cv::Mat screen) {
 
                 file_name.append("neg_").append(std::to_string(knn_blank_type_.at(point_to_knn_type(y, x))));
                 file_name.append("_").append(std::to_string(y)).append(std::to_string(x));
-                file_name.append("_").append(std::to_string(clock()));
+                file_name.append("_").append(std::to_string(rand.get_int()));
                 file_name.append(".jpg");
-                std::cout << file_name << std::endl;
                 file_name = Glib::build_filename(Hub::get_resources_path(), "dataset", file_name);
 
                 cv::imwrite(file_name, threshold, params);
@@ -434,7 +446,7 @@ void ScreenShot::generate_base_train_data(void) {
     generate_train_mark_img(pos_mat);
 }
 
-void ScreenShot::generate_train_mark_img(const cv::Mat screen) {
+void ScreenShot::generate_train_mark_img(const cv::Mat &screen) {
     cv::Mat copy = cv::Mat::zeros(screen.cols, screen.rows, screen.type());
     screen.copyTo(copy);
     gint y = 0, x = 0;
@@ -462,7 +474,10 @@ void ScreenShot::knn_predit_stat() {
         gint knn_type = std::stoi(sub_string);
 
         cv::Mat src = cv::imread(Glib::build_filename(Hub::get_resources_path(), "dataset", file_name));
-        gint predict_type = knn_predict(src);
+        cv::cvtColor(src, src, CV_BGR2GRAY);
+        src.convertTo(src, CV_32F);
+        float r = knn_model_->predict(src.reshape(0, 1));
+        gint predict_type = r;
 
         if (predict_type != knn_type) {
             std::cout << "file_name:" << file_name << " is err" << " type:" << knn_type << " err:" << predict_type << std::endl;
@@ -472,7 +487,7 @@ void ScreenShot::knn_predit_stat() {
         }
     }
 
-    std::cout << "wright:" << wright << " err:" << err << std::endl;
+    std::cout << "right:" << wright << " err:" << err << std::endl;
 }
 
 void ScreenShot::knn_sample_stat() {
@@ -502,4 +517,48 @@ void ScreenShot::knn_sample_stat() {
         it ++;
     }
 #endif
+}
+
+std::vector<cv::Vec3f> ScreenShot::hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &circles) {
+    cv::Mat src_gray;
+    cvtColor( src, src_gray, cv::COLOR_BGR2GRAY);
+    GaussianBlur( src_gray, src_gray, cv::Size(3, 3), 2, 2);
+    HoughCircles( src_gray, circles, cv::HOUGH_GRADIENT, 1, 25, 100, 40, 10, 30 );
+
+#ifdef _TEST_STD_OUT
+    cv::Point center(cvRound(circles[0][0]), cvRound(circles[0][1]));
+    int radius = cvRound(circles[0][2]);
+    cv::Mat split = cv::Mat::zeros(src.rows, src.cols, src.type());
+    src.copyTo(split);
+    cv::circle(split, center, radius, CV_RGB(255, 255, 255), -1);
+
+    Glib::Rand rand;
+    cv::imwrite(Glib::build_filename("/home/xushy/CLionProjects/test", std::to_string(rand.get_int()) + ".jpg"), split);
+#endif
+
+    return circles;
+}
+
+void ScreenShot::detect_chess_position(cv::Mat &screen, std::map<gint, gint> &map) {
+    cv::imwrite(Glib::build_filename("/home/xushy/CLionProjects/test", "demo.jpg"), screen);
+    gint y = 0, x = 0;
+    for (y = 0; y < 10; y++) {
+        for (x = 0; x < 9; x++) {
+            cv::Rect rect = cv::Rect(positions_[y][x].x - mask_size_x_ / 2 + 2,
+                                     positions_[y][x].y - mask_size_y_ / 2 - 6, mask_size_x_, mask_size_y_);
+            cv::Mat roi = screen(rect);
+
+            cv::imwrite(Glib::build_filename("/home/xushy/CLionProjects/test", std::to_string(y*10 + x) + ".jpg"), roi);
+
+            gint type = knn_predict(roi);
+
+            if (type > 1000) {
+                type = -1;
+            }
+
+            gint pos = point_to_knn_type(y, x);
+
+            map[pos] = type;
+        }
+    }
 }

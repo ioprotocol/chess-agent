@@ -11,7 +11,7 @@
 
 #define PWD "EPWD"
 
-#define _TEST_STD_OUT
+//#define _TEST_STD_OUT
 
 namespace Hub {
 
