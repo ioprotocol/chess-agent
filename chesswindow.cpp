@@ -9,51 +9,53 @@ ChessWindow::ChessWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builde
         : Gtk::ApplicationWindow(cobject),
           dispatcher_(),
           p_worker_thread_(nullptr),
+          worker_running_falg_(FALSE),
           chess_worker_(),
+          worker_mutex_(),
           screen_shot_()
 {
-    refGlade->get_widget("option_train", p_option_train_);
-    refGlade->get_widget("option_gen_resource", p_option_gen_resource_);
     refGlade->get_widget("option_run", p_option_run_);
-    refGlade->get_widget("option_knn_stat", p_option_knn_stat_);
 
-    p_option_train_->signal_activate().connect(sigc::mem_fun(this, &ChessWindow::on_option_train_active));
-    p_option_gen_resource_->signal_activate().connect(sigc::mem_fun(this, &ChessWindow::on_option_gen_resource_active));
-    p_option_run_->signal_activate().connect(sigc::mem_fun(this, &ChessWindow::on_option_run_active));
-    p_option_knn_stat_->signal_activate().connect(sigc::mem_fun(this, &ChessWindow::on_option_knn_stat_active));
+    p_option_run_->signal_toggled().connect(sigc::mem_fun(this, &ChessWindow::on_option_run_toggled));
 
-    dispatcher_.connect(sigc::mem_fun(*this, &ChessWindow::on_option_run_finish));
+    dispatcher_.connect(sigc::mem_fun(*this, &ChessWindow::on_worker_thread_finish));
 }
 
 void ChessWindow::notify() {
     dispatcher_.emit();
 }
 
-void ChessWindow::on_option_train_active() {
-    screen_shot_.knn_train();
-    std::cout << "knn train finish !" << std::endl;
+void ChessWindow::on_option_run_toggled() {
+    if (!p_option_run_->get_active()) {
+        set_worker_running_flag(FALSE);
+
+    } else {
+        p_worker_thread_ = new std::thread(
+                [this] {
+                    chess_worker_.run(this);
+                });
+    }
 }
 
-void ChessWindow::on_option_gen_resource_active() {
-    screen_shot_.generate_base_train_data();
-    std::cout << "generate finish!" << std::endl;
-}
-
-void ChessWindow::on_option_run_active() {
-    p_worker_thread_ = new std::thread(
-            [this] {
-                chess_worker_.run(this);
-            });
-}
-
-void ChessWindow::on_option_run_finish() {
-    std::cout << "on_option_run_finish" << std::endl;
+void ChessWindow::on_worker_thread_finish() {
+    std::cout << "on_worker_thread_finish" << std::endl;
 }
 
 ScreenShot ChessWindow::get_screen_shot() {
     return ScreenShot();
 }
 
-void ChessWindow::on_option_knn_stat_active() {
-    screen_shot_.knn_predit_stat();
+void ChessWindow::set_worker_running_flag(gboolean flag) {
+    worker_mutex_.lock();
+    worker_running_falg_ = flag;
+    worker_mutex_.unlock();
 }
+
+gboolean ChessWindow::get_worker_running_flag() {
+    gboolean flag;
+    worker_mutex_.lock();
+    flag = worker_running_falg_;
+    worker_mutex_.unlock();
+    return flag;
+}
+

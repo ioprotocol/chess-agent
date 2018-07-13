@@ -4,7 +4,6 @@
 #include "application_utils.h"
 
 #include <glibmm.h>
-#include <opencv2/opencv.hpp>
 #include <opencv2/imgcodecs.hpp>
 
 std::string Hub::get_application_path() {
@@ -60,3 +59,27 @@ cv::Mat Hub::pixbuffer_to_mat(GdkPixbuf *gdkPixbuf) {
     return mat;
 }
 
+cv::Point Chess::position_to_point(guint32 position) {
+    return cv::Point(position % 10000, position / 10000);
+}
+
+guint32 Chess::point_to_position(cv::Point point) {
+    return point_to_position(point.x, point.y);
+}
+
+guint32 Chess::point_to_position(gint x, gint y) {
+    return y * 10000 + x;
+}
+
+gboolean Chess::is_same_position(guint32 point1, guint32 point2) {
+    return get_distance_by_position(point1, point2) < 6;
+}
+
+gdouble Chess::get_distance_by_position(guint32 point1, guint32 point2) {
+    gint x1 = point1 % 10000;
+    gint y1 = point1 / 10000;
+    gint x2 = point2 % 10000;
+    gint y2 = point2 / 10000;
+    double distance = sqrt(abs(x1 - x2) * abs(x1 - x2) + abs(y1 - y2) * abs(y1 - y2));
+    return distance;
+}

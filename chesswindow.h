@@ -15,29 +15,23 @@ public:
 
     void notify();
 private:
-    Gtk::MenuItem *p_option_train_;
-    Gtk::MenuItem *p_option_gen_resource_;
-    Gtk::MenuItem *p_option_run_;
-    Gtk::MenuItem *p_option_knn_stat_;
+    Gtk::CheckMenuItem *p_option_run_;
 private:
     ScreenShot  screen_shot_;
     Glib::Dispatcher dispatcher_;
     std::thread* p_worker_thread_;
     ChessWorker chess_worker_;
+    gboolean worker_running_falg_;
+    Glib::Threads::Mutex worker_mutex_;
 private:
-    // train the knn model
-    void on_option_train_active();
+    void on_option_run_toggled();
 
-    // generate train base data
-    void on_option_gen_resource_active();
-
-    void on_option_knn_stat_active();
-
-    void on_option_run_active();
-
-    void on_option_run_finish();
+    void on_worker_thread_finish();
 
 public:
+    void set_worker_running_flag(gboolean flag);
+
+    gboolean get_worker_running_flag();
 
     ScreenShot get_screen_shot();
 };

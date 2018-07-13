@@ -12,7 +12,7 @@ class ChessWindow;
 
 class ChessWorker {
 private:
-    void print_chess_position(std::map<gint, gint> &posotion_map);
+    void print_chess_position(std::map<guint32, gint> &posotion_map);
 public:
     void run(ChessWindow* window);
 };

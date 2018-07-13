@@ -7,15 +7,16 @@
 #include "chesswindow.h"
 
 void ChessWorker::run(ChessWindow *chessWindow) {
+
+    chessWindow->set_worker_running_flag(TRUE);
+
     std::cout << "thread is run" << std::endl;
     usleep(3*1000*1000);
 
-    std::map<gint, gint> chess_position;
+    std::map<guint32, gint> chess_position;
 
-    while (true) {
-        cv::Mat scrren = chessWindow->get_screen_shot().screen_shot();
-
-        chessWindow->get_screen_shot().detect_chess_position(scrren, chess_position);
+    while (chessWindow->get_worker_running_flag()) {
+        chessWindow->get_screen_shot().detect_chess_position(chess_position);
 
         print_chess_position(chess_position);
 
@@ -25,8 +26,8 @@ void ChessWorker::run(ChessWindow *chessWindow) {
     chessWindow->notify();
 }
 
-void ChessWorker::print_chess_position(std::map<gint, gint> &posotion_map) {
-    std::map<gint, gint>::iterator it = posotion_map.begin();
+void ChessWorker::print_chess_position(std::map<guint32, gint> &posotion_map) {
+    std::map<guint32, gint>::iterator it = posotion_map.begin();
 
     while (it != posotion_map.end()) {
         std::cout << "position:" << it->first << " type:" << it->second << std::endl;
