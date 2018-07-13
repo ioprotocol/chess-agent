@@ -63,7 +63,17 @@ void ScreenShot::hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &ci
     cv::Mat src_gray;
     cvtColor( src, src_gray, cv::COLOR_BGR2GRAY);
     GaussianBlur( src_gray, src_gray, cv::Size(3, 3), 2, 2);
-    HoughCircles( src_gray, circles, cv::HOUGH_GRADIENT, 1, 25, 100, 40, 10, 30);
+    HoughCircles( src_gray, circles, cv::HOUGH_GRADIENT, 1, 25, 100, 35, 10, 30);
+#ifdef _TEST_STD_OUT
+    cv::Mat test;
+    src.copyTo(test);
+    for (cv::Vec3f vf : circles) {
+        cv::Point center(cvRound(vf[0]), cvRound(vf[1]));
+        int radius = cvRound(vf[2]);
+        cv::circle(test, center, radius, cv::Scalar(255, 0, 0), 1);
+        cv::imwrite(Glib::build_filename(Hub::get_resources_path(), "test.jpg"), test);
+    }
+#endif
 }
 
 #ifdef _TEST_STD_OUT
@@ -111,8 +121,47 @@ gboolean ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
     print_circle_position(circle_list);
 #endif
     std::list<Circle>::iterator list_iter = circle_list.begin();
-    while (list_iter != circle_list.end()) {
+    cv::Point start_point(0, 0);
+    gint continues_cout = 0;
 
+    while (list_iter != circle_list.end()) {
+        cv::Point p1 = list_iter->center();
+        list_iter ++;
+        if (list_iter == circle_list.end()) {
+            break;
+        }
+        cv::Point p2 = list_iter->center();
+        list_iter ++;
+        if (list_iter == circle_list.end()) {
+            break;
+        }
+        cv::Point p3 = list_iter->center();
+
+        gdouble d1 = Chess::get_distance_by_position(p1, p2);
+        gdouble d2 = Chess::get_distance_by_position(p2, p3);
+
+        std::cout << "d1:" << d1 << " d2:" << d2 << std::endl;
+        if(abs(d1 - d2) < 4) {
+            if (start_point.x == 0 && start_point.y == 0) {
+                start_point = p1;
+            }
+            continues_cout ++;
+        } else {
+            if (continues_cout == 7) {
+                if (left_top_.x == 0 && left_top_.y == 0) {
+                    left_top_ = start_point;
+                } else {
+                    right_bottom_ = p2;
+                    break;
+                }
+            } else {
+                start_point.x = 0;
+                start_point.y = 0;
+            }
+            continues_cout = 0;
+        }
+
+        list_iter--;
     }
 
     return TRUE;

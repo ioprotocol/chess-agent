@@ -83,3 +83,7 @@ gdouble Chess::get_distance_by_position(guint32 point1, guint32 point2) {
     double distance = sqrt(abs(x1 - x2) * abs(x1 - x2) + abs(y1 - y2) * abs(y1 - y2));
     return distance;
 }
+
+gdouble Chess::get_distance_by_position(cv::Point point1, cv::Point point2) {
+    return get_distance_by_position(point_to_position(point1), point_to_position(point2));
+}

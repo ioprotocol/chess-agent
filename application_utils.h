@@ -41,5 +41,7 @@ namespace Chess {
     gboolean is_same_position(guint32 point1, guint32 point2);
 
     gdouble get_distance_by_position(guint32 point1, guint32 point2);
+
+    gdouble get_distance_by_position(cv::Point point1, cv::Point point2);
 }
 #endif //CHESSAGENT_APPLICATION_UTILS_H
