@@ -7,9 +7,9 @@
 
 #include <glibmm.h>
 #include <opencv2/opencv.hpp>
-#include <opencv2/imgcodecs.hpp>
 
 #include "application_utils.h"
+#include "detection.h"
 
 class Circle {
 private:
@@ -28,15 +28,18 @@ public:
     }
 
     bool operator < (const Circle& other) const {
+        if(abs(center_.y - other.center_.y) < 15) {
+            return center_.x < other.center_.x;
+        }
         return Chess::point_to_position(center_) < Chess::point_to_position(other.center_);
     }
 };
 
 class ScreenShot {
 private:
-
     cv::Point left_top_;
     cv::Point right_bottom_;
+    Detection detection_;
 public:
     ScreenShot();
 
@@ -47,6 +50,7 @@ private:
 
     void hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &circles);
 
+    void study(std::list<Circle> &circle_list);
 public:
 
     gboolean detect_chess_position(std::map<guint32, gint> &map);

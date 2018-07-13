@@ -41,8 +41,8 @@ void ChessWindow::on_worker_thread_finish() {
     std::cout << "on_worker_thread_finish" << std::endl;
 }
 
-ScreenShot ChessWindow::get_screen_shot() {
-    return ScreenShot();
+ScreenShot &ChessWindow::get_screen_shot() {
+    return screen_shot_;
 }
 
 void ChessWindow::set_worker_running_flag(gboolean flag) {

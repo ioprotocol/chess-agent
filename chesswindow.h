@@ -33,7 +33,7 @@ public:
 
     gboolean get_worker_running_flag();
 
-    ScreenShot get_screen_shot();
+    ScreenShot &get_screen_shot();
 };
 
 
