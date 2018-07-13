@@ -39,7 +39,8 @@ class ScreenShot {
 private:
     cv::Point left_top_;
     cv::Point right_bottom_;
-    Detection detection_;
+    Detection *p_detection_;
+    gint chess_position_type_[32];
 public:
     ScreenShot();
 
@@ -53,7 +54,7 @@ private:
     void study(std::list<Circle> &circle_list);
 public:
 
-    gboolean detect_chess_position(std::map<guint32, gint> &map);
+    gint detect_chess_position(std::map<guint32, gint> &map);
 };
 
 

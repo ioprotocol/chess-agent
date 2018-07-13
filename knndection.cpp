@@ -22,6 +22,8 @@ KnnDection::KnnDection() {
 }
 
 void KnnDection::train(std::list<Sample> &samples) {
+    if(knn_model_->isTrained())
+        return;
 
     std::map<gint, gint> knn_sample_number_map_;
     cv::Mat src_data,src_labels;
@@ -37,7 +39,7 @@ void KnnDection::train(std::list<Sample> &samples) {
     }
 
     // 样本数量
-    int train_num = knn_sample_number_map_.size() * MIN_SAMPLE_NUMBER;
+    int train_num = samples.size();
     gint last_type = -1;
 
     for(Sample sample : samples) {
@@ -84,7 +86,7 @@ cv::Mat KnnDection::format(cv::Mat &mat) {
     cv::Mat out;
     cv::inRange(mat, cv::Scalar(0,0,47), cv::Scalar(255,255,183), out);
     cv::threshold(out, out, 0, 255.0, CV_THRESH_BINARY_INV);
-    cv::cvtColor(out, out, CV_BGR2GRAY);
+//    cv::cvtColor(out, out, CV_BGR2GRAY);
     return out.reshape(0, 1);
 }
 
@@ -98,5 +100,9 @@ gint KnnDection::predict(cv::Mat &mat) {
 
 KnnDection::~KnnDection() {
     knn_model_->save(Glib::build_filename(Hub::get_resources_path(), "knn.xml"));
+}
+
+gboolean KnnDection::is_trained() {
+    return knn_model_->isTrained();
 }
 

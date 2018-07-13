@@ -17,11 +17,46 @@
 #include "knndection.h"
 
 ScreenShot::ScreenShot() :
-        left_top_(0, 0), right_bottom_(0, 0), detection_(KnnDection())
+        left_top_(0, 0), right_bottom_(0, 0)
 {
+    p_detection_ = new KnnDection();
+    gint i = 0;
+    chess_position_type_[i++] = Chess::B_CHE;
+    chess_position_type_[i++] = Chess::B_MA;
+    chess_position_type_[i++] = Chess::B_XIANG;
+    chess_position_type_[i++] = Chess::B_SHI;
+    chess_position_type_[i++] = Chess::B_JIANG;
+    chess_position_type_[i++] = Chess::B_SHI;
+    chess_position_type_[i++] = Chess::B_XIANG;
+    chess_position_type_[i++] = Chess::B_MA;
+    chess_position_type_[i++] = Chess::B_CHE;
+    chess_position_type_[i++] = Chess::B_PAO;
+    chess_position_type_[i++] = Chess::B_PAO;
+    chess_position_type_[i++] = Chess::B_ZU;
+    chess_position_type_[i++] = Chess::B_ZU;
+    chess_position_type_[i++] = Chess::B_ZU;
+    chess_position_type_[i++] = Chess::B_ZU;
+    chess_position_type_[i++] = Chess::B_ZU;
+    chess_position_type_[i++] = Chess::R_ZU;
+    chess_position_type_[i++] = Chess::R_ZU;
+    chess_position_type_[i++] = Chess::R_ZU;
+    chess_position_type_[i++] = Chess::R_ZU;
+    chess_position_type_[i++] = Chess::R_ZU;
+    chess_position_type_[i++] = Chess::B_PAO;
+    chess_position_type_[i++] = Chess::B_PAO;
+    chess_position_type_[i++] = Chess::B_CHE;
+    chess_position_type_[i++] = Chess::B_MA;
+    chess_position_type_[i++] = Chess::R_XIANG;
+    chess_position_type_[i++] = Chess::R_SHI;
+    chess_position_type_[i++] = Chess::R_JIANG;
+    chess_position_type_[i++] = Chess::R_SHI;
+    chess_position_type_[i++] = Chess::R_XIANG;
+    chess_position_type_[i++] = Chess::B_MA;
+    chess_position_type_[i  ] = Chess::B_CHE;
 }
 
 ScreenShot::~ScreenShot() {
+    delete p_detection_;
 }
 
 cv::Mat ScreenShot::screen_shot() {
@@ -93,6 +128,7 @@ gboolean ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
     cv::Mat screen;
     std::vector<cv::Vec3f> circle_vector;
     std::list<Circle> circle_list;
+    std::list<Sample> samle_list;
 
     screen = screen_shot();
     hough_detection_circle(screen, circle_vector);
@@ -124,13 +160,51 @@ gboolean ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
 #ifdef _TEST_STD_OUT
     print_circle_position(circle_list);
 #endif
-
     if (left_top_.y == right_bottom_.y) {
         study(circle_list);
-        return FALSE;
+        return 1;
     }
 
-    return TRUE;
+    gint index = 0;
+    std::list<Circle>::iterator list_iter = circle_list.begin();
+    while (list_iter != circle_list.end()) {
+        cv::Rect rect(list_iter->center().x - list_iter->radius(), list_iter->center().y - list_iter->radius(),
+                      list_iter->radius() * 2, list_iter->radius() * 2);
+        cv::Mat roi = screen(rect);
+        cv::Mat split = cv::Mat::zeros(roi.rows, roi.cols, screen.type());
+        cv::Mat mask = cv::Mat::zeros(split.rows, split.cols, screen.type());
+        cv::circle(mask, list_iter->center(), list_iter->radius(), CV_RGB(255, 255, 255), -1);
+        roi.copyTo(split, mask);
+
+        samle_list.push_back(Sample(split, chess_position_type_[index]));
+        list_iter++;
+        index ++;
+    }
+
+    if (!p_detection_->is_trained()) {
+        if (circle_list.size() != 32) {
+            return 2;
+        }
+        p_detection_->train(samle_list);
+        // check is the train is correct
+        std::list<Sample>::iterator iter = samle_list.begin();
+        gint wrong_num = 0;
+        while (iter != samle_list.end()) {
+            gint type = p_detection_->predict(iter->mat());
+            if (type != iter->label()) {
+                std::cout << "type:" << type << "label:" << iter->label();
+                wrong_num ++;
+            }
+            iter ++;
+        }
+        if (wrong_num > 0) {
+            return 3;
+        }
+
+        std::cout << "knn model train success" << std::endl;
+    }
+
+    return 0;
 }
 
 /**

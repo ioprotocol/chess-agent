@@ -13,6 +13,8 @@ private:
     cv::Mat mat_;
     gint label_;
 public:
+    Sample(const cv::Mat &mat, gint label) : mat_(mat), label_(label) {}
+
     bool operator < (const Sample& ti) const {
         return label_ < ti.label_;
     }
@@ -32,6 +34,8 @@ public:
      * Train with generate sample
      */
     virtual void train(std::list<Sample> &samples) = 0;
+
+    virtual gboolean is_trained() = 0;
 
     virtual gint predict(cv::Mat &mat) = 0;
 };
