@@ -17,8 +17,7 @@
 #include "knndection.h"
 
 ScreenShot::ScreenShot() :
-        left_top_(0, 0), right_bottom_(0, 0), max_circle_radius_(0)
-{
+        left_top_(0, 0), right_bottom_(0, 0), max_circle_radius_(0) {
     p_detection_ = new KnnDection();
     gint i = 0;
     chess_position_type_[i++] = Chess::B_CHE;
@@ -52,7 +51,7 @@ ScreenShot::ScreenShot() :
     chess_position_type_[i++] = Chess::R_SHI;
     chess_position_type_[i++] = Chess::R_XIANG;
     chess_position_type_[i++] = Chess::B_MA;
-    chess_position_type_[i  ] = Chess::B_CHE;
+    chess_position_type_[i] = Chess::B_CHE;
 }
 
 ScreenShot::~ScreenShot() {
@@ -81,7 +80,8 @@ cv::Mat ScreenShot::screen_shot() {
     int x, y;
     active_window->get_origin(x, y);
 
-    GdkPixbuf *pixbuf = gdk_pixbuf_get_from_window(root_window->gobj(), x, y, active_window->get_width(), active_window->get_height());
+    GdkPixbuf *pixbuf = gdk_pixbuf_get_from_window(root_window->gobj(), x, y, active_window->get_width(),
+                                                   active_window->get_height());
 
     cv::Mat mat = Hub::pixbuffer_to_mat(pixbuf);
     std::cout << Glib::DateTime::create_now_local().format("%y-%m-%d %H:%M:%S") << "@x:" << x << "y:" << y << "width:"
@@ -94,9 +94,9 @@ cv::Mat ScreenShot::screen_shot() {
 
 void ScreenShot::hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &circles) {
     cv::Mat src_gray;
-    cvtColor( src, src_gray, cv::COLOR_BGR2GRAY);
-    GaussianBlur( src_gray, src_gray, cv::Size(3, 3), 2, 2);
-    HoughCircles( src_gray, circles, cv::HOUGH_GRADIENT, 1, 25, 208, 40, 15, 30);
+    cvtColor(src, src_gray, cv::COLOR_BGR2GRAY);
+    GaussianBlur(src_gray, src_gray, cv::Size(3, 3), 2, 2);
+    HoughCircles(src_gray, circles, cv::HOUGH_GRADIENT, 1, 25, 208, 40, 15, 30);
 #ifdef _TEST_STD_OUT
     cv::Mat test;
     src.copyTo(test);
@@ -120,6 +120,7 @@ void ScreenShot::hough_detection_circle_single(cv::Mat &src, Circle &circle) {
 }
 
 #ifdef _TEST_STD_OUT
+
 void print_circle_position(std::list<Circle> &circle_list) {
     std::cout << "total:" << circle_list.size() << std::endl;
     for (Circle circle : circle_list) {
@@ -127,6 +128,7 @@ void print_circle_position(std::list<Circle> &circle_list) {
     }
     std::cout << std::endl;
 }
+
 #endif
 
 // 自动学习成功，成功识别了棋盘的位置信息,并标记了棋盘的左上坐标和右下坐标
@@ -173,11 +175,12 @@ gint ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
 
     circle_list.sort();
 #ifdef _TEST_STD_OUT
-    std::cout << "input circle size:" << circle_vector.size() << " filter noise:" << circle_vector.size() - circle_list.size() << std::endl;
+    std::cout << "input circle size:" << circle_vector.size() << " filter noise:"
+              << circle_vector.size() - circle_list.size() << std::endl;
     print_circle_position(circle_list);
 #endif
     if (left_top_.y == right_bottom_.y) {
-        if(circle_list.size() < 32) {
+        if (circle_list.size() < 32) {
             return DETECT_STUDY_CIRCLE_TO_LITTILE;
         }
         study(circle_list);
@@ -201,9 +204,9 @@ gint ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
         gint type = p_detection_->predict(iter->mat());
         if (type != iter->label()) {
             std::cout << "type:" << type << "label:" << iter->label() << std::endl;
-            wrong_num ++;
+            wrong_num++;
         }
-        iter ++;
+        iter++;
     }
     std::cout << "wrong num:" << wrong_num << std::endl;
 
@@ -251,9 +254,10 @@ void ScreenShot::study(std::list<Circle> &circle_list) {
                 } else {
                     right_bottom_.x = p2.x;
                     right_bottom_.y = p2.y;
-                    std::cout << "Study result: ("
-                              << left_top_.x << ",y" << left_top_.y << ")("
-                              << right_bottom_.x << "," << right_bottom_.y << ")"
+                    std::cout << "Study result: (x = "
+                              << left_top_.x << ",y = " << left_top_.y << ")(x = "
+                              << right_bottom_.x << ",y = " << right_bottom_.y << ")"
+                              << " max_circle_radius_ = " << max_circle_radius_
                               << std::endl;
                     return;
                 }
@@ -269,38 +273,39 @@ void ScreenShot::study(std::list<Circle> &circle_list) {
 }
 
 gint ScreenShot::auto_train(std::list<Circle> &circle_list, cv::Mat &screen) {
-                                                                         std::list<Sample> samle_list;
+    std::list<Sample> samle_list;
 
-                                                                         if (circle_list.size() != 32) {
-                                                                         return DETECT_AUTOTRAIN_CIRCLE_LITTILE;
-                                                                         }
+    if (circle_list.size() != 32) {
+        return DETECT_AUTOTRAIN_CIRCLE_LITTILE;
+    }
 
-                                                                         grab_samles(circle_list, screen, samle_list);
+    grab_samles(circle_list, screen, samle_list);
 
-                                                                         p_detection_->train(samle_list);
-                                                                         // check is the train is correct
-                                                                         std::list<Sample>::iterator iter = samle_list.begin();
-                                                                         gint wrong_num = 0;
-                                                                         while (iter != samle_list.end()) {
-                                                                         gint type = p_detection_->predict(iter->mat());
-                                                                         if (type != iter->label()) {
-                                                                         std::cout << "type:" << type << "label:" << iter->label() << std::endl;
-                                                                         wrong_num ++;
-                                                                         }
-                                                                         iter ++;
-                                                                         }
-                                                                         if (wrong_num > 0) {
-                                                                         return DETECT_AUTOTRAIN_ERR_RATE_HIGH;
-                                                                         }
-                                                                         std::cout << "knn model train success" << std::endl;
-                                                                         return DETECT_AUTOTRAIN_SUCCESS;
-                                                                         }
+    p_detection_->train(samle_list);
+    // check is the train is correct
+    std::list<Sample>::iterator iter = samle_list.begin();
+    gint wrong_num = 0;
+    while (iter != samle_list.end()) {
+        gint type = p_detection_->predict(iter->mat());
+        if (type != iter->label()) {
+            std::cout << "type:" << type << "label:" << iter->label() << std::endl;
+            wrong_num++;
+        }
+        iter++;
+    }
+    if (wrong_num > 0) {
+        return DETECT_AUTOTRAIN_ERR_RATE_HIGH;
+    }
+    std::cout << "knn model train success" << std::endl;
+    return DETECT_AUTOTRAIN_SUCCESS;
+}
 
 void ScreenShot::grab_samles(std::list<Circle> &circle_list, cv::Mat &screen, std::list<Sample> &samle_list) {
+    gint size = max_circle_radius_*2 + 6;
     gint index = 0;
     std::list<Circle>::iterator list_iter = circle_list.begin();
     while (list_iter != circle_list.end()) {
-        cv::Rect rect(list_iter->center().x - 24, list_iter->center().y - 24, 48, 48);
+        cv::Rect rect(list_iter->center().x - size/2, list_iter->center().y - size/2, size, size);
         cv::Mat roi = screen(rect);
         cv::Mat split = cv::Mat::zeros(roi.rows, roi.cols, screen.type());
         cv::Mat mask = cv::Mat::zeros(split.rows, split.cols, screen.type());
@@ -312,6 +317,6 @@ void ScreenShot::grab_samles(std::list<Circle> &circle_list, cv::Mat &screen, st
 
         samle_list.push_back(Sample(split, chess_position_type_[index], list_iter->center()));
         list_iter++;
-        index ++;
+        index++;
     }
 }
