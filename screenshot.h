@@ -60,12 +60,40 @@ public:
 private:
     cv::Mat screen_shot();
 
+    /**
+     * 检测图像中的所有circle
+     * @param src
+     * @param circles
+     */
     void hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &circles);
 
+    /**
+     * 只检测图像中的单个园
+     * @param src
+     * @param circle
+     */
     void hough_detection_circle_single(cv::Mat &src, Circle &circle);
 
+    /**
+     * 自动学习识别棋盘坐标
+     *
+     * @param circle_list
+     */
     void study(std::list<Circle> &circle_list);
 
+    /**
+     * 根据识别的圆形坐标自动识别棋子完整样本
+     * @param circle_list
+     * @param screen
+     * @param smples
+     */
+    void grab_samles(std::list<Circle> &circle_list, cv::Mat &screen, std::list<Sample> &samle_list);
+    /**
+     * 棋盘位于开局阶段，自动训练识别算法
+     * @param circle_list
+     * @param screen
+     * @return
+     */
     gint auto_train(std::list<Circle> &circle_list, cv::Mat &screen);
 public:
 

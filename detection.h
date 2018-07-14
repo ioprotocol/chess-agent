@@ -12,8 +12,9 @@ class Sample {
 private:
     cv::Mat mat_;
     gint label_;
+    cv::Point position_;
 public:
-    Sample(const cv::Mat &mat, gint label) : mat_(mat), label_(label) {}
+    Sample(const cv::Mat &mat, gint label, cv::Point &position) : mat_(mat), label_(label), position_(position) {}
 
     bool operator < (const Sample& ti) const {
         return label_ < ti.label_;
@@ -25,6 +26,10 @@ public:
 
     inline gint label() {
         return label_;
+    }
+
+    inline cv::Point &position() {
+        return position_;
     }
 };
 
