@@ -60,7 +60,6 @@ ScreenShot::~ScreenShot() {
 }
 
 cv::Mat ScreenShot::screen_shot() {
-#ifdef _TEST_STD_OUT
     gdk_threads_enter();
     Glib::RefPtr<Gdk::Display> display = Gdk::Display::get_default();
     if (!display) {
@@ -88,32 +87,39 @@ cv::Mat ScreenShot::screen_shot() {
     std::cout << Glib::DateTime::create_now_local().format("%y-%m-%d %H:%M:%S") << "@x:" << x << "y:" << y << "width:"
               << active_window->get_width() << "height:" << active_window->get_height() << std::endl;
     gdk_threads_leave();
+
+    cv::imwrite(Glib::build_filename(Hub::get_resources_path(), "screen.jpg"), mat);
     return mat;
-#else
-    cv::Mat mat = cv::imread(Glib::build_filename(Hub::get_resources_img_path(), "demo.jpg"));
-    return mat;
-#endif
 }
 
 void ScreenShot::hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &circles) {
     cv::Mat src_gray;
     cvtColor( src, src_gray, cv::COLOR_BGR2GRAY);
     GaussianBlur( src_gray, src_gray, cv::Size(3, 3), 2, 2);
-    HoughCircles( src_gray, circles, cv::HOUGH_GRADIENT, 1, 25, 100, 40, 10, 30);
+    HoughCircles( src_gray, circles, cv::HOUGH_GRADIENT, 1, 25, 208, 40, 15, 30);
 #ifdef _TEST_STD_OUT
     cv::Mat test;
     src.copyTo(test);
     for (cv::Vec3f vf : circles) {
         cv::Point center(cvRound(vf[0]), cvRound(vf[1]));
         int radius = cvRound(vf[2]);
-        cv::circle(test, center, radius, cv::Scalar(255, 0, 0), 1);
+        cv::circle(test, center, radius, cv::Scalar(255, 0, 0), 2);
         cv::imwrite(Glib::build_filename(Hub::get_resources_path(), "test.jpg"), test);
     }
 #endif
 }
 
-#ifdef _TEST_STD_OUT
+void ScreenShot::hough_detection_circle_single(cv::Mat &src, Circle &circle) {
+    std::vector<cv::Vec3f> circles;
+    hough_detection_circle(src, circles);
 
+    cv::Point center(cvRound(circles[0][0]), cvRound(circles[0][1]));
+    int radius = cvRound(circles[0][2]);
+    circle.set_center(center);
+    circle.set_radius(radius);
+}
+
+#ifdef _TEST_STD_OUT
 void print_circle_position(std::list<Circle> &circle_list) {
     std::cout << "total:" << circle_list.size() << std::endl;
     for (Circle circle : circle_list) {
@@ -121,14 +127,25 @@ void print_circle_position(std::list<Circle> &circle_list) {
     }
     std::cout << std::endl;
 }
-
 #endif
 
-gboolean ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
+// 自动学习成功，成功识别了棋盘的位置信息,并标记了棋盘的左上坐标和右下坐标
+#define DETECT_STUDY_SUCCESS                1
+// 自动识别棋盘失败，可能原因是部分棋子未识别成功，建议调整hough_detection_circle的识别参数
+#define DETECT_STUDY_FAILED                 2
+// 识别的棋子信息太少，无法完成自动识别
+#define DETECT_STUDY_CIRCLE_TO_LITTILE      3
+// 自动训练失败，识别到的棋子信息不全，必须是32个棋子
+#define DETECT_AUTOTRAIN_CIRCLE_LITTILE     4
+// 自动训练失败，识别错误率太高，无法准确识别棋子
+#define DETECT_AUTOTRAIN_ERR_RATE_HIGH      5
+// 自动训练成功
+#define DETECT_AUTOTRAIN_SUCCESS            6
+
+gint ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
     cv::Mat screen;
     std::vector<cv::Vec3f> circle_vector;
     std::list<Circle> circle_list;
-    std::list<Sample> samle_list;
 
     screen = screen_shot();
     hough_detection_circle(screen, circle_vector);
@@ -150,30 +167,42 @@ gboolean ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
 
             if (value > low && value < high) {
                 circle_list.push_back(Circle(center, radius));
-            } else {
-                std::cout << "filter:" << center.x << "," << center.y << std::endl;
             }
         }
     }
-    circle_list.sort();
 
+    circle_list.sort();
 #ifdef _TEST_STD_OUT
+    std::cout << "input circle size:" << circle_vector.size() << " filter noise:" << circle_vector.size() - circle_list.size() << std::endl;
     print_circle_position(circle_list);
 #endif
     if (left_top_.y == right_bottom_.y) {
+        if(circle_list.size() < 32) {
+            return DETECT_STUDY_CIRCLE_TO_LITTILE;
+        }
         study(circle_list);
-        return 1;
+        if (left_top_.y == right_bottom_.y) {
+            return DETECT_STUDY_FAILED;
+        } else {
+            return DETECT_STUDY_SUCCESS;
+        }
+    }
+    if (!p_detection_->is_trained()) {
+        return auto_train(circle_list, screen);
     }
 
     gint index = 0;
+    std::list<Sample> samle_list;
+
     std::list<Circle>::iterator list_iter = circle_list.begin();
     while (list_iter != circle_list.end()) {
-        cv::Rect rect(list_iter->center().x - list_iter->radius(), list_iter->center().y - list_iter->radius(),
-                      list_iter->radius() * 2, list_iter->radius() * 2);
+        cv::Rect rect(list_iter->center().x - 24, list_iter->center().y - 24, 48, 48);
         cv::Mat roi = screen(rect);
         cv::Mat split = cv::Mat::zeros(roi.rows, roi.cols, screen.type());
         cv::Mat mask = cv::Mat::zeros(split.rows, split.cols, screen.type());
-        cv::circle(mask, list_iter->center(), list_iter->radius(), CV_RGB(255, 255, 255), -1);
+        Circle re_circle;
+        hough_detection_circle_single(roi, re_circle);
+        cv::circle(mask, re_circle.center(), re_circle.radius() - 5, CV_RGB(255, 255, 255), -1);
         roi.copyTo(split, mask);
 
         samle_list.push_back(Sample(split, chess_position_type_[index]));
@@ -181,28 +210,17 @@ gboolean ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
         index ++;
     }
 
-    if (!p_detection_->is_trained()) {
-        if (circle_list.size() != 32) {
-            return 2;
+    std::list<Sample>::iterator iter = samle_list.begin();
+    gint wrong_num = 0;
+    while (iter != samle_list.end()) {
+        gint type = p_detection_->predict(iter->mat());
+        if (type != iter->label()) {
+            std::cout << "type:" << type << "label:" << iter->label() << std::endl;
+            wrong_num ++;
         }
-        p_detection_->train(samle_list);
-        // check is the train is correct
-        std::list<Sample>::iterator iter = samle_list.begin();
-        gint wrong_num = 0;
-        while (iter != samle_list.end()) {
-            gint type = p_detection_->predict(iter->mat());
-            if (type != iter->label()) {
-                std::cout << "type:" << type << "label:" << iter->label();
-                wrong_num ++;
-            }
-            iter ++;
-        }
-        if (wrong_num > 0) {
-            return 3;
-        }
-
-        std::cout << "knn model train success" << std::endl;
+        iter ++;
     }
+    std::cout << "wrong num:" << wrong_num << std::endl;
 
     return 0;
 }
@@ -259,4 +277,47 @@ void ScreenShot::study(std::list<Circle> &circle_list) {
 
         list_iter--;
     }
+}
+
+gint ScreenShot::auto_train(std::list<Circle> &circle_list, cv::Mat &screen) {
+    gint index = 0;
+    std::list<Sample> samle_list;
+
+    if (circle_list.size() != 32) {
+        return DETECT_AUTOTRAIN_CIRCLE_LITTILE;
+    }
+
+    std::list<Circle>::iterator list_iter = circle_list.begin();
+    while (list_iter != circle_list.end()) {
+        cv::Rect rect(list_iter->center().x - 24, list_iter->center().y - 24, 48, 48);
+        cv::Mat roi = screen(rect);
+        cv::Mat split = cv::Mat::zeros(roi.rows, roi.cols, screen.type());
+        cv::Mat mask = cv::Mat::zeros(split.rows, split.cols, screen.type());
+
+        Circle re_circle;
+        hough_detection_circle_single(roi, re_circle);
+        cv::circle(mask, re_circle.center(), re_circle.radius() - 5, CV_RGB(255, 255, 255), -1);
+        roi.copyTo(split, mask);
+
+        samle_list.push_back(Sample(split, chess_position_type_[index]));
+        list_iter++;
+        index ++;
+    }
+    p_detection_->train(samle_list);
+    // check is the train is correct
+    std::list<Sample>::iterator iter = samle_list.begin();
+    gint wrong_num = 0;
+    while (iter != samle_list.end()) {
+        gint type = p_detection_->predict(iter->mat());
+        if (type != iter->label()) {
+            std::cout << "type:" << type << "label:" << iter->label() << std::endl;
+            wrong_num ++;
+        }
+        iter ++;
+    }
+    if (wrong_num > 0) {
+        return DETECT_AUTOTRAIN_ERR_RATE_HIGH;
+    }
+    std::cout << "knn model train success" << std::endl;
+    return DETECT_AUTOTRAIN_SUCCESS;
 }

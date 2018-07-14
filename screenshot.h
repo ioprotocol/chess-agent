@@ -17,6 +17,8 @@ private:
     gint radius_;
 
 public:
+    Circle() {}
+
     Circle(cv::Point center, gint radius) : center_(center), radius_(radius) {}
 
     inline cv::Point &center() {
@@ -32,6 +34,15 @@ public:
             return center_.x < other.center_.x;
         }
         return Chess::point_to_position(center_) < Chess::point_to_position(other.center_);
+    }
+
+    void set_center(const cv::Point &center) {
+        center_.x = center.x;
+        center_.y = center.y;
+    }
+
+    void set_radius(gint radius) {
+        radius_ = radius;
     }
 };
 
@@ -51,7 +62,11 @@ private:
 
     void hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &circles);
 
+    void hough_detection_circle_single(cv::Mat &src, Circle &circle);
+
     void study(std::list<Circle> &circle_list);
+
+    gint auto_train(std::list<Circle> &circle_list, cv::Mat &screen);
 public:
 
     gint detect_chess_position(std::map<guint32, gint> &map);
