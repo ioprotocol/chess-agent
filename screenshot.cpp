@@ -17,7 +17,7 @@
 #include "knndection.h"
 
 ScreenShot::ScreenShot() :
-        left_top_(0, 0), right_bottom_(0, 0)
+        left_top_(0, 0), right_bottom_(0, 0), max_circle_radius_(0)
 {
     p_detection_ = new KnnDection();
     gint i = 0;
@@ -221,13 +221,14 @@ void ScreenShot::study(std::list<Circle> &circle_list) {
     gint continues_cout = 0;
 
     while (list_iter != circle_list.end()) {
+        max_circle_radius_ = MAX(max_circle_radius_, list_iter->radius());
         cv::Point p1 = list_iter->center();
-        list_iter ++;
+        list_iter++;
         if (list_iter == circle_list.end()) {
             break;
         }
         cv::Point p2 = list_iter->center();
-        list_iter ++;
+        list_iter++;
         if (list_iter == circle_list.end()) {
             break;
         }
@@ -236,12 +237,12 @@ void ScreenShot::study(std::list<Circle> &circle_list) {
         gdouble d1 = Chess::get_distance_by_position(p1, p2);
         gdouble d2 = Chess::get_distance_by_position(p2, p3);
 
-        if(abs(d1 - d2) < 12) {
+        if (abs(d1 - d2) < 12) {
             if (start_point.x == 0 && start_point.y == 0) {
                 start_point.x = p1.x;
                 start_point.y = p1.y;
             }
-            continues_cout ++;
+            continues_cout++;
         } else {
             if (continues_cout == 7) {
                 if (left_top_.x == 0 && left_top_.y == 0) {
@@ -250,7 +251,10 @@ void ScreenShot::study(std::list<Circle> &circle_list) {
                 } else {
                     right_bottom_.x = p2.x;
                     right_bottom_.y = p2.y;
-                    std::cout << "Study result: (" << left_top_.x << ",y" << left_top_.y << ")(" << right_bottom_.x << "," << right_bottom_.y << ")" << std::endl;
+                    std::cout << "Study result: ("
+                              << left_top_.x << ",y" << left_top_.y << ")("
+                              << right_bottom_.x << "," << right_bottom_.y << ")"
+                              << std::endl;
                     return;
                 }
             } else {
@@ -265,32 +269,32 @@ void ScreenShot::study(std::list<Circle> &circle_list) {
 }
 
 gint ScreenShot::auto_train(std::list<Circle> &circle_list, cv::Mat &screen) {
-    std::list<Sample> samle_list;
+                                                                         std::list<Sample> samle_list;
 
-    if (circle_list.size() != 32) {
-        return DETECT_AUTOTRAIN_CIRCLE_LITTILE;
-    }
+                                                                         if (circle_list.size() != 32) {
+                                                                         return DETECT_AUTOTRAIN_CIRCLE_LITTILE;
+                                                                         }
 
-    grab_samles(circle_list, screen, samle_list);
+                                                                         grab_samles(circle_list, screen, samle_list);
 
-    p_detection_->train(samle_list);
-    // check is the train is correct
-    std::list<Sample>::iterator iter = samle_list.begin();
-    gint wrong_num = 0;
-    while (iter != samle_list.end()) {
-        gint type = p_detection_->predict(iter->mat());
-        if (type != iter->label()) {
-            std::cout << "type:" << type << "label:" << iter->label() << std::endl;
-            wrong_num ++;
-        }
-        iter ++;
-    }
-    if (wrong_num > 0) {
-        return DETECT_AUTOTRAIN_ERR_RATE_HIGH;
-    }
-    std::cout << "knn model train success" << std::endl;
-    return DETECT_AUTOTRAIN_SUCCESS;
-}
+                                                                         p_detection_->train(samle_list);
+                                                                         // check is the train is correct
+                                                                         std::list<Sample>::iterator iter = samle_list.begin();
+                                                                         gint wrong_num = 0;
+                                                                         while (iter != samle_list.end()) {
+                                                                         gint type = p_detection_->predict(iter->mat());
+                                                                         if (type != iter->label()) {
+                                                                         std::cout << "type:" << type << "label:" << iter->label() << std::endl;
+                                                                         wrong_num ++;
+                                                                         }
+                                                                         iter ++;
+                                                                         }
+                                                                         if (wrong_num > 0) {
+                                                                         return DETECT_AUTOTRAIN_ERR_RATE_HIGH;
+                                                                         }
+                                                                         std::cout << "knn model train success" << std::endl;
+                                                                         return DETECT_AUTOTRAIN_SUCCESS;
+                                                                         }
 
 void ScreenShot::grab_samles(std::list<Circle> &circle_list, cv::Mat &screen, std::list<Sample> &samle_list) {
     gint index = 0;

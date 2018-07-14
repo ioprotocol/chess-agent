@@ -50,6 +50,7 @@ class ScreenShot {
 private:
     cv::Point left_top_;
     cv::Point right_bottom_;
+    gint max_circle_radius_;
     Detection *p_detection_;
     gint chess_position_type_[32];
 public:
