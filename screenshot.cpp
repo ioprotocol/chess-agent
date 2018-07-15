@@ -17,7 +17,7 @@
 #include "knndection.h"
 
 ScreenShot::ScreenShot() :
-        left_top_(0, 0), right_bottom_(0, 0), max_circle_radius_(0) {
+        left_top_(0, 0), right_bottom_(0, 0), max_circle_radius_(0), chess_window_size_(0, 0) {
     p_detection_ = new KnnDection();
     gint i = 0;
     chess_position_type_[i++] = Chess::B_CHE;
@@ -84,8 +84,8 @@ cv::Mat ScreenShot::screen_shot() {
                                                    active_window->get_height());
 
     cv::Mat mat = Hub::pixbuffer_to_mat(pixbuf);
-    std::cout << Glib::DateTime::create_now_local().format("%y-%m-%d %H:%M:%S") << "@x:" << x << "y:" << y << "width:"
-              << active_window->get_width() << "height:" << active_window->get_height() << std::endl;
+    std::cout << Glib::DateTime::create_now_local().format("%y-%m-%d %H:%M:%S") << "@ x := " << x << "y := " << y << "width := "
+              << active_window->get_width() << "height := " << active_window->get_height() << std::endl;
     gdk_threads_leave();
 
     cv::imwrite(Glib::build_filename(Hub::get_resources_path(), "screen.jpg"), mat);
@@ -143,13 +143,25 @@ void print_circle_position(std::list<Circle> &circle_list) {
 #define DETECT_AUTOTRAIN_ERR_RATE_HIGH      5
 // 自动训练成功
 #define DETECT_AUTOTRAIN_SUCCESS            6
+// 象棋程序不是当前活动窗口
+#define DETECT_WINDOW_IS_NOT_ACTIVE         7
 
 gint ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
+
     cv::Mat screen;
     std::vector<cv::Vec3f> circle_vector;
     std::list<Circle> circle_list;
 
     screen = screen_shot();
+
+    if (chess_window_size_.width != 0) {
+        if (chess_window_size_.width != screen.cols && chess_window_size_.height != screen.rows) {
+            // chess window is not current active window
+            std::cout << " Chess window is not active, can't get it's screen" << std::endl;
+            return DETECT_WINDOW_IS_NOT_ACTIVE;
+        }
+    }
+
     hough_detection_circle(screen, circle_vector);
 
     for (cv::Vec3f vf : circle_vector) {
@@ -187,6 +199,8 @@ gint ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
         if (left_top_.y == right_bottom_.y) {
             return DETECT_STUDY_FAILED;
         } else {
+            chess_window_size_.height = screen.rows;
+            chess_window_size_.width = screen.cols;
             return DETECT_STUDY_SUCCESS;
         }
     }
@@ -200,6 +214,9 @@ gint ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
     while (iter != samle_list.end()) {
         gint type = p_detection_->predict(iter->mat());
         gint32 pos = coordinate_screen_to_chess(iter->position());
+        if (type >= 10) {
+            type = type - detect_chess_color(screen, *iter) * 10;
+        }
         map[pos] = type;
         iter++;
     }
@@ -346,4 +363,39 @@ void ScreenShot::coordinate_chess_to_screen(gint32 in, cv::Point &point) {
     cv::Point pos = Chess::uint32_to_point(in);
     point.x = left_top_.x + dx * pos.x;
     point.y = left_top_.y + dy * pos.y;
+}
+
+gint ScreenShot::detect_chess_color(cv::Mat &screen, Sample &sample) {
+    gint size = max_circle_radius_*2;
+    cv::Rect rect(sample.position().x - size/2, sample.position().y - size/2, size, size);
+    cv::Mat roi = screen(rect);
+
+    Circle circle;
+    double r = 0, g = 0, b = 0;
+    gint total_pix_num = 0;
+    CvScalar scalar;
+
+    IplImage cvArr = IplImage(roi);
+    // if hsr image convert
+
+    hough_detection_circle_single(roi, circle);
+
+    for (int i = 0; i < roi.cols; i++) {
+        for (int j = 0; j < roi.rows; j++) {
+            gdouble distance = Chess::get_distance_by_position(cv::Point(i, j), circle.center());
+            if (abs(distance - circle.radius() < 1)) { // 处于圆弧上，提取颜色
+                scalar = cvGet2D(&cvArr, i, j);
+                r = scalar.val[2] + r;
+                g = scalar.val[1] + g;
+                b = scalar.val[0] + b;
+                total_pix_num ++;
+            }
+        }
+    }
+    r = r / total_pix_num;
+    g = g / total_pix_num;
+    b = b / total_pix_num;
+
+    std::cout << "R:" << std::to_string(r) << " G:" << std::to_string(g) << " B:" <<  std::to_string(b) << std::endl;
+    return 0;
 }

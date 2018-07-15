@@ -48,10 +48,16 @@ public:
 
 class ScreenShot {
 private:
+    // 自动学习记住的棋盘坐标信息
     cv::Point left_top_;
     cv::Point right_bottom_;
+    // 自动学习记住识别到最大的象棋半径，用于从屏幕截图中提取象棋
     gint max_circle_radius_;
+    // 标定的窗口尺寸，用于判断象棋程序是否是最活跃的窗口
+    cv::Size chess_window_size_;
+
     Detection *p_detection_;
+    // 初始棋盘对应的棋子类型，用于训练识别算法
     gint chess_position_type_[32];
 public:
     ScreenShot();
@@ -110,6 +116,14 @@ private:
      * @return
      */
     void coordinate_chess_to_screen(gint32 in, cv::Point &point);
+
+    /**
+     * 识别象棋的颜色
+     *
+     * @param sample
+     * @return
+     */
+    gint detect_chess_color(cv::Mat &screen, Sample &sample);
 public:
 
     gint detect_chess_position(std::map<guint32, gint> &map);
