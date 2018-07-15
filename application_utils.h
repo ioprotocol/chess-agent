@@ -32,11 +32,38 @@ namespace Chess {
         R_CHE = 0, R_MA = 1, R_XIANG = 2, R_SHI = 3, R_JIANG = 4, R_PAO = 5, R_ZU = 6
     };
 
-    guint32 point_to_position(cv::Point point);
+    /**
+     * 根据象棋的枚举类型值获取中文名称
+     *
+     * @param type
+     * @return
+     */
+    std::string get_chess_name(gint type);
 
-    guint32 point_to_position(gint x, gint y);
+    /**
+     * 将象棋二维坐标转为一维坐标，方便计算
+     *
+     * @param point
+     * @return
+     */
+    guint32 point_to_uint32(cv::Point point);
 
-    cv::Point position_to_point(guint32 position);
+    /**
+     * 将象棋二维坐标转为一维坐标，方便计算
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    guint32 point_to_uint32(gint x, gint y);
+
+    /**
+     * 将一维坐标转为二维坐标
+     *
+     * @param position
+     * @return
+     */
+    cv::Point uint32_to_point(guint32 position);
 
     gboolean is_same_position(guint32 point1, guint32 point2);
 

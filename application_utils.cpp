@@ -59,15 +59,15 @@ cv::Mat Hub::pixbuffer_to_mat(GdkPixbuf *gdkPixbuf) {
     return mat;
 }
 
-cv::Point Chess::position_to_point(guint32 position) {
+cv::Point Chess::uint32_to_point(guint32 position) {
     return cv::Point(position % 10000, position / 10000);
 }
 
-guint32 Chess::point_to_position(cv::Point point) {
-    return point_to_position(point.x, point.y);
+guint32 Chess::point_to_uint32(cv::Point point) {
+    return point_to_uint32(point.x, point.y);
 }
 
-guint32 Chess::point_to_position(gint x, gint y) {
+guint32 Chess::point_to_uint32(gint x, gint y) {
     return y * 10000 + x;
 }
 
@@ -85,5 +85,40 @@ gdouble Chess::get_distance_by_position(guint32 point1, guint32 point2) {
 }
 
 gdouble Chess::get_distance_by_position(cv::Point point1, cv::Point point2) {
-    return get_distance_by_position(point_to_position(point1), point_to_position(point2));
+    return get_distance_by_position(point_to_uint32(point1), point_to_uint32(point2));
+}
+
+std::string Chess::get_chess_name(gint type) {
+    std::string prefix;
+    std::string name;
+    if (type >= 10) {
+        prefix = "黑";
+        type = type - 10;
+    } else {
+        prefix = "红";
+    }
+    switch (type) {
+        case R_CHE:
+            name = "车";
+            break;
+        case R_MA:
+            name = "马";
+            break;
+        case R_XIANG:
+            name = "相";
+            break;
+        case R_SHI:
+            name = "士";
+            break;
+        case R_JIANG:
+            name = "将";
+            break;
+        case R_PAO:
+            name = "炮";
+            break;
+        case R_ZU:
+            name = "卒";
+            break;
+    }
+    return prefix + name;
 }

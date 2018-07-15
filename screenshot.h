@@ -33,7 +33,7 @@ public:
         if(abs(center_.y - other.center_.y) < 15) {
             return center_.x < other.center_.x;
         }
-        return Chess::point_to_position(center_) < Chess::point_to_position(other.center_);
+        return Chess::point_to_uint32(center_) < Chess::point_to_uint32(other.center_);
     }
 
     void set_center(const cv::Point &center) {
@@ -96,6 +96,20 @@ private:
      * @return
      */
     gint auto_train(std::list<Circle> &circle_list, cv::Mat &screen);
+
+    /**
+     * 屏幕坐标转象棋坐标
+     * @param point
+     * @return
+     */
+    gint32 coordinate_screen_to_chess(cv::Point &point);
+
+    /**
+     * 象棋坐标转屏幕坐标
+     * @param point
+     * @return
+     */
+    void coordinate_chess_to_screen(gint32 in, cv::Point &point);
 public:
 
     gint detect_chess_position(std::map<guint32, gint> &map);

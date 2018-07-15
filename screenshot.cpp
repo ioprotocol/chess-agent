@@ -124,7 +124,7 @@ void ScreenShot::hough_detection_circle_single(cv::Mat &src, Circle &circle) {
 void print_circle_position(std::list<Circle> &circle_list) {
     std::cout << "total:" << circle_list.size() << std::endl;
     for (Circle circle : circle_list) {
-        std::cout << Chess::point_to_position(circle.center()) << " , ";
+        std::cout << Chess::point_to_uint32(circle.center()) << " , ";
     }
     std::cout << std::endl;
 }
@@ -163,9 +163,9 @@ gint ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
             cv::Point p1(left_top_.x - 10, left_top_.y - 10);
             cv::Point p2(right_bottom_.x + 10, right_bottom_.y + 10);
 
-            guint32 low = Chess::point_to_position(p1);
-            guint32 high = Chess::point_to_position(p2);
-            guint32 value = Chess::point_to_position(center);
+            guint32 low = Chess::point_to_uint32(p1);
+            guint32 high = Chess::point_to_uint32(p2);
+            guint32 value = Chess::point_to_uint32(center);
 
             if (value > low && value < high) {
                 circle_list.push_back(Circle(center, radius));
@@ -195,21 +195,14 @@ gint ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
     }
 
     std::list<Sample> samle_list;
-
     grab_samles(circle_list, screen, samle_list);
-
     std::list<Sample>::iterator iter = samle_list.begin();
-    gint wrong_num = 0;
     while (iter != samle_list.end()) {
         gint type = p_detection_->predict(iter->mat());
-        if (type != iter->label()) {
-            std::cout << "type:" << type << "label:" << iter->label() << std::endl;
-            wrong_num++;
-        }
+        gint32 pos = coordinate_screen_to_chess(iter->position());
+        map[pos] = type;
         iter++;
     }
-    std::cout << "wrong num:" << wrong_num << std::endl;
-
     return 0;
 }
 
@@ -301,7 +294,7 @@ gint ScreenShot::auto_train(std::list<Circle> &circle_list, cv::Mat &screen) {
 }
 
 void ScreenShot::grab_samles(std::list<Circle> &circle_list, cv::Mat &screen, std::list<Sample> &samle_list) {
-    gint size = max_circle_radius_*2 + 6;
+    gint size = max_circle_radius_*2;
     gint index = 0;
     std::list<Circle>::iterator list_iter = circle_list.begin();
     while (list_iter != circle_list.end()) {
@@ -319,4 +312,38 @@ void ScreenShot::grab_samles(std::list<Circle> &circle_list, cv::Mat &screen, st
         list_iter++;
         index++;
     }
+}
+
+gint32 ScreenShot::coordinate_screen_to_chess(cv::Point &point) {
+    gint y = 0, x = 0;
+    gint dx = 0, dy = 0;
+
+    dx = (right_bottom_.x - left_top_.x) / 8;
+    dy = (right_bottom_.y - left_top_.y) / 9;
+
+    for (int i = 0; i < 9; i++) {
+        if (abs(point.x - left_top_.x - dx * i) < 8) {
+            x = i;
+            break;
+        }
+    }
+    for (int i = 0; i < 10; i++) {
+        if (abs(point.y - left_top_.y - dy * i) < 8) {
+            y = i;
+        }
+    }
+
+    return Chess::point_to_uint32(x, y);
+}
+
+void ScreenShot::coordinate_chess_to_screen(gint32 in, cv::Point &point) {
+    gint y = 0, x = 0;
+    gint dx = 0, dy = 0;
+
+    dx = (right_bottom_.x - left_top_.x) / 8;
+    dy = (right_bottom_.y - left_top_.y) / 9;
+
+    cv::Point pos = Chess::uint32_to_point(in);
+    point.x = left_top_.x + dx * pos.x;
+    point.y = left_top_.y + dy * pos.y;
 }
