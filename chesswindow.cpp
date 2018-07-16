@@ -4,10 +4,12 @@
 
 #include "chesswindow.h"
 #include <iostream>
+#include "colorfilterdialog.h"
 
 ChessWindow::ChessWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refGlade)
         : Gtk::ApplicationWindow(cobject),
           dispatcher_(),
+          ref_glade(refGlade),
           p_worker_thread_(nullptr),
           worker_running_falg_(FALSE),
           chess_worker_(),
@@ -15,8 +17,10 @@ ChessWindow::ChessWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builde
           screen_shot_()
 {
     refGlade->get_widget("option_run", p_option_run_);
+    refGlade->get_widget("option_color_ranger", p_option_color_ranger_);
 
     p_option_run_->signal_toggled().connect(sigc::mem_fun(this, &ChessWindow::on_option_run_toggled));
+    p_option_color_ranger_->signal_activate().connect(sigc::mem_fun(this, &ChessWindow::on_option_color_ranger_active));
 
     dispatcher_.connect(sigc::mem_fun(*this, &ChessWindow::on_worker_thread_finish));
 }
@@ -57,5 +61,12 @@ gboolean ChessWindow::get_worker_running_flag() {
     flag = worker_running_falg_;
     worker_mutex_.unlock();
     return flag;
+}
+
+void ChessWindow::on_option_color_ranger_active() {
+
+    ref_glade->get_widget_derived("app_color_filter_dialog",  color_filter_dialog_);
+    color_filter_dialog_->set_transient_for(*this);
+    color_filter_dialog_->show_all();
 }
 
