@@ -24,6 +24,8 @@ namespace Hub {
     std::string get_resource_glade_file();
 
     cv::Mat pixbuffer_to_mat(GdkPixbuf* gdkPixbuf);
+
+    void mat_to_pixbuffer(cv::Mat &mat, GdkPixbuf* gdkPixbuf);
 }
 
 namespace Chess {

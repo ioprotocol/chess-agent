@@ -59,6 +59,22 @@ cv::Mat Hub::pixbuffer_to_mat(GdkPixbuf *gdkPixbuf) {
     return mat;
 }
 
+void Hub::mat_to_pixbuffer(cv::Mat &mat, GdkPixbuf *gdkPixbuf) {
+    std::vector<uchar> data_encode;
+    std::vector<int> params;
+    params.push_back(cv::IMWRITE_JPEG_QUALITY);
+    params.push_back(100);
+    cv::imencode(".jpeg", mat, data_encode, params);
+
+    GBytes* buffer = g_bytes_new(data_encode.data(), data_encode.size());
+
+    GInputStream* inputStream = g_memory_input_stream_new_from_bytes(buffer);
+    gdkPixbuf = gdk_pixbuf_new_from_stream(inputStream, NULL, NULL);
+
+    g_bytes_unref(buffer);
+    g_object_unref(inputStream);
+}
+
 cv::Point Chess::uint32_to_point(guint32 position) {
     return cv::Point(position % 10000, position / 10000);
 }

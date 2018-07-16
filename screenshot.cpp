@@ -218,7 +218,7 @@ gint ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
     std::list<Sample> samle_list;
     grab_samles(circle_list, screen, samle_list);
     std::list<Sample>::iterator iter = samle_list.begin();
-    while (iter != samle_list.end()) {
+    for(iter = samle_list.begin(); iter != samle_list.end(); iter ++) {
         gint type = p_detection_->predict(iter->mat());
         gint32 pos = coordinate_screen_to_chess(iter->position());
         if (type >= 10) {
@@ -227,7 +227,6 @@ gint ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
             }
         }
         map[pos] = type;
-        iter++;
     }
     return 0;
 }
@@ -395,6 +394,6 @@ gint ScreenShot::detect_chess_color(cv::Mat &screen, Sample &sample) {
         }
     }
 
-//    cv::imwrite(Glib::build_filename(Hub::get_resources_path(), "rand.jpg"), tmp);
+    cv::imwrite(Glib::build_filename(Hub::get_resources_path(), std::to_string(coordinate_screen_to_chess(sample.position())) + ".jpg"), sample.mat());
     return 0;
 }
