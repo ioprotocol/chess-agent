@@ -59,6 +59,7 @@ ScreenShot::~ScreenShot() {
 }
 
 cv::Mat ScreenShot::screen_shot() {
+#ifndef _TEST_STD_OUT
     gdk_threads_enter();
     Glib::RefPtr<Gdk::Display> display = Gdk::Display::get_default();
     if (!display) {
@@ -87,9 +88,15 @@ cv::Mat ScreenShot::screen_shot() {
     std::cout << Glib::DateTime::create_now_local().format("%y-%m-%d %H:%M:%S") << "@ x := " << x << "y := " << y << "width := "
               << active_window->get_width() << "height := " << active_window->get_height() << std::endl;
     gdk_threads_leave();
+#else
+    cv::Mat mat = cv::imread(Glib::build_filename(Hub::get_resources_img_path(), "demo.jpg"));
+#endif
 
+#ifdef _TEST_STD_OUT
     cv::imwrite(Glib::build_filename(Hub::get_resources_path(), "screen.jpg"), mat);
+#endif
     return mat;
+
 }
 
 void ScreenShot::hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &circles) {
@@ -215,7 +222,9 @@ gint ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
         gint type = p_detection_->predict(iter->mat());
         gint32 pos = coordinate_screen_to_chess(iter->position());
         if (type >= 10) {
-            type = type - detect_chess_color(screen, *iter) * 10;
+            if(type == 10) {
+                type = type - detect_chess_color(screen, *iter) * 10;
+            }
         }
         map[pos] = type;
         iter++;
@@ -366,36 +375,26 @@ void ScreenShot::coordinate_chess_to_screen(gint32 in, cv::Point &point) {
 }
 
 gint ScreenShot::detect_chess_color(cv::Mat &screen, Sample &sample) {
-    gint size = max_circle_radius_*2;
-    cv::Rect rect(sample.position().x - size/2, sample.position().y - size/2, size, size);
-    cv::Mat roi = screen(rect);
+    cv::Mat roi = sample.mat();
+    cv::Mat threshold;
 
-    Circle circle;
-    double r = 0, g = 0, b = 0;
-    gint total_pix_num = 0;
-    CvScalar scalar;
+    cv::inRange(roi, cv::Scalar(0,0,47), cv::Scalar(255,255,183), threshold);
+    cv::threshold(threshold, threshold, 0, 255.0, CV_THRESH_BINARY_INV);
 
-    IplImage cvArr = IplImage(roi);
-    // if hsr image convert
+    const int channels = threshold.channels();
+    guint cols = channels * threshold.cols;
+    uchar *p;
+    cv::Scalar scalar;
 
-    hough_detection_circle_single(roi, circle);
-
-    for (int i = 0; i < roi.cols; i++) {
-        for (int j = 0; j < roi.rows; j++) {
-            gdouble distance = Chess::get_distance_by_position(cv::Point(i, j), circle.center());
-            if (abs(distance - circle.radius() < 1)) { // 处于圆弧上，提取颜色
-                scalar = cvGet2D(&cvArr, i, j);
-                r = scalar.val[2] + r;
-                g = scalar.val[1] + g;
-                b = scalar.val[0] + b;
-                total_pix_num ++;
+    for (int j = 0; j < roi.rows; j++) {
+        p = threshold.ptr<uchar>(j);
+        for (int i = 0; i < cols; i++) {
+            int filter = (int)p[i];
+            if (filter == 0) {
             }
         }
     }
-    r = r / total_pix_num;
-    g = g / total_pix_num;
-    b = b / total_pix_num;
 
-    std::cout << "R:" << std::to_string(r) << " G:" << std::to_string(g) << " B:" <<  std::to_string(b) << std::endl;
+//    cv::imwrite(Glib::build_filename(Hub::get_resources_path(), "rand.jpg"), tmp);
     return 0;
 }
