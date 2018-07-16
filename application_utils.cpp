@@ -4,6 +4,7 @@
 #include "application_utils.h"
 
 #include <glibmm.h>
+#include <giomm.h>
 #include <opencv2/imgcodecs.hpp>
 
 std::string Hub::get_application_path() {
@@ -73,6 +74,22 @@ void Hub::mat_to_pixbuffer(cv::Mat &mat, GdkPixbuf *gdkPixbuf) {
 
     g_bytes_unref(buffer);
     g_object_unref(inputStream);
+}
+
+void Hub::mat_to_pixbuffer(cv::Mat &mat, Glib::RefPtr<Gdk::Pixbuf> pixbuf) {
+    std::vector<uchar> data_encode;
+    std::vector<int> params;
+    params.push_back(cv::IMWRITE_JPEG_QUALITY);
+    params.push_back(100);
+    cv::imencode(".jpeg", mat, data_encode, params);
+
+    gconstpointer data = (gconstpointer) data_encode.data();
+    Glib::RefPtr<Glib::Bytes> gbytes = Glib::Bytes::create(data, data_encode.size());
+    Glib::RefPtr<Gio::MemoryInputStream> inputStream = Gio::MemoryInputStream::create();
+    inputStream->add_bytes(gbytes);
+
+    Glib::RefPtr<Gdk::Pixbuf> refPtr = Gdk::Pixbuf::create_from_stream(inputStream);
+    refPtr->copy_area(0, 0, refPtr->get_width(), refPtr->get_height(), pixbuf, 0, 0);
 }
 
 cv::Point Chess::uint32_to_point(guint32 position) {

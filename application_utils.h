@@ -8,6 +8,7 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <gdk-pixbuf/gdk-pixbuf-core.h>
+#include <gdkmm/pixbuf.h>
 
 #define PWD "EPWD"
 
@@ -26,6 +27,8 @@ namespace Hub {
     cv::Mat pixbuffer_to_mat(GdkPixbuf* gdkPixbuf);
 
     void mat_to_pixbuffer(cv::Mat &mat, GdkPixbuf* gdkPixbuf);
+
+    void mat_to_pixbuffer(cv::Mat &mat, Glib::RefPtr<Gdk::Pixbuf> pixbuf);
 }
 
 namespace Chess {

@@ -37,6 +37,11 @@ ColorFilterDialog::ColorFilterDialog(BaseObjectType* cobject, const Glib::RefPtr
     img2 = cv::imread(Glib::build_filename(Hub::get_resources_path(), "8.jpg"));
     img3 = cv::imread(Glib::build_filename(Hub::get_resources_path(), "90000.jpg"));
     img4 = cv::imread(Glib::build_filename(Hub::get_resources_path(), "90008.jpg"));
+
+    pixbuf1 = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, 60, 60);
+    pixbuf2 = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, 60, 60);
+    pixbuf3 = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, 60, 60);
+    pixbuf4 = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, 60, 60);
 }
 
 void ColorFilterDialog::on_scale_button1_value_change(double value) {
@@ -71,11 +76,12 @@ void ColorFilterDialog::on_scale_button6_value_change(double value) {
 
 void ColorFilterDialog::update_scalar_label() {
     std::string msg;
-    msg += " LH:" + std::to_string(scale1_);
+
     msg += " LS:" + std::to_string(scale2_);
     msg += " LV:" + std::to_string(scale3_);
     msg += " HH:" + std::to_string(scale4_);
     msg += " HS:" + std::to_string(scale5_);
+    msg += " LH:" + std::to_string(scale1_);
     msg += " HV:" + std::to_string(scale6_);
     p_label->set_label(msg);
 
@@ -86,24 +92,15 @@ void ColorFilterDialog::update_scalar_label() {
     threold_mat(img3, tmp3);
     threold_mat(img4, tmp4);
 
-    cv::imwrite(Glib::build_filename(Hub::get_resources_path(), "img1.jpg"), img1);
-    cv::imwrite(Glib::build_filename(Hub::get_resources_path(), "img2.jpg"), img2);
-    cv::imwrite(Glib::build_filename(Hub::get_resources_path(), "img3.jpg"), img3);
-    cv::imwrite(Glib::build_filename(Hub::get_resources_path(), "img4.jpg"), img4);
+    Hub::mat_to_pixbuffer(img1, pixbuf1);
+    Hub::mat_to_pixbuffer(img2, pixbuf2);
+    Hub::mat_to_pixbuffer(img3, pixbuf3);
+    Hub::mat_to_pixbuffer(img4, pixbuf4);
 
-    p_image1->clear();
-    p_image2->clear();
-    p_image3->clear();
-    p_image4->clear();
-
-    p_image1->set(Gdk::Pixbuf::create_from_file(Glib::build_filename(Hub::get_resources_path(), "img1.jpg")));
-    p_image2->set(Gdk::Pixbuf::create_from_file(Glib::build_filename(Hub::get_resources_path(), "img2.jpg")));
-    p_image3->set(Gdk::Pixbuf::create_from_file(Glib::build_filename(Hub::get_resources_path(), "img3.jpg")));
-    p_image4->set(Gdk::Pixbuf::create_from_file(Glib::build_filename(Hub::get_resources_path(), "img4.jpg")));
-    p_image1->show();
-    p_image2->show();
-    p_image3->show();
-    p_image4->show();
+    p_image1->set(pixbuf1);
+    p_image2->set(pixbuf2);
+    p_image3->set(pixbuf3);
+    p_image4->set(pixbuf4);
 }
 
 void ColorFilterDialog::threold_mat(cv::Mat &in, cv::Mat& out) {

@@ -36,10 +36,10 @@ private:
     cv::Mat img3;
     cv::Mat img4;
 
-    GdkPixbuf *pixbuf1;
-    GdkPixbuf *pixbuf2;
-    GdkPixbuf *pixbuf3;
-    GdkPixbuf *pixbuf4;
+    Glib::RefPtr<Gdk::Pixbuf> pixbuf1;
+    Glib::RefPtr<Gdk::Pixbuf> pixbuf2;
+    Glib::RefPtr<Gdk::Pixbuf> pixbuf3;
+    Glib::RefPtr<Gdk::Pixbuf> pixbuf4;
 private:
     void on_scale_button1_value_change(double value);
     void on_scale_button2_value_change(double value);
