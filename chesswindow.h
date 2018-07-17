@@ -19,7 +19,7 @@ public:
 private:
     Gtk::CheckMenuItem *p_option_run_;
     Gtk::MenuItem  *p_option_color_ranger_;
-    Glib::RefPtr<Gtk::Builder> ref_glade;
+    Glib::RefPtr<Gtk::Builder> ref_glade_builder_;
 private:
     ScreenShot  screen_shot_;
     Glib::Dispatcher dispatcher_;

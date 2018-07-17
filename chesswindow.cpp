@@ -9,7 +9,7 @@
 ChessWindow::ChessWindow(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refGlade)
         : Gtk::ApplicationWindow(cobject),
           dispatcher_(),
-          ref_glade(refGlade),
+          ref_glade_builder_(refGlade),
           p_worker_thread_(nullptr),
           worker_running_falg_(FALSE),
           chess_worker_(),
@@ -65,7 +65,7 @@ gboolean ChessWindow::get_worker_running_flag() {
 
 void ChessWindow::on_option_color_ranger_active() {
 
-    ref_glade->get_widget_derived("app_color_filter_dialog",  color_filter_dialog_);
+    ref_glade_builder_->get_widget_derived("app_color_filter_dialog",  color_filter_dialog_);
     color_filter_dialog_->set_transient_for(*this);
     color_filter_dialog_->show_all();
 }
