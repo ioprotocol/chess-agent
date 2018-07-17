@@ -3,27 +3,20 @@
 //
 
 #include "knndection.h"
-#include <giomm.h>
-#include <glibmm.h>
 
+#include <QFile>
 #include "application_utils.h"
 
 KnnDection::KnnDection() {
-    std::string file_path = Glib::build_filename(Hub::get_resources_path(), "knn.xml");
-    Glib::RefPtr<Gio::File> file = Gio::File::create_for_path(file_path);
+    QString knn_file_path = Hub::current_dir() + "/resources/knn.xml";
+    QFile file(knn_file_path);
 
-    if (file->query_exists()) {
-        knn_model_ = cv::ml::StatModel::load<cv::ml::KNearest>(file_path);
+    if (file.exists()) {
+        knn_model_ = cv::ml::StatModel::load<cv::ml::KNearest>(knn_file_path.toStdString());
     } else {
         knn_model_ = cv::ml::KNearest::create();
         knn_model_->setDefaultK(5);
         knn_model_->setIsClassifier(true);
-    }
-}
-void output_samples_to_disk(std::list<Sample> &samples) {
-    Glib::Rand rand;
-    for (Sample sample : samples) {
-        cv::imwrite(Glib::build_filename(Hub::get_resources_path(), "test", "p1", std::to_string(sample.label()) + "_" + std::to_string(rand.get_int()) + ".jpg"), sample.mat());
     }
 }
 
@@ -54,7 +47,7 @@ void KnnDection::train(std::list<Sample> &samples) {
     } else {
         knn_model_->train(tData);
     }
-    knn_model_->save(Glib::build_filename(Hub::get_resources_path(), "knn.xml"));
+    knn_model_->save((Hub::current_dir() + "/resources/knn.xml").toStdString());
 }
 
 cv::Mat KnnDection::format(cv::Mat &mat) {
@@ -65,15 +58,15 @@ cv::Mat KnnDection::format(cv::Mat &mat) {
     return out.reshape(0, 1);
 }
 
-gint KnnDection::predict(cv::Mat &mat) {
-    return (gint) knn_model_->predict(format(mat));
+int KnnDection::predict(cv::Mat &mat) {
+    return (int) knn_model_->predict(format(mat));
 }
 
 KnnDection::~KnnDection() {
-    knn_model_->save(Glib::build_filename(Hub::get_resources_path(), "knn.xml"));
+    knn_model_->save((Hub::current_dir() + "/resources/knn.xml").toStdString());
 }
 
-gboolean KnnDection::is_trained() {
+bool KnnDection::is_trained() {
     return knn_model_->isTrained();
 }
 

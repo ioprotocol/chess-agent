@@ -4,13 +4,10 @@
 
 #include "screenshot.h"
 
-#include <glibmm.h>
-#include <gtkmm.h>
 #include <fstream>
 
 #include <opencv2/imgproc.hpp>
 #include <iostream>
-#include <gtk/gtk.h>
 #include <time.h>
 
 #include "application_utils.h"
@@ -19,7 +16,7 @@
 ScreenShot::ScreenShot() :
         left_top_(0, 0), right_bottom_(0, 0), max_circle_radius_(0), chess_window_size_(0, 0) {
     p_detection_ = new KnnDection();
-    gint i = 0;
+    int i = 0;
     chess_position_type_[i++] = Chess::B_CHE;
     chess_position_type_[i++] = Chess::B_MA;
     chess_position_type_[i++] = Chess::B_XIANG;
@@ -60,43 +57,10 @@ ScreenShot::~ScreenShot() {
 
 cv::Mat ScreenShot::screen_shot() {
 #ifndef _TEST_STD_OUT
-    gdk_threads_enter();
-    Glib::RefPtr<Gdk::Display> display = Gdk::Display::get_default();
-    if (!display) {
-        std::cout << "default display is null" << std::endl;
-    }
-
-    Glib::RefPtr<Gdk::Screen> screen = display->get_default_screen();
-
-    Glib::RefPtr<Gdk::Window> active_window = screen->get_active_window();
-    Glib::RefPtr<Gdk::Window> root_window = screen->get_root_window();
-
-    if (!active_window) {
-        std::cout << "root window is null " << std::endl;
-    }
-
-    Gdk::Rectangle frame_extras;
-
-    active_window->get_frame_extents(frame_extras);
-    int x, y;
-    active_window->get_origin(x, y);
-
-    GdkPixbuf *pixbuf = gdk_pixbuf_get_from_window(root_window->gobj(), x, y, active_window->get_width(),
-                                                   active_window->get_height());
-
-    cv::Mat mat = Hub::pixbuffer_to_mat(pixbuf);
-    std::cout << Glib::DateTime::create_now_local().format("%y-%m-%d %H:%M:%S") << "@ x := " << x << "y := " << y << "width := "
-              << active_window->get_width() << "height := " << active_window->get_height() << std::endl;
-    gdk_threads_leave();
 #else
-    cv::Mat mat = cv::imread(Glib::build_filename(Hub::get_resources_img_path(), "demo.jpg"));
-#endif
-
-#ifdef _TEST_STD_OUT
-    cv::imwrite(Glib::build_filename(Hub::get_resources_path(), "screen.jpg"), mat);
+    cv::Mat mat = cv::imread((Hub::current_dir() + "/resources/img/demo.jpg").toStdString());
 #endif
     return mat;
-
 }
 
 void ScreenShot::hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &circles) {
@@ -104,16 +68,6 @@ void ScreenShot::hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &ci
     cvtColor(src, src_gray, cv::COLOR_BGR2GRAY);
     GaussianBlur(src_gray, src_gray, cv::Size(3, 3), 2, 2);
     HoughCircles(src_gray, circles, cv::HOUGH_GRADIENT, 1, 25, 208, 40, 15, 30);
-#ifdef _TEST_STD_OUT
-    cv::Mat test;
-    src.copyTo(test);
-    for (cv::Vec3f vf : circles) {
-        cv::Point center(cvRound(vf[0]), cvRound(vf[1]));
-        int radius = cvRound(vf[2]);
-        cv::circle(test, center, radius, cv::Scalar(255, 0, 0), 2);
-        cv::imwrite(Glib::build_filename(Hub::get_resources_path(), "test.jpg"), test);
-    }
-#endif
 }
 
 void ScreenShot::hough_detection_circle_single(cv::Mat &src, Circle &circle) {
@@ -153,7 +107,7 @@ void print_circle_position(std::list<Circle> &circle_list) {
 // 象棋程序不是当前活动窗口
 #define DETECT_WINDOW_IS_NOT_ACTIVE         7
 
-gint ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
+int ScreenShot::detect_chess_position(std::map<unsigned int, int> &map) {
 
     cv::Mat screen;
     std::vector<cv::Vec3f> circle_vector;
@@ -182,9 +136,9 @@ gint ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
             cv::Point p1(left_top_.x - 10, left_top_.y - 10);
             cv::Point p2(right_bottom_.x + 10, right_bottom_.y + 10);
 
-            guint32 low = Chess::point_to_uint32(p1);
-            guint32 high = Chess::point_to_uint32(p2);
-            guint32 value = Chess::point_to_uint32(center);
+            unsigned int low = Chess::point_to_uint32(p1);
+            unsigned int high = Chess::point_to_uint32(p2);
+            unsigned int value = Chess::point_to_uint32(center);
 
             if (value > low && value < high) {
                 circle_list.push_back(Circle(center, radius));
@@ -219,8 +173,8 @@ gint ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
     grab_samles(circle_list, screen, samle_list);
     std::list<Sample>::iterator iter = samle_list.begin();
     for(iter = samle_list.begin(); iter != samle_list.end(); iter ++) {
-        gint type = p_detection_->predict(iter->mat());
-        gint32 pos = coordinate_screen_to_chess(iter->position());
+        int type = p_detection_->predict(iter->mat());
+        int pos = coordinate_screen_to_chess(iter->position());
         if (type >= 10) {
             if(type == 10) {
                 type = type - detect_chess_color(screen, *iter) * 10;
@@ -239,7 +193,7 @@ gint ScreenShot::detect_chess_position(std::map<guint32, gint> &map) {
 void ScreenShot::study(std::list<Circle> &circle_list) {
     std::list<Circle>::iterator list_iter = circle_list.begin();
     cv::Point start_point(0, 0);
-    gint continues_cout = 0;
+    int continues_cout = 0;
 
     while (list_iter != circle_list.end()) {
         max_circle_radius_ = MAX(max_circle_radius_, list_iter->radius());
@@ -255,8 +209,8 @@ void ScreenShot::study(std::list<Circle> &circle_list) {
         }
         cv::Point p3 = list_iter->center();
 
-        gdouble d1 = Chess::get_distance_by_position(p1, p2);
-        gdouble d2 = Chess::get_distance_by_position(p2, p3);
+        double d1 = Chess::get_distance_by_position(p1, p2);
+        double d2 = Chess::get_distance_by_position(p2, p3);
 
         if (abs(d1 - d2) < 12) {
             if (start_point.x == 0 && start_point.y == 0) {
@@ -290,7 +244,7 @@ void ScreenShot::study(std::list<Circle> &circle_list) {
     }
 }
 
-gint ScreenShot::auto_train(std::list<Circle> &circle_list, cv::Mat &screen) {
+int ScreenShot::auto_train(std::list<Circle> &circle_list, cv::Mat &screen) {
     std::list<Sample> samle_list;
 
     if (circle_list.size() != 32) {
@@ -302,9 +256,9 @@ gint ScreenShot::auto_train(std::list<Circle> &circle_list, cv::Mat &screen) {
     p_detection_->train(samle_list);
     // check is the train is correct
     std::list<Sample>::iterator iter = samle_list.begin();
-    gint wrong_num = 0;
+    int wrong_num = 0;
     while (iter != samle_list.end()) {
-        gint type = p_detection_->predict(iter->mat());
+        int type = p_detection_->predict(iter->mat());
         if (type != iter->label()) {
             std::cout << "type:" << type << "label:" << iter->label() << std::endl;
             wrong_num++;
@@ -319,8 +273,8 @@ gint ScreenShot::auto_train(std::list<Circle> &circle_list, cv::Mat &screen) {
 }
 
 void ScreenShot::grab_samles(std::list<Circle> &circle_list, cv::Mat &screen, std::list<Sample> &samle_list) {
-    gint size = max_circle_radius_*2;
-    gint index = 0;
+    int size = max_circle_radius_*2;
+    int index = 0;
     std::list<Circle>::iterator list_iter = circle_list.begin();
     while (list_iter != circle_list.end()) {
         cv::Rect rect(list_iter->center().x - size/2, list_iter->center().y - size/2, size, size);
@@ -339,9 +293,9 @@ void ScreenShot::grab_samles(std::list<Circle> &circle_list, cv::Mat &screen, st
     }
 }
 
-gint32 ScreenShot::coordinate_screen_to_chess(cv::Point &point) {
-    gint y = 0, x = 0;
-    gint dx = 0, dy = 0;
+int ScreenShot::coordinate_screen_to_chess(cv::Point &point) {
+    int y = 0, x = 0;
+    int dx = 0, dy = 0;
 
     dx = (right_bottom_.x - left_top_.x) / 8;
     dy = (right_bottom_.y - left_top_.y) / 9;
@@ -361,9 +315,9 @@ gint32 ScreenShot::coordinate_screen_to_chess(cv::Point &point) {
     return Chess::point_to_uint32(x, y);
 }
 
-void ScreenShot::coordinate_chess_to_screen(gint32 in, cv::Point &point) {
-    gint y = 0, x = 0;
-    gint dx = 0, dy = 0;
+void ScreenShot::coordinate_chess_to_screen(int in, cv::Point &point) {
+    int y = 0, x = 0;
+    int dx = 0, dy = 0;
 
     dx = (right_bottom_.x - left_top_.x) / 8;
     dy = (right_bottom_.y - left_top_.y) / 9;
@@ -373,7 +327,7 @@ void ScreenShot::coordinate_chess_to_screen(gint32 in, cv::Point &point) {
     point.y = left_top_.y + dy * pos.y;
 }
 
-gint ScreenShot::detect_chess_color(cv::Mat &screen, Sample &sample) {
+int ScreenShot::detect_chess_color(cv::Mat &screen, Sample &sample) {
     cv::Mat roi = sample.mat();
     cv::Mat threshold;
 
@@ -381,7 +335,7 @@ gint ScreenShot::detect_chess_color(cv::Mat &screen, Sample &sample) {
     cv::threshold(threshold, threshold, 0, 255.0, CV_THRESH_BINARY_INV);
 
     const int channels = threshold.channels();
-    guint cols = channels * threshold.cols;
+    unsigned int cols = channels * threshold.cols;
     uchar *p;
     cv::Scalar scalar;
 
@@ -393,7 +347,5 @@ gint ScreenShot::detect_chess_color(cv::Mat &screen, Sample &sample) {
             }
         }
     }
-
-    cv::imwrite(Glib::build_filename(Hub::get_resources_path(), std::to_string(coordinate_screen_to_chess(sample.position())) + ".jpg"), sample.mat());
     return 0;
 }

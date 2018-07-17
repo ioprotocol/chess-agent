@@ -3,15 +3,12 @@
 //
 
 #include "chessaction.h"
-
-#include <glibmm.h>
-
 #include "application_utils.h"
 
 ChessAction::ChessAction() {
-    this->chess_board_ = cv::imread(Glib::build_filename(Hub::get_resources_img_path(), "MAIN.png"), cv::IMREAD_COLOR);
+    this->chess_board_ = cv::imread((Hub::current_dir() + "/resources/img/MAIN.png").toStdString(), cv::IMREAD_COLOR);
     if (this->chess_board_.empty()) {
-        g_assert_not_reached();
+        qErrnoWarning("chess board MAIN.png load failed");
     }
 
     top_left_ = cv::Point(51, 53);
@@ -19,10 +16,10 @@ ChessAction::ChessAction() {
     bottom_left_ = cv::Point(51, 567);
     bottom_right_ = cv::Point(507, 567);
 
-    gdouble dx = (top_right_.x - top_left_.x) / 8.0;
-    gdouble dy = (bottom_left_.y - top_left_.y) / 9.0;
+    double dx = (top_right_.x - top_left_.x) / 8.0;
+    double dy = (bottom_left_.y - top_left_.y) / 9.0;
 
-    gint y = 0, x = 0;
+    int y = 0, x = 0;
     for( y = 0; y < 10; y++)
     {
         for(x = 0; x < 9; x++)
@@ -93,7 +90,7 @@ ChessAction::~ChessAction() {
 
 void ChessAction::save_to_disk() {
     int thickness = 2;
-    gint y = 0, x = 0;
+    int y = 0, x = 0;
     for( y = 0; y < 9; y++) {
         for(x = 0; x < 8; x++) {
             cv::line(this->chess_board_, positions_[y][x], positions_[y+1][x+1], cv::Scalar( 0, 0, 255), thickness, cv::LINE_8);
@@ -104,7 +101,7 @@ void ChessAction::save_to_disk() {
 }
 
 void ChessAction::reset_piece_position() {
-    gint y = 0;
+    int y = 0;
     // che
     chess_pieces_[y++]->set_position(0, 0);
     chess_pieces_[y++]->set_position(8, 0);
@@ -148,11 +145,12 @@ void ChessAction::reset_piece_position() {
 }
 
 void ChessAction::reverse_piece_position() {
-    for(gint i = 0; i < 32; i++) {
+    for(int i = 0; i < 32; i++) {
         chess_pieces_[i]->set_position(chess_pieces_[i]->get_col(), 9 - chess_pieces_[i]->get_row());
     }
 }
 
+/*
 GdkPixbuf * ChessAction::generate_mat() {
 
     cv::Mat out = cv::Mat::zeros(558, 620, this->chess_board_.type());
@@ -191,6 +189,7 @@ GdkPixbuf * ChessAction::generate_mat() {
 
     return pixbuf;
 }
+ */
 
 int ChessAction::cv_add4c_mat_q(cv::Mat &dst, cv::Mat &scr, double scale)
 {

@@ -5,10 +5,7 @@
 #ifndef CHESSAGENT_CHESS_H
 #define CHESSAGENT_CHESS_H
 
-#include <gtk/gtk.h>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/highgui.hpp>
+#include <opencv2/opencv.hpp>
 
 #include "chesspiece.h"
 
@@ -33,8 +30,6 @@ public:
     void reset_piece_position();
 
     void reverse_piece_position();
-
-    GdkPixbuf * generate_mat();
 
     int cv_add4c_mat_q(cv::Mat &dst, cv::Mat &scr, double scale);
     // for test

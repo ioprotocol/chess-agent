@@ -5,16 +5,15 @@
 #ifndef CHESSAGENT_DETECTION_H
 #define CHESSAGENT_DETECTION_H
 
-#include <glibmm.h>
 #include <opencv2/opencv.hpp>
 
 class Sample {
 private:
     cv::Mat mat_;
-    gint label_;
+    int label_;
     cv::Point position_;
 public:
-    Sample(const cv::Mat &mat, gint label, cv::Point &position) : mat_(mat), label_(label), position_(position) {}
+    Sample(const cv::Mat &mat, int label, cv::Point &position) : mat_(mat), label_(label), position_(position) {}
 
     bool operator < (const Sample& ti) const {
         return label_ < ti.label_;
@@ -24,7 +23,7 @@ public:
         return mat_;
     }
 
-    inline gint label() {
+    inline int label() {
         return label_;
     }
 
@@ -40,9 +39,9 @@ public:
      */
     virtual void train(std::list<Sample> &samples) = 0;
 
-    virtual gboolean is_trained() = 0;
+    virtual bool is_trained() = 0;
 
-    virtual gint predict(cv::Mat &mat) = 0;
+    virtual int predict(cv::Mat &mat) = 0;
 };
 
 
