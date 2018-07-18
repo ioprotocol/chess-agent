@@ -18,7 +18,7 @@ public:
 private slots:
     void on_actioncolor_triggered();
 
-    void on_actionRun_toggled(bool arg1);
+    void on_actionrun_triggered(bool checked);
 
 private:
     Ui::MainWindow *ui;

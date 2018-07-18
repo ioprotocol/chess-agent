@@ -27,13 +27,13 @@
     <property name="title">
      <string>Option</string>
     </property>
-    <addaction name="actionRun"/>
+    <addaction name="actionrun"/>
     <addaction name="actioncolor"/>
    </widget>
    <addaction name="menuOption"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionRun">
+  <action name="actionrun">
    <property name="checkable">
     <bool>true</bool>
    </property>

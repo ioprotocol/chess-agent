@@ -28,6 +28,6 @@ include_directories(${OpenCV_DIR})
 file(GLOB SOURCE_HS_FILES "*.h")
 file(GLOB SOURCE_CPPS_FILES "*.cpp")
 
-add_executable(ChessAgent ${MOC_FILES} ${SOURCE_HS_FILES} ${SOURCE_CPPS_FILES})
+add_executable(ChessAgent ${MOC_FILES} ${WRAP_FILES} ${SOURCE_HS_FILES} ${SOURCE_CPPS_FILES})
 
 target_link_libraries (ChessAgent ${OpenCV_LIBS} Qt5::Widgets Qt5::Core Qt5::Gui)
