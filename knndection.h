@@ -29,9 +29,9 @@ private:
 public:
     void train(std::list<Sample> &samples) override;
 
-    gboolean is_trained() override;
+    bool is_trained() override;
 
-    gint predict(cv::Mat &mat) override;
+    int predict(cv::Mat &mat) override;
 };
 
 

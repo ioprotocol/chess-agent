@@ -5,7 +5,6 @@
 #ifndef CHESSAGENT_SCREENSHOTTASK_H
 #define CHESSAGENT_SCREENSHOTTASK_H
 
-#include <glibmm.h>
 #include <opencv2/opencv.hpp>
 
 #include "application_utils.h"
@@ -14,18 +13,18 @@
 class Circle {
 private:
     cv::Point center_;
-    gint radius_;
+    int radius_;
 
 public:
     Circle() {}
 
-    Circle(cv::Point center, gint radius) : center_(center), radius_(radius) {}
+    Circle(cv::Point center, int radius) : center_(center), radius_(radius) {}
 
     inline cv::Point &center() {
         return center_;
     }
 
-    inline gint radius() {
+    inline int radius() {
         return radius_;
     }
 
@@ -41,7 +40,7 @@ public:
         center_.y = center.y;
     }
 
-    void set_radius(gint radius) {
+    void set_radius(int radius) {
         radius_ = radius;
     }
 };
@@ -52,13 +51,13 @@ private:
     cv::Point left_top_;
     cv::Point right_bottom_;
     // 自动学习记住识别到最大的象棋半径，用于从屏幕截图中提取象棋
-    gint max_circle_radius_;
+    int max_circle_radius_;
     // 标定的窗口尺寸，用于判断象棋程序是否是最活跃的窗口
     cv::Size chess_window_size_;
 
     Detection *p_detection_;
     // 初始棋盘对应的棋子类型，用于训练识别算法
-    gint chess_position_type_[32];
+    int chess_position_type_[32];
 public:
     ScreenShot();
 
@@ -101,21 +100,21 @@ private:
      * @param screen
      * @return
      */
-    gint auto_train(std::list<Circle> &circle_list, cv::Mat &screen);
+    int auto_train(std::list<Circle> &circle_list, cv::Mat &screen);
 
     /**
      * 屏幕坐标转象棋坐标
      * @param point
      * @return
      */
-    gint32 coordinate_screen_to_chess(cv::Point &point);
+    int coordinate_screen_to_chess(cv::Point &point);
 
     /**
      * 象棋坐标转屏幕坐标
      * @param point
      * @return
      */
-    void coordinate_chess_to_screen(gint32 in, cv::Point &point);
+    void coordinate_chess_to_screen(int in, cv::Point &point);
 
     /**
      * 识别象棋的颜色
@@ -123,10 +122,10 @@ private:
      * @param sample
      * @return
      */
-    gint detect_chess_color(cv::Mat &screen, Sample &sample);
+    int detect_chess_color(cv::Mat &screen, Sample &sample);
 public:
 
-    gint detect_chess_position(std::map<guint32, gint> &map);
+    int detect_chess_position(std::map<unsigned int, int> &map);
 };
 
 

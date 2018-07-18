@@ -6,29 +6,15 @@
 #define CHESSAGENT_APPLICATION_UTILS_H
 
 #include <iostream>
+#include <QString>
 #include <opencv2/opencv.hpp>
-#include <gdk-pixbuf/gdk-pixbuf-core.h>
-#include <gdkmm/pixbuf.h>
 
 #define PWD "EPWD"
 
 #define _TEST_STD_OUT
 
 namespace Hub {
-
-    std::string get_application_path();
-
-    std::string get_resources_path();
-
-    std::string get_resources_img_path();
-
-    std::string get_resource_glade_file();
-
-    cv::Mat pixbuffer_to_mat(GdkPixbuf* gdkPixbuf);
-
-    void mat_to_pixbuffer(cv::Mat &mat, GdkPixbuf* gdkPixbuf);
-
-    void mat_to_pixbuffer(cv::Mat &mat, Glib::RefPtr<Gdk::Pixbuf> pixbuf);
+    QString current_dir();
 }
 
 namespace Chess {
@@ -43,7 +29,7 @@ namespace Chess {
      * @param type
      * @return
      */
-    std::string get_chess_name(gint type);
+    std::string get_chess_name(int type);
 
     /**
      * 将象棋二维坐标转为一维坐标，方便计算
@@ -51,7 +37,7 @@ namespace Chess {
      * @param point
      * @return
      */
-    guint32 point_to_uint32(cv::Point point);
+    unsigned int point_to_uint32(cv::Point point);
 
     /**
      * 将象棋二维坐标转为一维坐标，方便计算
@@ -60,7 +46,7 @@ namespace Chess {
      * @param y
      * @return
      */
-    guint32 point_to_uint32(gint x, gint y);
+    unsigned int point_to_uint32(int x, int y);
 
     /**
      * 将一维坐标转为二维坐标
@@ -68,12 +54,12 @@ namespace Chess {
      * @param position
      * @return
      */
-    cv::Point uint32_to_point(guint32 position);
+    cv::Point uint32_to_point(unsigned int position);
 
-    gboolean is_same_position(guint32 point1, guint32 point2);
+    bool is_same_position(unsigned int point1, unsigned int point2);
 
-    gdouble get_distance_by_position(guint32 point1, guint32 point2);
+    double get_distance_by_position(unsigned int point1, unsigned int point2);
 
-    gdouble get_distance_by_position(cv::Point point1, cv::Point point2);
+    double get_distance_by_position(cv::Point point1, cv::Point point2);
 }
 #endif //CHESSAGENT_APPLICATION_UTILS_H
