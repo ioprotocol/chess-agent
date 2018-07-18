@@ -12,13 +12,3 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-void MainWindow::on_actionRun_toggled(bool arg1)
-{
-
-}
-
-void MainWindow::on_actionColorFilter_triggered()
-{
-
-}

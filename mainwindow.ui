@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>象棋先锋</string>
+   <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget"/>
   <widget class="QMenuBar" name="menubar">
@@ -20,33 +20,27 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOption">
     <property name="title">
-     <string>选项</string>
+     <string>Option</string>
     </property>
     <addaction name="actionRun"/>
-    <addaction name="actionColorFilter"/>
+    <addaction name="actioncolor"/>
    </widget>
    <addaction name="menuOption"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionRun">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
    <property name="text">
-    <string>运行</string>
+    <string>run</string>
    </property>
   </action>
-  <action name="actionColorFilter">
-   <property name="checkable">
-    <bool>false</bool>
-   </property>
+  <action name="actioncolor">
    <property name="text">
-    <string>颜色</string>
+    <string>color</string>
    </property>
   </action>
  </widget>
