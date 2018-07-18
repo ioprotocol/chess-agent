@@ -72,9 +72,5 @@ std::string Chess::get_chess_name(int type) {
 }
 
 QString Hub::current_dir() {
-    QByteArray env = qgetenv(PWD);
-    if (env.size() < 1) {
-        return QDir::currentPath();
-    }
-    return QString(env);
+    return qEnvironmentVariable(PWD, QDir::currentPath());
 }
