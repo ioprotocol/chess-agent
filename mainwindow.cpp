@@ -1,10 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QDebug>
-#include <QApplication>
-#include <QDesktopWidget>
-#include <QPixmap>
-#include <QScreen>
 
 #include "detectionthread.h"
 #include "application_utils.h"
