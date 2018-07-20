@@ -31,7 +31,7 @@ qt5_wrap_ui(WRAP_FILES mainwindow.ui)
 
 set(RCC_FILES )
 
-include_directories(${OpenCV_DIR} ${Qt5Core_DIR} ${Qt5Gui_DIR} ${Qt5Widgets_DIR})
+include_directories(${OpenCV_DIR})
 
 file(GLOB SOURCE_HS_FILES "*.h")
 file(GLOB SOURCE_CPPS_FILES "*.cpp")
