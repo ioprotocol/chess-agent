@@ -2,22 +2,24 @@ cmake_minimum_required(VERSION 3.10)
 project(ChessAgent)
 
 set(CMAKE_CXX_STANDARD 11)
-#set(Qt5_DIR /home/xushy/qt5/5.11.1/gcc_64/lib/cmake/Qt5)
+
 IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
-    set(Qt5_DIR /home/xsy/expand_disk1/qt5/5.11.1/gcc_64)
+    set(CMAKE_PREFIX_PATH /home/xsy/expand_disk1/qt5/5.11.1/gcc_64)
     set(OpenCV_DIR /usr/local/share/OpenCV)
 ELSEIF (CMAKE_SYSTEM_NAME MATCHES "Windows")
     set(CMAKE_PREFIX_PATH D:/Qt/5.10.0/mingw53_32)
     set(OpenCV_DIR D:/opencv/build/install)
 ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
 
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-#find_package(PkgConfig REQUIRED)
+IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+find_package(PkgConfig REQUIRED)
+ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+
 find_package(OpenCV REQUIRED)
 
 find_package(Qt5Widgets CONFIG REQUIRED)
