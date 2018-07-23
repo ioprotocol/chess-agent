@@ -2,9 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMap>
 #include <QTimer>
-
-#include "detectionthread.h"
+#include <QThreadPool>
+#include <opencv2/opencv.hpp>
 
 namespace Ui {
 class MainWindow;
@@ -25,8 +26,13 @@ private slots:
 
     void screen_timer_timeout();
 private:
+    cv::Mat grab_window();
+
+    QThreadPool wokerThreadPool;
+
+    QMap<quint32, qint32> detect_chess_position(cv::Mat &mat);
+private:
     Ui::MainWindow *ui;
-    DetectionThread detectionThread;
     QTimer *screenTimer;
 };
 
