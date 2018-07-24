@@ -66,6 +66,10 @@ void ScreenShot::hough_detection_circle_single(cv::Mat &src, Circle &circle) {
     std::vector<cv::Vec3f> circles;
     hough_detection_circle(src, circles);
 
+    if (circles.size() < 1) {
+        qErrnoWarning("hough_detection_circle_single err");
+        return;
+    }
     cv::Point center(cvRound(circles[0][0]), cvRound(circles[0][1]));
     int radius = cvRound(circles[0][2]);
     circle.set_center(center);
@@ -84,22 +88,7 @@ void print_circle_position(std::list<Circle> &circle_list) {
 
 #endif
 
-// 自动学习成功，成功识别了棋盘的位置信息,并标记了棋盘的左上坐标和右下坐标
-#define DETECT_STUDY_SUCCESS                1
-// 自动识别棋盘失败，可能原因是部分棋子未识别成功，建议调整hough_detection_circle的识别参数
-#define DETECT_STUDY_FAILED                 2
-// 识别的棋子信息太少，无法完成自动识别
-#define DETECT_STUDY_CIRCLE_TO_LITTILE      3
-// 自动训练失败，识别到的棋子信息不全，必须是32个棋子
-#define DETECT_AUTOTRAIN_CIRCLE_LITTILE     4
-// 自动训练失败，识别错误率太高，无法准确识别棋子
-#define DETECT_AUTOTRAIN_ERR_RATE_HIGH      5
-// 自动训练成功
-#define DETECT_AUTOTRAIN_SUCCESS            6
-// 象棋程序不是当前活动窗口
-#define DETECT_WINDOW_IS_NOT_ACTIVE         7
-
-int ScreenShot::detect_chess_position(std::map<unsigned int, int> &map, cv::Mat &screen) {
+int ScreenShot::detect_chess_position(std::map<unsigned int, int>* map, cv::Mat &screen) {
     std::vector<cv::Vec3f> circle_vector;
     std::list<Circle> circle_list;
 
@@ -121,8 +110,8 @@ int ScreenShot::detect_chess_position(std::map<unsigned int, int> &map, cv::Mat 
             circle_list.push_back(Circle(center, radius));
         } else {
             // fiter out noise circle
-            cv::Point p1(left_top_.x - 10, left_top_.y - 10);
-            cv::Point p2(right_bottom_.x + 10, right_bottom_.y + 10);
+            cv::Point p1(left_top_.x - 30, left_top_.y - 30);
+            cv::Point p2(right_bottom_.x + 30, right_bottom_.y + 30);
 
             unsigned int low = Chess::point_to_uint32(p1);
             unsigned int high = Chess::point_to_uint32(p2);
@@ -134,11 +123,15 @@ int ScreenShot::detect_chess_position(std::map<unsigned int, int> &map, cv::Mat 
         }
     }
 
+    if (circle_list.size() < 3) {
+        return DETECT_AUTOTRAIN_CIRCLE_LITTILE;
+    }
+
     circle_list.sort();
 #ifdef _TEST_STD_OUT
     std::cout << "input circle size:" << circle_vector.size() << " filter noise:"
               << circle_vector.size() - circle_list.size() << std::endl;
-    print_circle_position(circle_list);
+//    print_circle_position(circle_list);
 #endif
     if (left_top_.y == right_bottom_.y) {
         if (circle_list.size() < 32) {
@@ -164,11 +157,9 @@ int ScreenShot::detect_chess_position(std::map<unsigned int, int> &map, cv::Mat 
         int type = p_detection_->predict(iter->mat());
         int pos = coordinate_screen_to_chess(iter->position());
         if (type >= 10) {
-            if(type == 10) {
-                type = type - detect_chess_color(screen, *iter) * 10;
-            }
+            type = type - detect_chess_color(screen, *iter);
         }
-        map[pos] = type;
+        (*map)[pos] = type;
     }
     return 0;
 }
@@ -319,7 +310,7 @@ int ScreenShot::detect_chess_color(cv::Mat &screen, Sample &sample) {
     cv::Mat roi = sample.mat();
     cv::Mat threshold;
 
-    cv::inRange(roi, cv::Scalar(0,0,47), cv::Scalar(255,255,183), threshold);
+    cv::inRange(roi, cv::Scalar(0,0,84), cv::Scalar(255,255,255), threshold);
     cv::threshold(threshold, threshold, 0, 255.0, CV_THRESH_BINARY_INV);
 
     const int channels = threshold.channels();
@@ -327,13 +318,21 @@ int ScreenShot::detect_chess_color(cv::Mat &screen, Sample &sample) {
     uchar *p;
     cv::Scalar scalar;
 
+    int counter = 0;
     for (int j = 0; j < roi.rows; j++) {
         p = threshold.ptr<uchar>(j);
         for (int i = 0; i < cols; i++) {
             int filter = (int)p[i];
             if (filter == 0) {
+                counter ++;
             }
         }
     }
-    return 0;
+
+    if (counter > 50) {
+        // black
+        return 0;
+    }
+    // else is red
+    return 10;
 }

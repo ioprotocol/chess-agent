@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     bindHWND(NULL),
-    bindTitleKeyWord("微信"),
+    bindTitleKeyWord("4399"),
     bindWindowRect(QRect(0, 0, 0, 0))
 {
     ui->setupUi(this);
@@ -32,7 +32,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(grabWindowTimer, SIGNAL(timeout()), this, SLOT(grab_window_timer_timeout()));
 
     connect(&workerFutureWatcher, SIGNAL(finished()), this, SLOT(worker_run_finish()));
-    this->setFixedSize(300, 100);
+    this->setFixedSize(600, 700);
+
+
 }
 
 MainWindow::~MainWindow()
@@ -50,9 +52,9 @@ void MainWindow::on_actioncolor_triggered()
 void MainWindow::on_actionrun_triggered(bool checked)
 {
     if(checked) {
-        screenTimer->setInterval(1000);
+        screenTimer->setInterval(3000);
         screenTimer->start();
-        grabWindowTimer->setInterval(1000);
+        grabWindowTimer->setInterval(3000);
         grabWindowTimer->start();
     } else {
         screenTimer->stop();
@@ -65,7 +67,9 @@ void MainWindow::screen_timer_timeout()
     cv::Mat screen;
     if (grab_window(screen)) {
         if (!workerFutureWatcher.isRunning()) {
-            QFuture<int> future = QtConcurrent::run(&workerThreadPool, &screenShot, &ScreenShot::detect_chess_position, chess_position_map, screen);
+            chess_position_map.clear();
+            QFuture<int> future = QtConcurrent::run(&workerThreadPool,
+                    &screenShot, &ScreenShot::detect_chess_position, &chess_position_map, screen);
             workerFutureWatcher.setFuture(future);
         } else {
             qDebug() << "task queue is full";
@@ -74,7 +78,31 @@ void MainWindow::screen_timer_timeout()
 }
 
 void MainWindow::worker_run_finish() {
+    int result = workerFutureWatcher.result();
 
+    qDebug() << "worker_run_finish, result:" << result;
+
+    switch (result) {
+        case DETECT_STUDY_SUCCESS:
+            break;
+        case DETECT_STUDY_FAILED:
+            break;
+        case DETECT_STUDY_CIRCLE_TO_LITTILE:
+            break;
+        case DETECT_AUTOTRAIN_CIRCLE_LITTILE:
+            break;
+        case DETECT_AUTOTRAIN_ERR_RATE_HIGH:
+            break;
+        case DETECT_AUTOTRAIN_SUCCESS:
+            break;
+        case DETECT_WINDOW_IS_NOT_ACTIVE:
+            break;
+    }
+
+    if(result == 0) {
+        QPixmap pixmap = chessAction.generate_pixture(chess_position_map);
+        ui->mainImg->setPixmap(pixmap);
+    }
 }
 
 bool MainWindow::grab_window(cv::Mat &mat)
@@ -130,7 +158,7 @@ HWND get_active_windows(QString keyWord) {
 void MainWindow::grab_window_timer_timeout()
 {
     if(bindHWND == NULL) {
-        bindHWND = get_active_windows("微信");
+        bindHWND = get_active_windows(bindTitleKeyWord);
         if(bindHWND != NULL) {
             qDebug() << "bind " << bindTitleKeyWord << " HWND success";
         } else {

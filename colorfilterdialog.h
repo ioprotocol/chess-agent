@@ -2,6 +2,8 @@
 #define COLORFILTERDIALOG_H
 
 #include <QDialog>
+#include <QPixmap>
+#include <opencv2/opencv.hpp>
 
 namespace Ui {
 class ColorFilterDialog;
@@ -31,7 +33,11 @@ private slots:
     void on_horizontalSlider_4_sliderReleased();
 
 private:
+    void update_img();
+private:
     Ui::ColorFilterDialog *ui;
+    cv::Mat mat1;
+    cv::Mat mat2;
 };
 
 #endif // COLORFILTERDIALOG_H

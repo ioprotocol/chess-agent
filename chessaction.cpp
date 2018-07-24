@@ -29,63 +29,41 @@ ChessAction::ChessAction() {
         }
     }
 
-    y = 0;
-    /**
-     * initialize the chess pieces
-     */
-    chess_pieces_[y++] = new ChessPiece("BR", 0, 0, "黑車");
-    chess_pieces_[y++] = new ChessPiece("BR", 8, 0, "黑車");
+    normal_img[0] = cv::imread(Hub::current_dir().append("/resources/img").append("/RR.png").toStdString(), cv::IMREAD_UNCHANGED);
+    normal_img[1] = cv::imread(Hub::current_dir().append("/resources/img").append("/RN.png").toStdString(), cv::IMREAD_UNCHANGED);
+    normal_img[2] = cv::imread(Hub::current_dir().append("/resources/img").append("/RB.png").toStdString(), cv::IMREAD_UNCHANGED);
+    normal_img[3] = cv::imread(Hub::current_dir().append("/resources/img").append("/RA.png").toStdString(), cv::IMREAD_UNCHANGED);
+    normal_img[4] = cv::imread(Hub::current_dir().append("/resources/img").append("/RK.png").toStdString(), cv::IMREAD_UNCHANGED);
+    normal_img[5] = cv::imread(Hub::current_dir().append("/resources/img").append("/RC.png").toStdString(), cv::IMREAD_UNCHANGED);
+    normal_img[6] = cv::imread(Hub::current_dir().append("/resources/img").append("/RP.png").toStdString(), cv::IMREAD_UNCHANGED);
 
-    chess_pieces_[y++] = new ChessPiece("RR", 0, 9, "红車");
-    chess_pieces_[y++] = new ChessPiece("RR", 8, 9, "红車");
+    normal_img[10] = cv::imread(Hub::current_dir().append("/resources/img").append("/BR.png").toStdString(), cv::IMREAD_UNCHANGED);
+    normal_img[11] = cv::imread(Hub::current_dir().append("/resources/img").append("/BN.png").toStdString(), cv::IMREAD_UNCHANGED);
+    normal_img[12] = cv::imread(Hub::current_dir().append("/resources/img").append("/BB.png").toStdString(), cv::IMREAD_UNCHANGED);
+    normal_img[13] = cv::imread(Hub::current_dir().append("/resources/img").append("/BA.png").toStdString(), cv::IMREAD_UNCHANGED);
+    normal_img[14] = cv::imread(Hub::current_dir().append("/resources/img").append("/BK.png").toStdString(), cv::IMREAD_UNCHANGED);
+    normal_img[15] = cv::imread(Hub::current_dir().append("/resources/img").append("/BC.png").toStdString(), cv::IMREAD_UNCHANGED);
+    normal_img[16] = cv::imread(Hub::current_dir().append("/resources/img").append("/BP.png").toStdString(), cv::IMREAD_UNCHANGED);
 
-    chess_pieces_[y++] = new ChessPiece("BN", 1, 0, "黑马");
-    chess_pieces_[y++] = new ChessPiece("BN", 7, 0, "黑马");
+    selected_img[0] = cv::imread(Hub::current_dir().append("/resources/img").append("/RRS.png").toStdString(), cv::IMREAD_UNCHANGED);
+    selected_img[1] = cv::imread(Hub::current_dir().append("/resources/img").append("/RNS.png").toStdString(), cv::IMREAD_UNCHANGED);
+    selected_img[2] = cv::imread(Hub::current_dir().append("/resources/img").append("/RBS.png").toStdString(), cv::IMREAD_UNCHANGED);
+    selected_img[3] = cv::imread(Hub::current_dir().append("/resources/img").append("/RAS.png").toStdString(), cv::IMREAD_UNCHANGED);
+    selected_img[4] = cv::imread(Hub::current_dir().append("/resources/img").append("/RKS.png").toStdString(), cv::IMREAD_UNCHANGED);
+    selected_img[5] = cv::imread(Hub::current_dir().append("/resources/img").append("/RCS.png").toStdString(), cv::IMREAD_UNCHANGED);
+    selected_img[6] = cv::imread(Hub::current_dir().append("/resources/img").append("/RPS.png").toStdString(), cv::IMREAD_UNCHANGED);
 
-    chess_pieces_[y++] = new ChessPiece("RN", 1, 9, "红马");
-    chess_pieces_[y++] = new ChessPiece("RN", 7, 9, "红马");
-
-    chess_pieces_[y++] = new ChessPiece("BB", 2, 0, "黑象");
-    chess_pieces_[y++] = new ChessPiece("BB", 6, 0, "黑象");
-
-    chess_pieces_[y++] = new ChessPiece("RB", 2, 9, "红象");
-    chess_pieces_[y++] = new ChessPiece("RB", 6, 9, "红象");
-
-    chess_pieces_[y++] = new ChessPiece("BA", 3, 0, "黑士");
-    chess_pieces_[y++] = new ChessPiece("BA", 5, 0, "黑士");
-
-    chess_pieces_[y++] = new ChessPiece("RA", 3, 9, "红士");
-    chess_pieces_[y++] = new ChessPiece("RA", 5, 9, "红士");
-
-    chess_pieces_[y++] = new ChessPiece("BK", 4, 0, "黑将");
-
-    chess_pieces_[y++] = new ChessPiece("RK", 4, 9, "红将");
-
-    chess_pieces_[y++] = new ChessPiece("BC", 1, 2, "黑炮");
-    chess_pieces_[y++] = new ChessPiece("BC", 7, 2, "黑炮");
-
-    chess_pieces_[y++] = new ChessPiece("RC", 1, 7, "红炮");
-    chess_pieces_[y++] = new ChessPiece("RC", 7, 7, "红炮");
-
-    chess_pieces_[y++] = new ChessPiece("BP", 0, 3, "黑卒");
-    chess_pieces_[y++] = new ChessPiece("BP", 2, 3, "黑卒");
-    chess_pieces_[y++] = new ChessPiece("BP", 4, 3, "黑卒");
-    chess_pieces_[y++] = new ChessPiece("BP", 6, 3, "黑卒");
-    chess_pieces_[y++] = new ChessPiece("BP", 8, 3, "黑卒");
-
-    chess_pieces_[y++] = new ChessPiece("RP", 0, 6, "红卒");
-    chess_pieces_[y++] = new ChessPiece("RP", 2, 6, "红卒");
-    chess_pieces_[y++] = new ChessPiece("RP", 4, 6, "红卒");
-    chess_pieces_[y++] = new ChessPiece("RP", 6, 6, "红卒");
-    chess_pieces_[y  ] = new ChessPiece("RP", 8, 6, "红卒");
+    selected_img[10] = cv::imread(Hub::current_dir().append("/resources/img").append("/BRS.png").toStdString(), cv::IMREAD_UNCHANGED);
+    selected_img[11] = cv::imread(Hub::current_dir().append("/resources/img").append("/BNS.png").toStdString(), cv::IMREAD_UNCHANGED);
+    selected_img[12] = cv::imread(Hub::current_dir().append("/resources/img").append("/BBS.png").toStdString(), cv::IMREAD_UNCHANGED);
+    selected_img[13] = cv::imread(Hub::current_dir().append("/resources/img").append("/BAS.png").toStdString(), cv::IMREAD_UNCHANGED);
+    selected_img[14] = cv::imread(Hub::current_dir().append("/resources/img").append("/BKS.png").toStdString(), cv::IMREAD_UNCHANGED);
+    selected_img[15] = cv::imread(Hub::current_dir().append("/resources/img").append("/BCS.png").toStdString(), cv::IMREAD_UNCHANGED);
+    selected_img[16] = cv::imread(Hub::current_dir().append("/resources/img").append("/BPS.png").toStdString(), cv::IMREAD_UNCHANGED);
 }
 
 ChessAction::~ChessAction() {
     this->chess_board_.release();
-    for(int i = 0; i < 32; i++) {
-        delete chess_pieces_[i];
-        chess_pieces_[i] = NULL;
-    }
 }
 
 void ChessAction::save_to_disk() {
@@ -100,77 +78,26 @@ void ChessAction::save_to_disk() {
     cv::imwrite("/home/xsy/main.png", this->chess_board_);
 }
 
-void ChessAction::reset_piece_position() {
-    int y = 0;
-    // che
-    chess_pieces_[y++]->set_position(0, 0);
-    chess_pieces_[y++]->set_position(8, 0);
-    chess_pieces_[y++]->set_position(0, 9);
-    chess_pieces_[y++]->set_position(8, 9);
-    // ma
-    chess_pieces_[y++]->set_position(1, 0);
-    chess_pieces_[y++]->set_position(7, 0);
-    chess_pieces_[y++]->set_position(1, 9);
-    chess_pieces_[y++]->set_position(7, 9);
-    // xiang
-    chess_pieces_[y++]->set_position(2, 0);
-    chess_pieces_[y++]->set_position(6, 0);
-    chess_pieces_[y++]->set_position(2, 9);
-    chess_pieces_[y++]->set_position(6, 9);
-    // shi
-    chess_pieces_[y++]->set_position(3, 0);
-    chess_pieces_[y++]->set_position(5, 0);
-    chess_pieces_[y++]->set_position(3, 9);
-    chess_pieces_[y++]->set_position(5, 9);
-    // jiang
-    chess_pieces_[y++]->set_position(4, 0);
-    chess_pieces_[y++]->set_position(4, 9);
-    // pao
-    chess_pieces_[y++]->set_position(1, 2);
-    chess_pieces_[y++]->set_position(7, 2);
-    chess_pieces_[y++]->set_position(1, 7);
-    chess_pieces_[y++]->set_position(7, 7);
-    // zu
-    chess_pieces_[y++]->set_position(0, 3);
-    chess_pieces_[y++]->set_position(2, 3);
-    chess_pieces_[y++]->set_position(4, 3);
-    chess_pieces_[y++]->set_position(6, 3);
-    chess_pieces_[y++]->set_position(8, 3);
-
-    chess_pieces_[y++]->set_position(0, 6);
-    chess_pieces_[y++]->set_position(2, 6);
-    chess_pieces_[y++]->set_position(4, 6);
-    chess_pieces_[y++]->set_position(6, 6);
-    chess_pieces_[y  ]->set_position(8, 6);
-}
-
-void ChessAction::reverse_piece_position() {
-    for(int i = 0; i < 32; i++) {
-        chess_pieces_[i]->set_position(chess_pieces_[i]->get_col(), 9 - chess_pieces_[i]->get_row());
-    }
-}
-
-/*
-GdkPixbuf * ChessAction::generate_mat() {
-
+QPixmap ChessAction::generate_pixture(std::map<unsigned int, int> &chess_position_map) {
     cv::Mat out = cv::Mat::zeros(558, 620, this->chess_board_.type());
-
     this->chess_board_.copyTo(out);
 
-    for(gint i = 0; i < 32; i++) {
-        cv::Point center = positions_[chess_pieces_[i]->get_row()][chess_pieces_[i]->get_col()];
+    std::map<unsigned int, int>::iterator it = chess_position_map.begin();
 
+    while (it != chess_position_map.end()) {
+        qint32 type = it->second;
+        if (type < 0 || type > 16 || (type > 6 && type < 10)) {
+            qErrnoWarning("invalid chess type value");
+        }
+        cv::Point pt = Chess::uint32_to_point(it->first);
+        cv::Point center = positions_[pt.y][pt.x];
         cv::Rect rect = cv::Rect(center.x - 28, center.y - 28, 57, 57);
         cv::Mat roi = out(rect);
-
-        if (chess_pieces_[i]->get_enable()) {
-            if (chess_pieces_[i]->get_active()) {
-                cv_add4c_mat_q(roi, chess_pieces_[i]->get_img_active(), 1);
-            } else {
-                cv_add4c_mat_q(roi, chess_pieces_[i]->get_img(), 1);
-            }
-        }
+        cv_add4c_mat_q(roi, normal_img[type], 1);
+        it ++;
     }
+
+    cv::imwrite("D:\\test.jpg", out);
 
     std::vector<uchar> data_encode;
     std::vector<int> params;
@@ -178,18 +105,10 @@ GdkPixbuf * ChessAction::generate_mat() {
     params.push_back(100);
     cv::imencode(".jpeg", out, data_encode, params);
 
-    GBytes* buffer = g_bytes_new(data_encode.data(), data_encode.size());
-
-    GInputStream* inputStream = g_memory_input_stream_new_from_bytes(buffer);
-    GdkPixbuf *pixbuf = gdk_pixbuf_new_from_stream(inputStream, NULL, NULL);
-
-    g_bytes_unref(buffer);
-    g_object_unref(inputStream);
-    out.release();
-
-    return pixbuf;
+    QPixmap pixmap;
+    pixmap.loadFromData(data_encode.data(), data_encode.size(), "jpeg");
+    return pixmap;
 }
- */
 
 int ChessAction::cv_add4c_mat_q(cv::Mat &dst, cv::Mat &scr, double scale)
 {

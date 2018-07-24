@@ -10,6 +10,7 @@
 #include <Windows.h>
 
 #include "screenshot.h"
+#include "chessaction.h"
 
 namespace Ui {
 class MainWindow;
@@ -50,6 +51,7 @@ private:
     QRect bindWindowRect;
 
     ScreenShot screenShot;
+    ChessAction chessAction;
 };
 
 #endif // MAINWINDOW_H

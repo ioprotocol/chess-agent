@@ -10,6 +10,21 @@
 #include "application_utils.h"
 #include "detection.h"
 
+// 自动学习成功，成功识别了棋盘的位置信息,并标记了棋盘的左上坐标和右下坐标
+#define DETECT_STUDY_SUCCESS                1
+// 自动识别棋盘失败，可能原因是部分棋子未识别成功，建议调整hough_detection_circle的识别参数
+#define DETECT_STUDY_FAILED                 2
+// 识别的棋子信息太少，无法完成自动识别
+#define DETECT_STUDY_CIRCLE_TO_LITTILE      3
+// 自动训练失败，识别到的棋子信息不全，必须是32个棋子
+#define DETECT_AUTOTRAIN_CIRCLE_LITTILE     4
+// 自动训练失败，识别错误率太高，无法准确识别棋子
+#define DETECT_AUTOTRAIN_ERR_RATE_HIGH      5
+// 自动训练成功
+#define DETECT_AUTOTRAIN_SUCCESS            6
+// 象棋程序不是当前活动窗口
+#define DETECT_WINDOW_IS_NOT_ACTIVE         7
+
 class Circle {
 private:
     cv::Point center_;
@@ -123,7 +138,7 @@ private:
     int detect_chess_color(cv::Mat &screen, Sample &sample);
 public:
 
-    int detect_chess_position(std::map<unsigned int, int> &map, cv::Mat &screen);
+    int detect_chess_position(std::map<unsigned int, int> *map, cv::Mat &screen);
 };
 
 
