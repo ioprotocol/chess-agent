@@ -64,8 +64,6 @@ public:
     virtual ~ScreenShot();
 
 private:
-    cv::Mat screen_shot();
-
     /**
      * 检测图像中的所有circle
      * @param src
@@ -125,7 +123,7 @@ private:
     int detect_chess_color(cv::Mat &screen, Sample &sample);
 public:
 
-    int detect_chess_position(std::map<unsigned int, int> &map);
+    int detect_chess_position(std::map<unsigned int, int> &map, cv::Mat &screen);
 };
 
 

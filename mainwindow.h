@@ -5,7 +5,11 @@
 #include <QMap>
 #include <QTimer>
 #include <QThreadPool>
+#include <QFutureWatcher>
 #include <opencv2/opencv.hpp>
+#include <Windows.h>
+
+#include "screenshot.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,15 +29,27 @@ private slots:
     void on_actionrun_triggered(bool checked);
 
     void screen_timer_timeout();
+
+    void grab_window_timer_timeout();
+
+    void worker_run_finish();
 private:
-    cv::Mat grab_window();
+    bool grab_window(cv::Mat &mat);
 
-    QThreadPool wokerThreadPool;
+    QThreadPool workerThreadPool;
+    QFutureWatcher<int> workerFutureWatcher;
 
-    QMap<quint32, qint32> detect_chess_position(cv::Mat &mat);
+    std::map<unsigned int, int> chess_position_map;
 private:
     Ui::MainWindow *ui;
     QTimer *screenTimer;
+    QTimer *grabWindowTimer;
+
+    QString bindTitleKeyWord;
+    HWND bindHWND;
+    QRect bindWindowRect;
+
+    ScreenShot screenShot;
 };
 
 #endif // MAINWINDOW_H

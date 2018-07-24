@@ -55,14 +55,6 @@ ScreenShot::~ScreenShot() {
     delete p_detection_;
 }
 
-cv::Mat ScreenShot::screen_shot() {
-#ifndef _TEST_STD_OUT
-#else
-    cv::Mat mat = cv::imread((Hub::current_dir() + "/resources/img/demo.jpg").toStdString());
-#endif
-    return mat;
-}
-
 void ScreenShot::hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &circles) {
     cv::Mat src_gray;
     cvtColor(src, src_gray, cv::COLOR_BGR2GRAY);
@@ -107,13 +99,9 @@ void print_circle_position(std::list<Circle> &circle_list) {
 // 象棋程序不是当前活动窗口
 #define DETECT_WINDOW_IS_NOT_ACTIVE         7
 
-int ScreenShot::detect_chess_position(std::map<unsigned int, int> &map) {
-
-    cv::Mat screen;
+int ScreenShot::detect_chess_position(std::map<unsigned int, int> &map, cv::Mat &screen) {
     std::vector<cv::Vec3f> circle_vector;
     std::list<Circle> circle_list;
-
-    screen = screen_shot();
 
     if (chess_window_size_.width != 0) {
         if (chess_window_size_.width != screen.cols && chess_window_size_.height != screen.rows) {
