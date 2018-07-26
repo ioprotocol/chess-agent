@@ -3,17 +3,13 @@ project(ChessAgent)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(CMAKE_PREFIX_PATH D:/dev_qt/5.11.1/mingw53_32)
+set(CMAKE_PREFIX_PATH D:/Qt/Qt5.11.1/5.11.1)
 set(OpenCV_DIR D:/opencv/build/install)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
-
-IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
-find_package(PkgConfig REQUIRED)
-ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
 
 find_package(OpenCV CONFIG REQUIRED)
 

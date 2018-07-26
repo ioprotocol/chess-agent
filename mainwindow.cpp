@@ -100,7 +100,9 @@ void MainWindow::worker_run_finish() {
     }
 
     if(result == 0) {
-        QPixmap pixmap = chessAction.generate_pixture(chess_position_map);
+//        QPixmap pixmap = chessAction.generate_pixture(chess_position_map);
+        QPixmap pixmap;
+        pixmap.load("D:\\test.jpg");
         ui->mainImg->setPixmap(pixmap);
     }
 }

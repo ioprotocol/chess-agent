@@ -24,7 +24,7 @@ namespace Chess {
     };
 
     /**
-     * æ ¹æ®è±¡æ£‹çš„æšä¸¾ç±»å‹å€¼è·å–ä¸­æ–‡åç§°
+     * ¸ù¾İÏóÆåµÄÃ¶¾ÙÀàĞÍÖµ»ñÈ¡ÖĞÎÄÃû³Æ
      *
      * @param type
      * @return
@@ -32,7 +32,7 @@ namespace Chess {
     std::string get_chess_name(int type);
 
     /**
-     * å°†è±¡æ£‹äºŒç»´åæ ‡è½¬ä¸ºä¸€ç»´åæ ‡ï¼Œæ–¹ä¾¿è®¡ç®—
+     * ½«ÏóÆå¶şÎ¬×ø±ê×ªÎªÒ»Î¬×ø±ê£¬·½±ã¼ÆËã
      *
      * @param point
      * @return
@@ -40,7 +40,7 @@ namespace Chess {
     unsigned int point_to_uint32(cv::Point point);
 
     /**
-     * å°†è±¡æ£‹äºŒç»´åæ ‡è½¬ä¸ºä¸€ç»´åæ ‡ï¼Œæ–¹ä¾¿è®¡ç®—
+     * ½«ÏóÆå¶şÎ¬×ø±ê×ªÎªÒ»Î¬×ø±ê£¬·½±ã¼ÆËã
      *
      * @param x
      * @param y
@@ -49,7 +49,7 @@ namespace Chess {
     unsigned int point_to_uint32(int x, int y);
 
     /**
-     * å°†ä¸€ç»´åæ ‡è½¬ä¸ºäºŒç»´åæ ‡
+     * ½«Ò»Î¬×ø±ê×ªÎª¶şÎ¬×ø±ê
      *
      * @param position
      * @return

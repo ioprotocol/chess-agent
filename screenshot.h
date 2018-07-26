@@ -10,19 +10,19 @@
 #include "application_utils.h"
 #include "detection.h"
 
-// è‡ªåŠ¨å­¦ä¹ æˆåŠŸï¼ŒæˆåŠŸè¯†åˆ«äº†æ£‹ç›˜çš„ä½ç½®ä¿¡æ¯,å¹¶æ ‡è®°äº†æ£‹ç›˜çš„å·¦ä¸Šåæ ‡å’Œå³ä¸‹åæ ‡
+// ×Ô¶¯Ñ§Ï°³É¹¦£¬³É¹¦Ê¶±ğÁËÆåÅÌµÄÎ»ÖÃĞÅÏ¢,²¢±ê¼ÇÁËÆåÅÌµÄ×óÉÏ×ø±êºÍÓÒÏÂ×ø±ê
 #define DETECT_STUDY_SUCCESS                1
-// è‡ªåŠ¨è¯†åˆ«æ£‹ç›˜å¤±è´¥ï¼Œå¯èƒ½åŸå› æ˜¯éƒ¨åˆ†æ£‹å­æœªè¯†åˆ«æˆåŠŸï¼Œå»ºè®®è°ƒæ•´hough_detection_circleçš„è¯†åˆ«å‚æ•°
+// ×Ô¶¯Ê¶±ğÆåÅÌÊ§°Ü£¬¿ÉÄÜÔ­ÒòÊÇ²¿·ÖÆå×ÓÎ´Ê¶±ğ³É¹¦£¬½¨Òéµ÷Õûhough_detection_circleµÄÊ¶±ğ²ÎÊı
 #define DETECT_STUDY_FAILED                 2
-// è¯†åˆ«çš„æ£‹å­ä¿¡æ¯å¤ªå°‘ï¼Œæ— æ³•å®Œæˆè‡ªåŠ¨è¯†åˆ«
+// Ê¶±ğµÄÆå×ÓĞÅÏ¢Ì«ÉÙ£¬ÎŞ·¨Íê³É×Ô¶¯Ê¶±ğ
 #define DETECT_STUDY_CIRCLE_TO_LITTILE      3
-// è‡ªåŠ¨è®­ç»ƒå¤±è´¥ï¼Œè¯†åˆ«åˆ°çš„æ£‹å­ä¿¡æ¯ä¸å…¨ï¼Œå¿…é¡»æ˜¯32ä¸ªæ£‹å­
+// ×Ô¶¯ÑµÁ·Ê§°Ü£¬Ê¶±ğµ½µÄÆå×ÓĞÅÏ¢²»È«£¬±ØĞëÊÇ32¸öÆå×Ó
 #define DETECT_AUTOTRAIN_CIRCLE_LITTILE     4
-// è‡ªåŠ¨è®­ç»ƒå¤±è´¥ï¼Œè¯†åˆ«é”™è¯¯ç‡å¤ªé«˜ï¼Œæ— æ³•å‡†ç¡®è¯†åˆ«æ£‹å­
+// ×Ô¶¯ÑµÁ·Ê§°Ü£¬Ê¶±ğ´íÎóÂÊÌ«¸ß£¬ÎŞ·¨×¼È·Ê¶±ğÆå×Ó
 #define DETECT_AUTOTRAIN_ERR_RATE_HIGH      5
-// è‡ªåŠ¨è®­ç»ƒæˆåŠŸ
+// ×Ô¶¯ÑµÁ·³É¹¦
 #define DETECT_AUTOTRAIN_SUCCESS            6
-// è±¡æ£‹ç¨‹åºä¸æ˜¯å½“å‰æ´»åŠ¨çª—å£
+// ÏóÆå³ÌĞò²»ÊÇµ±Ç°»î¶¯´°¿Ú
 #define DETECT_WINDOW_IS_NOT_ACTIVE         7
 
 class Circle {
@@ -62,16 +62,16 @@ public:
 
 class ScreenShot {
 private:
-    // è‡ªåŠ¨å­¦ä¹ è®°ä½çš„æ£‹ç›˜åæ ‡ä¿¡æ¯
+    // ×Ô¶¯Ñ§Ï°¼Ç×¡µÄÆåÅÌ×ø±êĞÅÏ¢
     cv::Point left_top_;
     cv::Point right_bottom_;
-    // è‡ªåŠ¨å­¦ä¹ è®°ä½è¯†åˆ«åˆ°æœ€å¤§çš„è±¡æ£‹åŠå¾„ï¼Œç”¨äºä»å±å¹•æˆªå›¾ä¸­æå–è±¡æ£‹
+    // ×Ô¶¯Ñ§Ï°¼Ç×¡Ê¶±ğµ½×î´óµÄÏóÆå°ë¾¶£¬ÓÃÓÚ´ÓÆÁÄ»½ØÍ¼ÖĞÌáÈ¡ÏóÆå
     int max_circle_radius_;
-    // æ ‡å®šçš„çª—å£å°ºå¯¸ï¼Œç”¨äºåˆ¤æ–­è±¡æ£‹ç¨‹åºæ˜¯å¦æ˜¯æœ€æ´»è·ƒçš„çª—å£
+    // ±ê¶¨µÄ´°¿Ú³ß´ç£¬ÓÃÓÚÅĞ¶ÏÏóÆå³ÌĞòÊÇ·ñÊÇ×î»îÔ¾µÄ´°¿Ú
     cv::Size chess_window_size_;
 
     Detection *p_detection_;
-    // åˆå§‹æ£‹ç›˜å¯¹åº”çš„æ£‹å­ç±»å‹ï¼Œç”¨äºè®­ç»ƒè¯†åˆ«ç®—æ³•
+    // ³õÊ¼ÆåÅÌ¶ÔÓ¦µÄÆå×ÓÀàĞÍ£¬ÓÃÓÚÑµÁ·Ê¶±ğËã·¨
     int chess_position_type_[32];
 public:
     ScreenShot();
@@ -80,35 +80,35 @@ public:
 
 private:
     /**
-     * æ£€æµ‹å›¾åƒä¸­çš„æ‰€æœ‰circle
+     * ¼ì²âÍ¼ÏñÖĞµÄËùÓĞcircle
      * @param src
      * @param circles
      */
     void hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &circles);
 
     /**
-     * åªæ£€æµ‹å›¾åƒä¸­çš„å•ä¸ªå›­
+     * Ö»¼ì²âÍ¼ÏñÖĞµÄµ¥¸öÔ°
      * @param src
      * @param circle
      */
     void hough_detection_circle_single(cv::Mat &src, Circle &circle);
 
     /**
-     * è‡ªåŠ¨å­¦ä¹ è¯†åˆ«æ£‹ç›˜åæ ‡
+     * ×Ô¶¯Ñ§Ï°Ê¶±ğÆåÅÌ×ø±ê
      *
      * @param circle_list
      */
     void study(std::list<Circle> &circle_list);
 
     /**
-     * æ ¹æ®è¯†åˆ«çš„åœ†å½¢åæ ‡è‡ªåŠ¨è¯†åˆ«æ£‹å­å®Œæ•´æ ·æœ¬
+     * ¸ù¾İÊ¶±ğµÄÔ²ĞÎ×ø±ê×Ô¶¯Ê¶±ğÆå×ÓÍêÕûÑù±¾
      * @param circle_list
      * @param screen
      * @param smples
      */
     void grab_samles(std::list<Circle> &circle_list, cv::Mat &screen, std::list<Sample> &samle_list);
     /**
-     * æ£‹ç›˜ä½äºå¼€å±€é˜¶æ®µï¼Œè‡ªåŠ¨è®­ç»ƒè¯†åˆ«ç®—æ³•
+     * ÆåÅÌÎ»ÓÚ¿ª¾Ö½×¶Î£¬×Ô¶¯ÑµÁ·Ê¶±ğËã·¨
      * @param circle_list
      * @param screen
      * @return
@@ -116,21 +116,21 @@ private:
     int auto_train(std::list<Circle> &circle_list, cv::Mat &screen);
 
     /**
-     * å±å¹•åæ ‡è½¬è±¡æ£‹åæ ‡
+     * ÆÁÄ»×ø±ê×ªÏóÆå×ø±ê
      * @param point
      * @return
      */
     int coordinate_screen_to_chess(cv::Point &point);
 
     /**
-     * è±¡æ£‹åæ ‡è½¬å±å¹•åæ ‡
+     * ÏóÆå×ø±ê×ªÆÁÄ»×ø±ê
      * @param point
      * @return
      */
     void coordinate_chess_to_screen(int in, cv::Point &point);
 
     /**
-     * è¯†åˆ«è±¡æ£‹çš„é¢œè‰²
+     * Ê¶±ğÏóÆåµÄÑÕÉ«
      *
      * @param sample
      * @return

@@ -12,9 +12,9 @@ class ChessAction {
 private:
     // 558 x 620
     cv::Mat chess_board_;
-    // æ™®é€šæ£‹å­
+    // ÆÕÍ¨Æå×Ó
     cv::Mat normal_img[17];
-    // é€‰ä¸­çŠ¶æ€çš„æ£‹å­
+    // Ñ¡ÖĞ×´Ì¬µÄÆå×Ó
     cv::Mat selected_img[17];
 
     cv::Point top_left_;

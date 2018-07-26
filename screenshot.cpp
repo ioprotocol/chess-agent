@@ -70,6 +70,9 @@ void ScreenShot::hough_detection_circle_single(cv::Mat &src, Circle &circle) {
         qErrnoWarning("hough_detection_circle_single err");
         return;
     }
+    if(circles.size() > 1) {
+        std::cout << "more than one cirlce" << std::endl;
+    }
     cv::Point center(cvRound(circles[0][0]), cvRound(circles[0][1]));
     int radius = cvRound(circles[0][2]);
     circle.set_center(center);
@@ -78,12 +81,13 @@ void ScreenShot::hough_detection_circle_single(cv::Mat &src, Circle &circle) {
 
 #ifdef _TEST_STD_OUT
 
-void print_circle_position(std::list<Circle> &circle_list) {
-    std::cout << "total:" << circle_list.size() << std::endl;
+void print_circle_position(std::list<Circle> &circle_list, cv::Mat &screen) {
+    cv::Mat tmp;
+    screen.copyTo(tmp);
     for (Circle circle : circle_list) {
-        std::cout << Chess::point_to_uint32(circle.center()) << " , ";
+        cv::circle(tmp, circle.center(), circle.radius(), cv::Scalar(255, 0, 0), 1);
     }
-    std::cout << std::endl;
+    cv::imwrite("D:\\test.jpg", tmp);
 }
 
 #endif
@@ -131,7 +135,7 @@ int ScreenShot::detect_chess_position(std::map<unsigned int, int>* map, cv::Mat 
 #ifdef _TEST_STD_OUT
     std::cout << "input circle size:" << circle_vector.size() << " filter noise:"
               << circle_vector.size() - circle_list.size() << std::endl;
-//    print_circle_position(circle_list);
+    print_circle_position(circle_list, screen);
 #endif
     if (left_top_.y == right_bottom_.y) {
         if (circle_list.size() < 32) {
@@ -165,7 +169,7 @@ int ScreenShot::detect_chess_position(std::map<unsigned int, int>* map, cv::Mat 
 }
 
 /**
- * 鑷涔狅紝鑷姩璇嗗埆妫嬬洏鐨勪綅缃紝骞舵爣瀹氫笂宸﹀潗鏍囧拰鍙充笅鍧愭爣
+ * 自学习，自动识别棋盘的位置，并标定上左坐标和右下坐标
  *
  * @param circle_list
  */
