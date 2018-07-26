@@ -157,7 +157,7 @@ int ScreenShot::detect_chess_position(std::map<unsigned int, int>* map, cv::Mat 
         int type = p_detection_->predict(iter->mat());
         int pos = coordinate_screen_to_chess(iter->position());
         if (type >= 10) {
-            type = type - detect_chess_color(screen, *iter);
+            type = type - detect_chess_color(*iter);
         }
         (*map)[pos] = type;
     }
@@ -306,12 +306,12 @@ void ScreenShot::coordinate_chess_to_screen(int in, cv::Point &point) {
     point.y = left_top_.y + dy * pos.y;
 }
 
-int ScreenShot::detect_chess_color(cv::Mat &screen, Sample &sample) {
+int ScreenShot::detect_chess_color(Sample &sample) {
     cv::Mat roi = sample.mat();
     cv::Mat threshold;
 
     cv::inRange(roi, cv::Scalar(0,0,84), cv::Scalar(255,255,255), threshold);
-    cv::threshold(threshold, threshold, 0, 255.0, CV_THRESH_BINARY_INV);
+    cv::threshold(threshold, threshold, 0, 255.0, CV_THRESH_BINARY);
 
     const int channels = threshold.channels();
     unsigned int cols = channels * threshold.cols;

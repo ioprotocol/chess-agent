@@ -135,7 +135,7 @@ private:
      * @param sample
      * @return
      */
-    int detect_chess_color(cv::Mat &screen, Sample &sample);
+    int detect_chess_color(Sample &sample);
 public:
 
     int detect_chess_position(std::map<unsigned int, int> *map, cv::Mat &screen);
