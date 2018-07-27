@@ -299,7 +299,6 @@ int ScreenShot::coordinate_screen_to_chess(cv::Point &point) {
 }
 
 void ScreenShot::coordinate_chess_to_screen(int in, cv::Point &point) {
-    int y = 0, x = 0;
     int dx = 0, dy = 0;
 
     dx = (right_bottom_.x - left_top_.x) / 8;
