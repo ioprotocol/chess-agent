@@ -11,7 +11,7 @@
 #include <time.h>
 
 #include "application_utils.h"
-#include "knndection.h"
+#include "knndetection.h"
 
 ScreenShot::ScreenShot() :
         left_top_(0, 0), right_bottom_(0, 0), max_circle_radius_(0), chess_window_size_(0, 0) {

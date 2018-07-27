@@ -2,13 +2,15 @@
 // Created by xsy on 18-7-13.
 //
 
-#include "knndection.h"
+#include "knndetection.h"
 
 #include <QFile>
 #include "application_utils.h"
 
+#define MODEL_FILE_NAME "/resources/knn.xml"
+
 KnnDection::KnnDection() {
-    QString knn_file_path = Hub::current_dir() + "/resources/knn.xml";
+    QString knn_file_path = Hub::current_dir() + MODEL_FILE_NAME;
     QFile file(knn_file_path);
 
     if (file.exists()) {
@@ -47,7 +49,7 @@ void KnnDection::train(std::list<Sample> &samples) {
     } else {
         knn_model_->train(tData);
     }
-    knn_model_->save((Hub::current_dir() + "/resources/knn.xml").toStdString());
+    knn_model_->save((Hub::current_dir() + MODEL_FILE_NAME).toStdString());
 }
 
 cv::Mat KnnDection::format(cv::Mat &mat) {
@@ -63,7 +65,7 @@ int KnnDection::predict(cv::Mat &mat) {
 }
 
 KnnDection::~KnnDection() {
-    knn_model_->save((Hub::current_dir() + "/resources/knn.xml").toStdString());
+    knn_model_->save((Hub::current_dir() + MODEL_FILE_NAME).toStdString());
 }
 
 bool KnnDection::is_trained() {
