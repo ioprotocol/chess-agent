@@ -23,6 +23,8 @@ CvANNDection::CvANNDection() {
 //    model->train(trainData);
 
 //    Ptr<ANN_MLP> bp = ANN_MLP::load<ANN_MLP>("*.xml");
+
+    // https://blog.csdn.net/akadiao/article/details/79236458
 }
 
 void CvANNDection::train(std::list<Sample> &samples) {
