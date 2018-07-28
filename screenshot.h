@@ -6,6 +6,7 @@
 #define CHESSAGENT_SCREENSHOTTASK_H
 
 #include <opencv2/opencv.hpp>
+#include <QMap>
 
 #include "application_utils.h"
 #include "detection.h"
@@ -73,6 +74,8 @@ private:
     Detection *p_detection_;
     // 初始棋盘对应的棋子类型，用于训练识别算法
     int chess_position_type_[32];
+    // 样本制作相关
+    QMap<quint32, quint32> prev_chess_snap;
 public:
     ScreenShot();
 
@@ -91,7 +94,7 @@ private:
      * @param src
      * @param circle
      */
-    void hough_detection_circle_single(cv::Mat &src, Circle &circle);
+    bool hough_detection_circle_single(cv::Mat &src, Circle &circle);
 
     /**
      * 自动学习识别棋盘坐标

@@ -16,6 +16,8 @@ public:
 private:
     cv::Ptr<cv::ml::ANN_MLP> model;
 public:
+    cv::Mat format(cv::Mat &mat) override;
+
     void train(std::list<Sample> &samples) override;
 
     bool is_trained() override;

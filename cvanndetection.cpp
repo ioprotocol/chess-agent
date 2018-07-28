@@ -39,4 +39,8 @@ int CvANNDection::predict(cv::Mat &mat) {
     return 0;
 }
 
+cv::Mat CvANNDection::format(cv::Mat &mat) {
+    return cv::Mat();
+}
+
 

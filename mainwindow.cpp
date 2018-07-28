@@ -33,8 +33,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&workerFutureWatcher, SIGNAL(finished()), this, SLOT(worker_run_finish()));
     this->setFixedSize(600, 700);
-
-
 }
 
 MainWindow::~MainWindow()
@@ -100,9 +98,9 @@ void MainWindow::worker_run_finish() {
     }
 
     if(result == 0) {
-//        QPixmap pixmap = chessAction.generate_pixture(chess_position_map);
-        QPixmap pixmap;
-        pixmap.load("D:\\test.jpg");
+        QPixmap pixmap = chessAction.generate_pixture(chess_position_map);
+//        QPixmap pixmap;
+//        pixmap.load("D:\\test.jpg");
         ui->mainImg->setPixmap(pixmap);
     }
 }

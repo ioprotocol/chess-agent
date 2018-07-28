@@ -9,6 +9,8 @@
 #include <opencv2/imgproc.hpp>
 #include <iostream>
 #include <time.h>
+#include <QDir>
+#include <QDebug>
 
 #include "application_utils.h"
 #include "knndetection.h"
@@ -62,13 +64,13 @@ void ScreenShot::hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &ci
     HoughCircles(src_gray, circles, cv::HOUGH_GRADIENT, 1, 25, 208, 40, 15, 30);
 }
 
-void ScreenShot::hough_detection_circle_single(cv::Mat &src, Circle &circle) {
+bool ScreenShot::hough_detection_circle_single(cv::Mat &src, Circle &circle) {
     std::vector<cv::Vec3f> circles;
     hough_detection_circle(src, circles);
 
     if (circles.size() < 1) {
         qErrnoWarning("hough_detection_circle_single err");
-        return;
+        return false;
     }
     if(circles.size() > 1) {
         std::cout << "more than one cirlce" << std::endl;
@@ -77,6 +79,7 @@ void ScreenShot::hough_detection_circle_single(cv::Mat &src, Circle &circle) {
     int radius = cvRound(circles[0][2]);
     circle.set_center(center);
     circle.set_radius(radius);
+    return true;
 }
 
 #ifdef _TEST_STD_OUT
@@ -156,7 +159,7 @@ int ScreenShot::detect_chess_position(std::map<unsigned int, int>* map, cv::Mat 
 
     std::list<Sample> samle_list;
     grab_samles(circle_list, screen, samle_list);
-    std::list<Sample>::iterator iter = samle_list.begin();
+    std::list<Sample>::iterator iter;
     for(iter = samle_list.begin(); iter != samle_list.end(); iter ++) {
         int type = p_detection_->predict(iter->mat());
         int pos = coordinate_screen_to_chess(iter->position());
@@ -165,6 +168,43 @@ int ScreenShot::detect_chess_position(std::map<unsigned int, int>* map, cv::Mat 
         }
         (*map)[pos] = type;
     }
+
+    if (prev_chess_snap.size() < 1) {
+        std::map<unsigned int, int>::iterator it = map->begin();
+        while (it != map->end()) {
+            prev_chess_snap.insert(it->first, it->second);
+            it ++;
+        }
+    } else {
+        std::map<unsigned int, int>::iterator it = map->begin();
+        while (it != map->end()) {
+            if (!prev_chess_snap.contains(it->first) || it->second != prev_chess_snap.value(it->first)) {
+                qDebug() << "chess snap change, grab samples";
+                for(iter = samle_list.begin(); iter != samle_list.end(); iter ++) {
+                    int type = p_detection_->predict(iter->mat());
+                    if (type >= 10) {
+                        type = type - detect_chess_color(*iter);
+                    }
+                    QString path = Hub::current_dir().append("/resources/train/");
+                    path.append(QString::number(type));
+                    QDir dir(path);
+                    if (!dir.exists()) {
+                        dir.mkpath(path);
+                    }
+                    path.append("/").append(QString::number(qrand())).append(".jpg");
+                    qDebug() << path;
+                    cv::Mat out;
+                    cv::inRange(iter->mat(), cv::Scalar(0,0,47), cv::Scalar(255,255,183), out);
+                    cv::threshold(out, out, 0, 255.0, CV_THRESH_BINARY_INV);
+                    out.convertTo(out, CV_32F);
+                    cv::imwrite(path.toStdString(), out);
+                }
+                break;
+            }
+            it ++;
+        }
+    }
+
     return 0;
 }
 
@@ -266,8 +306,13 @@ void ScreenShot::grab_samles(std::list<Circle> &circle_list, cv::Mat &screen, st
         cv::Mat mask = cv::Mat::zeros(split.rows, split.cols, screen.type());
 
         Circle re_circle;
-        hough_detection_circle_single(roi, re_circle);
-        cv::circle(mask, re_circle.center(), re_circle.radius() - 5, CV_RGB(255, 255, 255), -1);
+        if (!hough_detection_circle_single(roi, re_circle)) {
+            list_iter++;
+            index++;
+            continue;
+        }
+
+        cv::circle(mask, re_circle.center(), re_circle.radius(), CV_RGB(255, 255, 255), -1);
         roi.copyTo(split, mask);
 
         samle_list.push_back(Sample(split, chess_position_type_[index], list_iter->center()));

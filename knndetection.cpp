@@ -35,13 +35,13 @@ void KnnDection::train(std::list<Sample> &samples) {
             }
         }
 
-    src_data.convertTo(src_data, CV_32F); //uchar型转换为cv_32f
+    src_data.convertTo(src_data, CV_32F); //uchar??????cv_32f
 
     cv::Mat trainData, trainLabels;
     trainData = src_data(cv::Range(0, train_num), cv::Range::all());
     trainLabels = src_labels(cv::Range(0, train_num), cv::Range::all());
 
-    //使用KNN算法
+    //???KNN??
     cv::Ptr<cv::ml::TrainData> tData = cv::ml::TrainData::create(trainData, cv::ml::ROW_SAMPLE, trainLabels);
 
     if (knn_model_->isTrained()) {

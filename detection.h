@@ -34,6 +34,7 @@ public:
 
 class Detection {
 public:
+    virtual cv::Mat format(cv::Mat &mat) = 0;
     /**
      * Train with generate sample
      */

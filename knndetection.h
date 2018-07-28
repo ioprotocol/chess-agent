@@ -25,8 +25,9 @@ private:
      * @param mat
      * @return
      */
-    cv::Mat format(cv::Mat &mat);
 public:
+    cv::Mat format(cv::Mat &mat);
+
     void train(std::list<Sample> &samples) override;
 
     bool is_trained() override;
