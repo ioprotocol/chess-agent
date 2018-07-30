@@ -192,7 +192,6 @@ int ScreenShot::detect_chess_position(std::map<unsigned int, int>* map, cv::Mat 
                         dir.mkpath(path);
                     }
                     path.append("/").append(QString::number(qrand())).append(".jpg");
-                    qDebug() << path;
                     cv::Mat out;
                     cv::inRange(iter->mat(), cv::Scalar(0,0,47), cv::Scalar(255,255,183), out);
                     cv::threshold(out, out, 0, 255.0, CV_THRESH_BINARY_INV);
@@ -267,6 +266,16 @@ void ScreenShot::study(std::list<Circle> &circle_list) {
     }
 }
 
+int max_redius(std::list<Circle> &circle_list) {
+    int max_value = 0;
+    std::list<Circle>::iterator list_iter = circle_list.begin();
+    while (list_iter != circle_list.end()) {
+        max_value = MAX(max_value, list_iter->radius());
+        list_iter++;
+    }
+    return max_value;
+}
+
 int ScreenShot::auto_train(std::list<Circle> &circle_list, cv::Mat &screen) {
     std::list<Sample> samle_list;
 
@@ -296,7 +305,7 @@ int ScreenShot::auto_train(std::list<Circle> &circle_list, cv::Mat &screen) {
 }
 
 void ScreenShot::grab_samles(std::list<Circle> &circle_list, cv::Mat &screen, std::list<Sample> &samle_list) {
-    int size = max_circle_radius_*2;
+    int size = max_redius(circle_list)*2 + 10;
     int index = 0;
     std::list<Circle>::iterator list_iter = circle_list.begin();
     while (list_iter != circle_list.end()) {
@@ -307,13 +316,26 @@ void ScreenShot::grab_samles(std::list<Circle> &circle_list, cv::Mat &screen, st
 
         Circle re_circle;
         if (!hough_detection_circle_single(roi, re_circle)) {
+            QString path = Hub::current_dir().append("/resources/abnormal");
+            QDir dir(path);
+            if (!dir.exists()) {
+                dir.mkpath(path);
+            }
+            path.append("/").append(QString::number(qrand())).append(".jpg");
+            cv::imwrite(path.toStdString(), roi);
+
+            qDebug() << " abnormal img";
+
             list_iter++;
             index++;
             continue;
         }
 
-        cv::circle(mask, re_circle.center(), re_circle.radius(), CV_RGB(255, 255, 255), -1);
+        cv::circle(mask, re_circle.center(), re_circle.radius() - 3, CV_RGB(255, 255, 255), -1);
         roi.copyTo(split, mask);
+
+        cv::Rect re_rect(re_circle.center().x - 22, re_circle.center().y - 22, 44, 44);
+        split = split(re_rect);
 
         samle_list.push_back(Sample(split, chess_position_type_[index], list_iter->center()));
         list_iter++;

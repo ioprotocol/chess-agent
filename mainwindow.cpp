@@ -24,13 +24,13 @@ MainWindow::MainWindow(QWidget *parent) :
     bindWindowRect(QRect(0, 0, 0, 0))
 {
     ui->setupUi(this);
-
+	
     screenTimer = new QTimer(this);
     grabWindowTimer = new QTimer(this);
-
+	
     connect(screenTimer, SIGNAL(timeout()), this, SLOT(screen_timer_timeout()));
     connect(grabWindowTimer, SIGNAL(timeout()), this, SLOT(grab_window_timer_timeout()));
-
+	
     connect(&workerFutureWatcher, SIGNAL(finished()), this, SLOT(worker_run_finish()));
     this->setFixedSize(600, 700);
 }
@@ -121,6 +121,7 @@ bool MainWindow::grab_window(cv::Mat &mat)
     buffer.open(QIODevice::ReadWrite);
 
     p.save(&buffer, "jpeg", 100);
+
 
     uchar* data = (uchar *) byteArray.data();
     std::vector<uchar> vec_data(&data[0], &data[0] + byteArray.size());
