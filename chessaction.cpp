@@ -3,7 +3,7 @@
 //
 
 #include "chessaction.h"
-#include "application_utils.h"
+#include "applicationutils.h"
 
 ChessAction::ChessAction() {
     this->chess_board_ = cv::imread((Hub::current_dir() + "/resources/img/MAIN.png").toStdString(), cv::IMREAD_COLOR);

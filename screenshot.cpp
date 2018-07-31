@@ -12,7 +12,7 @@
 #include <QDir>
 #include <QDebug>
 
-#include "application_utils.h"
+#include "applicationutils.h"
 #include "knndetection.h"
 
 ScreenShot::ScreenShot() :

@@ -5,3 +5,4 @@ resources/dataset
 resources/knn.xml
 resources/screen.jpg
 resources/test.jpg
+*.json

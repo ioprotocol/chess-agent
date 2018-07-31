@@ -5,7 +5,6 @@
 #ifndef CHESSAGENT_APPLICATION_UTILS_H
 #define CHESSAGENT_APPLICATION_UTILS_H
 
-#include <iostream>
 #include <QString>
 #include <opencv2/opencv.hpp>
 
@@ -29,7 +28,7 @@ namespace Chess {
      * @param type
      * @return
      */
-    std::string get_chess_name(int type);
+    QString get_chess_name(int type);
 
     /**
      * 将象棋二维坐标转为一维坐标，方便计算

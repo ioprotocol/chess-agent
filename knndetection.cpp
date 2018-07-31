@@ -5,7 +5,7 @@
 #include "knndetection.h"
 
 #include <QFile>
-#include "application_utils.h"
+#include "applicationutils.h"
 
 #define MODEL_FILE_NAME "/resources/knn.xml"
 

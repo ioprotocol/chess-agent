@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(ChessAgent)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_PREFIX_PATH D:/Qt/Qt5.11.1/5.11.1)
 set(OpenCV_DIR D:/opencv/build/install)

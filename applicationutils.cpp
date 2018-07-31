@@ -1,11 +1,10 @@
 //
 // Created by xushy on 18-7-2.
 //
-#include "application_utils.h"
+#include "applicationutils.h"
 
 #include <QDir>
 #include <opencv2/imgcodecs.hpp>
-#include <iostream>
 
 cv::Point Chess::uint32_to_point(unsigned int position) {
     return cv::Point(position % 10000, position / 10000);
@@ -36,10 +35,10 @@ double Chess::get_distance_by_position(cv::Point point1, cv::Point point2) {
     return get_distance_by_position(point_to_uint32(point1), point_to_uint32(point2));
 }
 
-std::string Chess::get_chess_name(int type) {
+QString Chess::get_chess_name(int type) {
 	int tmp = type;
-    std::string prefix;
-    std::string name;
+    QString prefix;
+    QString name;
     if (tmp >= 10) {
         prefix.append("ºÚ");
 		tmp = tmp - 10;
@@ -69,7 +68,7 @@ std::string Chess::get_chess_name(int type) {
             name = "×ä";
             break;
     }
-    return prefix + name;
+    return prefix.append(name);
 }
 
 QString Hub::current_dir() {

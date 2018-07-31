@@ -14,7 +14,7 @@
 #include <QDebug>
 
 #include "colorfilterdialog.h"
-#include "application_utils.h"
+#include "applicationutils.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(grabWindowTimer, SIGNAL(timeout()), this, SLOT(grab_window_timer_timeout()));
 	
     connect(&workerFutureWatcher, SIGNAL(finished()), this, SLOT(worker_run_finish()));
-    this->setFixedSize(600, 700);
+	this->setFixedSize(600, 700);
 }
 
 MainWindow::~MainWindow()
@@ -80,27 +80,8 @@ void MainWindow::worker_run_finish() {
 
     qDebug() << "worker_run_finish, result:" << result;
 
-    switch (result) {
-        case DETECT_STUDY_SUCCESS:
-            break;
-        case DETECT_STUDY_FAILED:
-            break;
-        case DETECT_STUDY_CIRCLE_TO_LITTILE:
-            break;
-        case DETECT_AUTOTRAIN_CIRCLE_LITTILE:
-            break;
-        case DETECT_AUTOTRAIN_ERR_RATE_HIGH:
-            break;
-        case DETECT_AUTOTRAIN_SUCCESS:
-            break;
-        case DETECT_WINDOW_IS_NOT_ACTIVE:
-            break;
-    }
-
     if(result == 0) {
         QPixmap pixmap = chessAction.generate_pixture(chess_position_map);
-//        QPixmap pixmap;
-//        pixmap.load("D:\\test.jpg");
         ui->mainImg->setPixmap(pixmap);
     }
 }

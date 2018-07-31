@@ -8,7 +8,7 @@
 #include <opencv2/opencv.hpp>
 #include <QMap>
 
-#include "application_utils.h"
+#include "applicationutils.h"
 #include "detection.h"
 
 // 自动学习成功，成功识别了棋盘的位置信息,并标记了棋盘的左上坐标和右下坐标
