@@ -118,7 +118,7 @@ QList<QRect> Chess::hough_detection_circle(cv::Mat &src) {
     std::vector<cv::Vec3f> cirs;
     cvtColor(src, src_gray, cv::COLOR_BGR2GRAY);
     GaussianBlur(src_gray, src_gray, cv::Size(3, 3), 2, 2);
-    HoughCircles(src_gray, cirs, cv::HOUGH_GRADIENT, 1, 25, 208, 40, 15, 30);
+    HoughCircles(src_gray, cirs, cv::HOUGH_GRADIENT, 1, 25, 208, 40, 20, 45);
     if (cirs.size() > 0) {
         for (cv::Vec3f vec3f : cirs) {
             int radius = cvRound(vec3f[2]);
