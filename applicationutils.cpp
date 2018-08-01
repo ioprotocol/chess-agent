@@ -67,6 +67,11 @@ QRect Chess::detect_chess_board(cv::Mat &screen) {
 
     QList<QRect> list = hough_detection_circle(screen);
 
+    if (list.size() < 32) {
+        qErrnoWarning("detect_chess_board failed for circle is too little!");
+        return rect;
+    }
+
     QList<QRect>::iterator list_iter = list.begin();
 
     while (list_iter != list.end()) {
@@ -97,6 +102,7 @@ QRect Chess::detect_chess_board(cv::Mat &screen) {
                 } else {
                     rect.setWidth(p2.x() - start_point.x());
                     rect.setHeight(p2.y() - start_point.y());
+                    qDebug() << "detect_chess_board successfully ";
                     break;
                 }
             } else {
