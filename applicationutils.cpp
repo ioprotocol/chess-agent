@@ -18,21 +18,9 @@ unsigned int  Chess::point_to_uint32(int x, int y) {
     return y * 10000 + x;
 }
 
-bool Chess::is_same_position(unsigned int  point1, unsigned int  point2) {
-    return get_distance_by_position(point1, point2) < 6;
-}
-
-double Chess::get_distance_by_position(unsigned int  point1, unsigned int  point2) {
-    int x1 = point1 % 10000;
-    int y1 = point1 / 10000;
-    int x2 = point2 % 10000;
-    int y2 = point2 / 10000;
-    double distance = sqrt(abs(x1 - x2) * abs(x1 - x2) + abs(y1 - y2) * abs(y1 - y2));
+double Chess::get_distance_by_position(QPoint point1, QPoint point2) {
+    double distance = sqrt(abs(point1.x() - point2.x()) * abs(point1.x() - point2.x()) + abs(point1.y() - point2.y()) * abs(point1.y() - point2.y()));
     return distance;
-}
-
-double Chess::get_distance_by_position(cv::Point point1, cv::Point point2) {
-    return get_distance_by_position(point_to_uint32(point1), point_to_uint32(point2));
 }
 
 QString Chess::get_chess_name(int type) {
@@ -69,6 +57,75 @@ QString Chess::get_chess_name(int type) {
             break;
     }
     return prefix.append(name);
+}
+
+QRect Chess::detect_chess_board(cv::Mat &screen) {
+    QRect rect(0, 0, 0, 0);
+
+    QPoint start_point(0, 0);
+    int continues_cout = 0;
+
+    QList<QRect> list = hough_detection_circle(screen);
+
+    QList<QRect>::iterator list_iter = list.begin();
+
+    while (list_iter != list.end()) {
+        QPoint p1 = list_iter->topLeft();
+        list_iter++;
+        if (list_iter == list.end()) {
+            break;
+        }
+        QPoint p2 = list_iter->topLeft();
+        list_iter++;
+        if (list_iter == list.end()) {
+            break;
+        }
+        QPoint p3 = list_iter->topLeft();
+
+        double d1 = get_distance_by_position(p1, p2);
+        double d2 = get_distance_by_position(p2, p3);
+
+        if (abs(d1 - d2) < 12) {
+            if (start_point.x() == 0 && start_point.y() == 0) {
+                start_point = p1;
+            }
+            continues_cout++;
+        } else {
+            if (continues_cout == 7) {
+                if (rect.width() == 0 && rect.height() == 0) {
+                    rect.setTopLeft(start_point);
+                } else {
+                    rect.setWidth(p2.x() - start_point.x());
+                    rect.setHeight(p2.y() - start_point.y());
+                    break;
+                }
+            } else {
+                start_point.setX(0);
+                start_point.setY(0);
+            }
+            continues_cout = 0;
+        }
+
+        list_iter--;
+    }
+
+    return rect;
+}
+
+QList<QRect> Chess::hough_detection_circle(cv::Mat &src) {
+    QList<QRect> circles;
+    cv::Mat src_gray;
+    std::vector<cv::Vec3f> cirs;
+    cvtColor(src, src_gray, cv::COLOR_BGR2GRAY);
+    GaussianBlur(src_gray, src_gray, cv::Size(3, 3), 2, 2);
+    HoughCircles(src_gray, cirs, cv::HOUGH_GRADIENT, 1, 25, 208, 40, 15, 30);
+    if (cirs.size() > 0) {
+        for (cv::Vec3f vec3f : cirs) {
+            int radius = cvRound(vec3f[2]);
+            circles.push_back(QRect(vec3f[0], vec3f[1], radius, radius));
+        }
+    }
+    return circles;
 }
 
 QString Hub::current_dir() {

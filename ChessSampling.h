@@ -15,9 +15,6 @@ private:
 public:
     ChessSampling(const QRect &chessRect);
 
-private:
-    void houghDetectionCircle(cv::Mat &src, std::vector<cv::Vec3f> &circles);
-    bool ChessSampling::houghDetectionCircle(cv::Mat &src, QRect &circle);
 public:
     QList<cv::Mat> grabSample(cv::Mat &screen);
 };

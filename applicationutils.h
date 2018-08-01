@@ -6,6 +6,8 @@
 #define CHESSAGENT_APPLICATION_UTILS_H
 
 #include <QString>
+#include <QRect>
+#include <QList>
 #include <opencv2/opencv.hpp>
 
 #define PWD "EPWD"
@@ -55,10 +57,29 @@ namespace Chess {
      */
     cv::Point uint32_to_point(unsigned int position);
 
-    bool is_same_position(unsigned int point1, unsigned int point2);
+    /**
+     * 计算两点间的距离
+     *
+     * @param point1
+     * @param point2
+     * @return
+     */
+    double get_distance_by_position(QPoint point1, QPoint point2);
 
-    double get_distance_by_position(unsigned int point1, unsigned int point2);
+    /**
+     * 通过开局位置，监测棋盘坐标
+     *
+     * @param screen
+     * @return
+     */
+    QRect detect_chess_board(cv::Mat &screen);
 
-    double get_distance_by_position(cv::Point point1, cv::Point point2);
+    /**
+     * 检测图像中所有的圆形
+     *
+     * @param src
+     * @param circles
+     */
+    QList<QRect> hough_detection_circle(cv::Mat &src);
 }
 #endif //CHESSAGENT_APPLICATION_UTILS_H
