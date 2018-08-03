@@ -26,7 +26,7 @@ namespace Chess {
 
     bool sort_circle(QRect &rt1, QRect &rt2);
     /**
-     * ���������ö������ֵ��ȡ��������
+     * ????????????????????????????
      *
      * @param type
      * @return
@@ -34,7 +34,7 @@ namespace Chess {
     QString get_chess_name(int type);
 
     /**
-     * �������ά����תΪһά���꣬�������
+     * ???????????????????????????
      *
      * @param point
      * @return
@@ -42,7 +42,7 @@ namespace Chess {
     unsigned int point_to_uint32(cv::Point point);
 
     /**
-     * �������ά����תΪһά���꣬�������
+     * ???????????????????????????
      *
      * @param x
      * @param y
@@ -51,7 +51,7 @@ namespace Chess {
     unsigned int point_to_uint32(int x, int y);
 
     /**
-     * ��һά����תΪ��ά����
+     * ?????????????????
      *
      * @param position
      * @return
@@ -59,7 +59,7 @@ namespace Chess {
     cv::Point uint32_to_point(unsigned int position);
 
     /**
-     * ���������ľ���
+     * ?????????????
      *
      * @param point1
      * @param point2
@@ -68,7 +68,7 @@ namespace Chess {
     double get_distance_by_position(QPoint point1, QPoint point2);
 
     /**
-     * ͨ������λ�ã������������
+     * ???????��??????????????
      *
      * @param screen
      * @return
@@ -76,7 +76,7 @@ namespace Chess {
     QRect detect_chess_board(cv::Mat &screen);
 
     /**
-     * ���ͼ�������е�Բ��
+     * ???????????��????
      *
      * @param src
      * @param circles
@@ -84,7 +84,7 @@ namespace Chess {
     QList<QRect> hough_detection_circle(cv::Mat &src);
 
     /**
-     * ֻ�������ͼ���е�һ��Բ��
+     * ????????????��???????
      *
      * @param src
      * @param out
