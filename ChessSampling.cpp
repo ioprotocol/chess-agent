@@ -4,13 +4,23 @@
 
 
 #include "ChessSampling.h"
+#include "applicationutils.h"
 
 #include <QDebug>
 
-ChessSampling::ChessSampling(const QRect &chessRect) : chessRect(chessRect) {}
+ChessSampling::ChessSampling() : chessRect(QRect(0, 0, 0, 0)){}
 
 QList<cv::Mat> ChessSampling::grabSample(cv::Mat &screen) {
+    if (chessRect.width() == 0) {
+        chessRect = Chess::detect_chess_board(screen);
+    }
+
     QList<cv::Mat> result;
+
+    if (chessRect.width() == 0) {
+        return result;
+    }
+
     float dx = this->chessRect.width() / 9.0;
     float dy = this->chessRect.height() / 10.0;
 
@@ -19,7 +29,7 @@ QList<cv::Mat> ChessSampling::grabSample(cv::Mat &screen) {
             cv::Rect rect(chessRect.left() + x * dx - 32, chessRect.top() + dy * y - 32, 64, 64);
             cv::Mat roi = screen(rect);
             QRect circle;
-            if (houghDetectionCircle(roi, circle)) {
+            if (Chess::hough_detection_single_circle(roi, circle)) {
 
             } else {
                 qDebug() << "detection circle failed, this img is blank or other err";

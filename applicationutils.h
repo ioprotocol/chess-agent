@@ -81,5 +81,14 @@ namespace Chess {
      * @param circles
      */
     QList<QRect> hough_detection_circle(cv::Mat &src);
+
+    /**
+     * 只检测输入图像中的一个圆形
+     *
+     * @param src
+     * @param out
+     * @return
+     */
+    bool hough_detection_single_circle(cv::Mat &src, QRect &out);
 }
 #endif //CHESSAGENT_APPLICATION_UTILS_H

@@ -134,6 +134,15 @@ QList<QRect> Chess::hough_detection_circle(cv::Mat &src) {
     return circles;
 }
 
+bool Chess::hough_detection_single_circle(cv::Mat &src, QRect &out) {
+    QList<QRect> rects = hough_detection_circle(src);
+    if (rects.size() < 1) {
+        return false;
+    }
+    out = rects.front();
+    return true;
+}
+
 QString Hub::current_dir() {
     return qEnvironmentVariable(PWD, QDir::currentPath());
 }

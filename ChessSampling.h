@@ -13,7 +13,7 @@ class ChessSampling {
 private:
     QRect chessRect;
 public:
-    ChessSampling(const QRect &chessRect);
+    ChessSampling();
 
 public:
     QList<cv::Mat> grabSample(cv::Mat &screen);
