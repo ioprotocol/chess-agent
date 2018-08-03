@@ -6,7 +6,7 @@
 #define CHESSAGENT_CHESSSAMPLING_H
 
 #include <QRect>
-#include <QList>>
+#include <QList>
 #include <opencv2/opencv.hpp>
 
 class ChessSampling {
@@ -17,6 +17,8 @@ public:
 
 public:
     QList<cv::Mat> grabSample(cv::Mat &screen);
+
+    void test(cv::Mat &screen);
 };
 
 

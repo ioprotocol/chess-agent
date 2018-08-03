@@ -4,6 +4,7 @@
 #include "applicationutils.h"
 
 #include <QDir>
+#include <QDebug>
 #include <opencv2/imgcodecs.hpp>
 
 cv::Point Chess::uint32_to_point(unsigned int position) {
@@ -28,35 +29,51 @@ QString Chess::get_chess_name(int type) {
     QString prefix;
     QString name;
     if (tmp >= 10) {
-        prefix.append("黑");
+        prefix.append("??");
 		tmp = tmp - 10;
     } else {
-        prefix = "红";
+        prefix = "??";
     }
     switch (tmp) {
         case R_CHE:
-            name = "车";
+            name = "??";
             break;
         case R_MA:
-            name = "马";
+            name = "??";
             break;
         case R_XIANG:
-            name = "相";
+            name = "??";
             break;
         case R_SHI:
-            name = "士";
+            name = "?";
             break;
         case R_JIANG:
-            name = "将";
+            name = "??";
             break;
         case R_PAO:
-            name = "炮";
+            name = "??";
             break;
         case R_ZU:
-            name = "卒";
+            name = "??";
             break;
     }
     return prefix.append(name);
+}
+
+void debug_print_all_circle_to_screen(QList<QRect> &list, cv::Mat &screen) {
+    for(QRect rect : list) {
+        cv::circle(screen, cv::Point(rect.left(), rect.top()), rect.width(), cv::Scalar(255, 0, 0), 2);
+        QString path = "D:\\test.jpg";
+        cv::imwrite(path.toStdString(), screen);
+    }
+}
+
+bool Chess::sort_circle(QRect &rt1, QRect &rt2) {
+    if(abs(rt1.top() - rt2.top()) < 15) {
+        return rt1.left() < rt2.left();
+    } else {
+        return rt1.top() < rt2.top();
+    }
 }
 
 QRect Chess::detect_chess_board(cv::Mat &screen) {
@@ -67,10 +84,13 @@ QRect Chess::detect_chess_board(cv::Mat &screen) {
 
     QList<QRect> list = hough_detection_circle(screen);
 
+    qDebug() << "detect_chess_board circle size:" << list.size();
     if (list.size() < 32) {
         qErrnoWarning("detect_chess_board failed for circle is too little!");
         return rect;
     }
+
+    qSort(list.begin(), list.end(), sort_circle);
 
     QList<QRect>::iterator list_iter = list.begin();
 
@@ -97,7 +117,8 @@ QRect Chess::detect_chess_board(cv::Mat &screen) {
             continues_cout++;
         } else {
             if (continues_cout == 7) {
-                if (rect.width() == 0 && rect.height() == 0) {
+                if (rect.left() == 0 && rect.top() == 0) {
+                    qDebug() << "detect chess board left top point:x=" << start_point.x() << " y:" << start_point.y();
                     rect.setTopLeft(start_point);
                 } else {
                     rect.setWidth(p2.x() - start_point.x());
@@ -124,7 +145,7 @@ QList<QRect> Chess::hough_detection_circle(cv::Mat &src) {
     std::vector<cv::Vec3f> cirs;
     cvtColor(src, src_gray, cv::COLOR_BGR2GRAY);
     GaussianBlur(src_gray, src_gray, cv::Size(3, 3), 2, 2);
-    HoughCircles(src_gray, cirs, cv::HOUGH_GRADIENT, 1, 25, 208, 40, 20, 45);
+    HoughCircles(src_gray, cirs, cv::HOUGH_GRADIENT, 1, 25, 208, 40, 15, 45);
     if (cirs.size() > 0) {
         for (cv::Vec3f vec3f : cirs) {
             int radius = cvRound(vec3f[2]);

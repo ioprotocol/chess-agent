@@ -9,8 +9,8 @@
 #include <opencv2/opencv.hpp>
 #include <Windows.h>
 
-#include "screenshot.h"
 #include "chessaction.h"
+#include "ChessSampling.h"
 
 namespace Ui {
 class MainWindow;
@@ -38,7 +38,7 @@ private:
     bool grab_window(cv::Mat &mat);
 
     QThreadPool workerThreadPool;
-    QFutureWatcher<int> workerFutureWatcher;
+    QFutureWatcher<void> workerFutureWatcher;
 
     std::map<unsigned int, int> chess_position_map;
 private:
@@ -50,7 +50,7 @@ private:
     HWND bindHWND;
     QRect bindWindowRect;
 
-    ScreenShot screenShot;
+    ChessSampling chessSampling;
     ChessAction chessAction;
 };
 

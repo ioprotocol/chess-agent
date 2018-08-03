@@ -82,26 +82,6 @@ public:
     virtual ~ScreenShot();
 
 private:
-    /**
-     * 检测图像中的所有circle
-     * @param src
-     * @param circles
-     */
-    void hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &circles);
-
-    /**
-     * 只检测图像中的单个园
-     * @param src
-     * @param circle
-     */
-    bool hough_detection_circle_single(cv::Mat &src, Circle &circle);
-
-    /**
-     * 自动学习识别棋盘坐标
-     *
-     * @param circle_list
-     */
-    void study(std::list<Circle> &circle_list);
 
     /**
      * 根据识别的圆形坐标自动识别棋子完整样本
@@ -109,28 +89,28 @@ private:
      * @param screen
      * @param smples
      */
-    void grab_samles(std::list<Circle> &circle_list, cv::Mat &screen, std::list<Sample> &samle_list);
+//    void grab_samles(std::list<Circle> &circle_list, cv::Mat &screen, std::list<Sample> &samle_list);
     /**
      * 棋盘位于开局阶段，自动训练识别算法
      * @param circle_list
      * @param screen
      * @return
      */
-    int auto_train(std::list<Circle> &circle_list, cv::Mat &screen);
+//    int auto_train(std::list<Circle> &circle_list, cv::Mat &screen);
 
     /**
      * 屏幕坐标转象棋坐标
      * @param point
      * @return
      */
-    int coordinate_screen_to_chess(cv::Point &point);
+//    int coordinate_screen_to_chess(cv::Point &point);
 
     /**
      * 象棋坐标转屏幕坐标
      * @param point
      * @return
      */
-    void coordinate_chess_to_screen(int in, cv::Point &point);
+//    void coordinate_chess_to_screen(int in, cv::Point &point);
 
     /**
      * 识别象棋的颜色
@@ -138,10 +118,8 @@ private:
      * @param sample
      * @return
      */
-    int detect_chess_color(Sample &sample);
-public:
-
-    int detect_chess_position(std::map<unsigned int, int> *map, cv::Mat &screen);
+//    int detect_chess_color(Sample &sample);
+//    int detect_chess_position(std::map<unsigned int, int> *map, cv::Mat &screen);
 };
 
 

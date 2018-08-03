@@ -24,8 +24,9 @@ namespace Chess {
         R_CHE = 0, R_MA = 1, R_XIANG = 2, R_SHI = 3, R_JIANG = 4, R_PAO = 5, R_ZU = 6
     };
 
+    bool sort_circle(QRect &rt1, QRect &rt2);
     /**
-     * ¸ù¾ÝÏóÆåµÄÃ¶¾ÙÀàÐÍÖµ»ñÈ¡ÖÐÎÄÃû³Æ
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      *
      * @param type
      * @return
@@ -33,7 +34,7 @@ namespace Chess {
     QString get_chess_name(int type);
 
     /**
-     * ½«ÏóÆå¶þÎ¬×ø±ê×ªÎªÒ»Î¬×ø±ê£¬·½±ã¼ÆËã
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¬ï¿½ï¿½ï¿½ï¿½×ªÎªÒ»Î¬ï¿½ï¿½ï¿½ê£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      *
      * @param point
      * @return
@@ -41,7 +42,7 @@ namespace Chess {
     unsigned int point_to_uint32(cv::Point point);
 
     /**
-     * ½«ÏóÆå¶þÎ¬×ø±ê×ªÎªÒ»Î¬×ø±ê£¬·½±ã¼ÆËã
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¬ï¿½ï¿½ï¿½ï¿½×ªÎªÒ»Î¬ï¿½ï¿½ï¿½ê£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      *
      * @param x
      * @param y
@@ -50,7 +51,7 @@ namespace Chess {
     unsigned int point_to_uint32(int x, int y);
 
     /**
-     * ½«Ò»Î¬×ø±ê×ªÎª¶þÎ¬×ø±ê
+     * ï¿½ï¿½Ò»Î¬ï¿½ï¿½ï¿½ï¿½×ªÎªï¿½ï¿½Î¬ï¿½ï¿½ï¿½ï¿½
      *
      * @param position
      * @return
@@ -58,7 +59,7 @@ namespace Chess {
     cv::Point uint32_to_point(unsigned int position);
 
     /**
-     * ¼ÆËãÁ½µã¼äµÄ¾àÀë
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½
      *
      * @param point1
      * @param point2
@@ -67,7 +68,7 @@ namespace Chess {
     double get_distance_by_position(QPoint point1, QPoint point2);
 
     /**
-     * Í¨¹ý¿ª¾ÖÎ»ÖÃ£¬¼à²âÆåÅÌ×ø±ê
+     * Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      *
      * @param screen
      * @return
@@ -75,7 +76,7 @@ namespace Chess {
     QRect detect_chess_board(cv::Mat &screen);
 
     /**
-     * ¼ì²âÍ¼ÏñÖÐËùÓÐµÄÔ²ÐÎ
+     * ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½Ô²ï¿½ï¿½
      *
      * @param src
      * @param circles
@@ -83,7 +84,7 @@ namespace Chess {
     QList<QRect> hough_detection_circle(cv::Mat &src);
 
     /**
-     * Ö»¼ì²âÊäÈëÍ¼ÏñÖÐµÄÒ»¸öÔ²ÐÎ
+     * Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½Ðµï¿½Ò»ï¿½ï¿½Ô²ï¿½ï¿½
      *
      * @param src
      * @param out

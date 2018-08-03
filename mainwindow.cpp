@@ -66,8 +66,8 @@ void MainWindow::screen_timer_timeout()
     if (grab_window(screen)) {
         if (!workerFutureWatcher.isRunning()) {
             chess_position_map.clear();
-            QFuture<int> future = QtConcurrent::run(&workerThreadPool,
-                    &screenShot, &ScreenShot::detect_chess_position, &chess_position_map, screen);
+            QFuture<void> future = QtConcurrent::run(&workerThreadPool,
+                    &chessSampling, &ChessSampling::test, screen);
             workerFutureWatcher.setFuture(future);
         } else {
             qDebug() << "task queue is full";
@@ -76,14 +76,8 @@ void MainWindow::screen_timer_timeout()
 }
 
 void MainWindow::worker_run_finish() {
-    int result = workerFutureWatcher.result();
-
-    qDebug() << "worker_run_finish, result:" << result;
-
-    if(result == 0) {
-        QPixmap pixmap = chessAction.generate_pixture(chess_position_map);
-        ui->mainImg->setPixmap(pixmap);
-    }
+//    int result = workerFutureWatcher.result();
+    qDebug() << "worker_run_finish, result:";
 }
 
 bool MainWindow::grab_window(cv::Mat &mat)

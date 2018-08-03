@@ -57,44 +57,7 @@ ScreenShot::~ScreenShot() {
     delete p_detection_;
 }
 
-void ScreenShot::hough_detection_circle(cv::Mat &src, std::vector<cv::Vec3f> &circles) {
-    cv::Mat src_gray;
-    cvtColor(src, src_gray, cv::COLOR_BGR2GRAY);
-    GaussianBlur(src_gray, src_gray, cv::Size(3, 3), 2, 2);
-    HoughCircles(src_gray, circles, cv::HOUGH_GRADIENT, 1, 25, 208, 40, 15, 30);
-}
-
-bool ScreenShot::hough_detection_circle_single(cv::Mat &src, Circle &circle) {
-    std::vector<cv::Vec3f> circles;
-    hough_detection_circle(src, circles);
-
-    if (circles.size() < 1) {
-        qErrnoWarning("hough_detection_circle_single err");
-        return false;
-    }
-    if(circles.size() > 1) {
-        std::cout << "more than one cirlce" << std::endl;
-    }
-    cv::Point center(cvRound(circles[0][0]), cvRound(circles[0][1]));
-    int radius = cvRound(circles[0][2]);
-    circle.set_center(center);
-    circle.set_radius(radius);
-    return true;
-}
-
-#ifdef _TEST_STD_OUT
-
-void print_circle_position(std::list<Circle> &circle_list, cv::Mat &screen) {
-    cv::Mat tmp;
-    screen.copyTo(tmp);
-    for (Circle circle : circle_list) {
-        cv::circle(tmp, circle.center(), circle.radius(), cv::Scalar(255, 0, 0), 1);
-    }
-    cv::imwrite("D:\\test.jpg", tmp);
-}
-
-#endif
-
+/*
 int ScreenShot::detect_chess_position(std::map<unsigned int, int>* map, cv::Mat &screen) {
     std::vector<cv::Vec3f> circle_vector;
     std::list<Circle> circle_list;
@@ -207,11 +170,6 @@ int ScreenShot::detect_chess_position(std::map<unsigned int, int>* map, cv::Mat 
     return 0;
 }
 
-/**
- * 自学习，自动识别棋盘的位置，并标定上左坐标和右下坐标
- *
- * @param circle_list
- */
 void ScreenShot::study(std::list<Circle> &circle_list) {
     std::list<Circle>::iterator list_iter = circle_list.begin();
     cv::Point start_point(0, 0);
@@ -406,3 +364,4 @@ int ScreenShot::detect_chess_color(Sample &sample) {
     // else is red
     return 10;
 }
+*/

@@ -12,7 +12,8 @@ ChessSampling::ChessSampling() : chessRect(QRect(0, 0, 0, 0)){}
 
 QList<cv::Mat> ChessSampling::grabSample(cv::Mat &screen) {
     if (chessRect.width() == 0) {
-        chessRect = Chess::detect_chess_board(screen);
+        qDebug() << "detect chess board";
+        chessRect = QRect(Chess::detect_chess_board(screen));
     }
 
     QList<cv::Mat> result;
@@ -30,7 +31,11 @@ QList<cv::Mat> ChessSampling::grabSample(cv::Mat &screen) {
             cv::Mat roi = screen(rect);
             QRect circle;
             if (Chess::hough_detection_single_circle(roi, circle)) {
-
+                QString path = Hub::current_dir();
+                path.append("/resources/train/");
+                path.append(QString::number(qrand())).append(".jpg");
+                qDebug() << path;
+                cv::imwrite(path.toStdString(), roi);
             } else {
                 qDebug() << "detection circle failed, this img is blank or other err";
             }
@@ -38,4 +43,8 @@ QList<cv::Mat> ChessSampling::grabSample(cv::Mat &screen) {
     }
 
     return result;
+}
+
+void ChessSampling::test(cv::Mat &screen) {
+    grabSample(screen);
 }
