@@ -91,5 +91,6 @@ namespace Chess {
      * @return
      */
     bool hough_detection_single_circle(cv::Mat &src, QRect &out);
+
 }
 #endif //CHESSAGENT_APPLICATION_UTILS_H

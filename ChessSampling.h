@@ -15,6 +15,9 @@ private:
 public:
     ChessSampling();
 
+private:
+
+    QList<QRect> filter(QList<QRect> list);
 public:
     QList<cv::Mat> grabSample(cv::Mat &screen);
 

@@ -12,8 +12,9 @@ ChessSampling::ChessSampling() : chessRect(QRect(0, 0, 0, 0)){}
 
 QList<cv::Mat> ChessSampling::grabSample(cv::Mat &screen) {
     if (chessRect.width() == 0) {
-        qDebug() << "detect chess board";
         chessRect = QRect(Chess::detect_chess_board(screen));
+        qDebug() << "detect chess board(" << chessRect.left() << "," << chessRect.top() << "," << chessRect.width()
+                 << "," << chessRect.height() << ")";
     }
 
     QList<cv::Mat> result;
@@ -22,29 +23,48 @@ QList<cv::Mat> ChessSampling::grabSample(cv::Mat &screen) {
         return result;
     }
 
-    float dx = this->chessRect.width() / 9.0;
-    float dy = this->chessRect.height() / 10.0;
+    QList<QRect> circles = filter(Chess::hough_detection_circle(screen));
+    QSize size(48, 48);
 
-    for(int x = 0; x < 9; x++) {
-        for(int y = 0; y < 10; y++) {
-            cv::Rect rect(chessRect.left() + x * dx - 32, chessRect.top() + dy * y - 32, 64, 64);
-            cv::Mat roi = screen(rect);
-            QRect circle;
-            if (Chess::hough_detection_single_circle(roi, circle)) {
-                QString path = Hub::current_dir();
-                path.append("/resources/train/");
-                path.append(QString::number(qrand())).append(".jpg");
-                qDebug() << path;
-                cv::imwrite(path.toStdString(), roi);
-            } else {
-                qDebug() << "detection circle failed, this img is blank or other err";
-            }
-        }
+    for (QRect circle : circles) {
+        cv::Mat out;
+        cv::Mat roi = screen(cv::Rect(circle.left() - size.width() / 2, circle.top() - size.width() / 2, size.width(),
+                                      size.width()));
+        cv::Mat mask = cv::Mat::zeros(size.width(), size.width(), screen.type());
+        cv::circle(mask, cv::Point(24, 24), circle.width() - 4, CV_RGB(255, 255, 255), -1);
+        roi.copyTo(out, mask);
+
+        cv::inRange(out, cv::Scalar(0,0,56), cv::Scalar(132,130,193), out);
+        cv::threshold(out, out, 0, 255.0, CV_THRESH_BINARY_INV);
+        out.convertTo(out, CV_32F);
+
+        result.push_back(out);
     }
 
     return result;
 }
 
 void ChessSampling::test(cv::Mat &screen) {
-    grabSample(screen);
+    QList<cv::Mat> list = grabSample(screen);
+    QString path = Hub::current_dir();
+    path.append("/resources/train/");
+    for(cv::Mat mat : list) {
+        QString name(path);
+        name.append(QString::number(qrand())).append(".jpg");
+        cv::imwrite(name.toStdString(), mat);
+    }
+}
+
+QList<QRect> ChessSampling::filter(QList<QRect> list) {
+    QRect extandRect = QRect(chessRect.left() - 10, chessRect.top() - 10, chessRect.width() + 10,
+                             chessRect.height() + 10);
+    QList<QRect> result;
+
+    for (QRect rect : list) {
+        if (extandRect.contains(rect.topLeft())) {
+            result.push_back(rect);
+        }
+    }
+    qDebug() << "input cicle size:" << list.size() << " filter:" << list.size() - result.size();
+    return result;
 }

@@ -8,8 +8,8 @@ ColorFilterDialog::ColorFilterDialog(QWidget *parent) :
     ui(new Ui::ColorFilterDialog)
 {
     ui->setupUi(this);
-    mat1 = cv::imread("D:\\1.png");
-    mat2 = cv::imread("D:\\2.png");
+    mat1 = cv::imread("D:\\1.jpg");
+    mat2 = cv::imread("D:\\2.jpg");
 }
 
 ColorFilterDialog::~ColorFilterDialog()
@@ -69,6 +69,12 @@ void ColorFilterDialog::update_img() {
     cv::Mat thr1, thr2;
     cv::inRange(mat1, low, high, thr1);
     cv::inRange(mat2, low, high, thr2);
+
+    cv::threshold(thr1, thr1, 0, 255.0, CV_THRESH_BINARY_INV);
+    thr1.convertTo(thr1, CV_32F);
+
+    cv::threshold(thr2, thr2, 0, 255.0, CV_THRESH_BINARY_INV);
+    thr2.convertTo(thr2, CV_32F);
 
     std::vector<uchar> data1;
     std::vector<uchar> data2;

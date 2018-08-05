@@ -118,12 +118,12 @@ QRect Chess::detect_chess_board(cv::Mat &screen) {
         } else {
             if (continues_cout == 7) {
                 if (rect.left() == 0 && rect.top() == 0) {
-                    qDebug() << "detect chess board left top point:x=" << start_point.x() << " y:" << start_point.y();
+                    qDebug() << "detect chess board start_point:(" << start_point.x() << "," << start_point.y() << ")";
                     rect.setTopLeft(start_point);
                 } else {
-                    rect.setWidth(p2.x() - start_point.x());
-                    rect.setHeight(p2.y() - start_point.y());
-                    qDebug() << "detect_chess_board successfully ";
+                    rect.setWidth(p2.x() - rect.left());
+                    rect.setHeight(p2.y() - rect.top());
+                    qDebug() << "detect_chess_board end_point:(" << p2.x() << "," << p2.y() << ")";
                     break;
                 }
             } else {
