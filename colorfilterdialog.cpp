@@ -67,8 +67,12 @@ void ColorFilterDialog::update_img() {
     cv::Scalar low(lr, lg, lb);
 
     cv::Mat thr1, thr2;
+
     cv::inRange(mat1, low, high, thr1);
     cv::inRange(mat2, low, high, thr2);
+
+    cv::medianBlur(thr1, thr1, 1);
+    cv::medianBlur(thr2, thr2, 1);
 
     cv::threshold(thr1, thr1, 0, 255.0, CV_THRESH_BINARY_INV);
     thr1.convertTo(thr1, CV_32F);
