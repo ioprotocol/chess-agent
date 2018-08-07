@@ -18,7 +18,7 @@ private:
 public:
     cv::Mat format(cv::Mat &mat) override;
 
-    void train(std::list<Sample> &samples) override;
+    void train() override;
 
     bool is_trained() override;
 

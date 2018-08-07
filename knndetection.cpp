@@ -22,18 +22,19 @@ KnnDection::KnnDection() {
     }
 }
 
-void KnnDection::train(std::list<Sample> &samples) {
+void KnnDection::train() {
     cv::Mat src_data,src_labels;
-    samples.sort();
 
-    int train_num = samples.size() * MIN_SAMPLE_NUMBER;
 
+    int train_num = 0;//samples.size() * MIN_SAMPLE_NUMBER;
+/*
         for(int i = 0; i < MIN_SAMPLE_NUMBER; i++) {
             for (Sample sample : samples) {
                 src_data.push_back(format(sample.mat()));
                 src_labels.push_back(sample.label());
             }
         }
+        */
 
     src_data.convertTo(src_data, CV_32F);
 

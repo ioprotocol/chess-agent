@@ -38,7 +38,7 @@ public:
     /**
      * Train with generate sample
      */
-    virtual void train(std::list<Sample> &samples) = 0;
+    virtual void train() = 0;
 
     virtual bool is_trained() = 0;
 
