@@ -22,7 +22,7 @@ CvANNDection::CvANNDection() {
 //    cv::Ptr<cv::ml::TrainData> trainData = cv::ml::TrainData::create(trainingDataMat, ROW_SAMPLE, labelsMat);
 //    model->train(trainData);
 
-//    Ptr<ANN_MLP> bp = ANN_MLP::load<ANN_MLP>("*.xml");
+//    Ptr<ANN_MLP> bp = ANN_MLP::load<ANN_MLP>("ann.xml");
 
     // https://blog.csdn.net/akadiao/article/details/79236458
 }

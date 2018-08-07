@@ -29,32 +29,32 @@ QString Chess::get_chess_name(int type) {
     QString prefix;
     QString name;
     if (tmp >= 10) {
-        prefix.append("??");
+        prefix.append("黑");
 		tmp = tmp - 10;
     } else {
-        prefix = "??";
+        prefix = "红";
     }
     switch (tmp) {
         case R_CHE:
-            name = "??";
+            name = "车";
             break;
         case R_MA:
-            name = "??";
+            name = "马";
             break;
         case R_XIANG:
-            name = "??";
+            name = "象";
             break;
         case R_SHI:
-            name = "?";
+            name = "士";
             break;
         case R_JIANG:
-            name = "??";
+            name = "将";
             break;
         case R_PAO:
-            name = "??";
+            name = "炮";
             break;
         case R_ZU:
-            name = "??";
+            name = "卒";
             break;
     }
     return prefix.append(name);
